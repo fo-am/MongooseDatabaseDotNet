@@ -1,12 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.OleDb;
-using System.IO;
-using System.Linq;
-using DataImporter.Data;
-using Npgsql;
+﻿using DataImporter.Data;
 
 namespace DataImporter.Console
 {
@@ -16,40 +8,17 @@ namespace DataImporter.Console
     // write them all to the postgres database.
 
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var accessData = new AccessData();
 
             var idsList = accessData.GetGroups();
             System.Console.WriteLine("Total Groups: " + idsList.Count);
-
-            using (var npgsqlConnection = new NpgsqlConnection("Host=localhost;Username=postgres;Password=Dctagl04;Database=FoAM"))
-            {
-                npgsqlConnection.Open();
-                using (var cmd = new NpgsqlCommand())
-                {
-                    cmd.Connection = npgsqlConnection;
-
-                  
-
-                    // Retrieve all rows
-                var query =    @"INSERT INTO mongoosedb.""Group""(""Group"") VALUES ";
-
-
-                    query += string.Join(",", idsList.Select(id => string.Format("('" + id + "')")));
-
-                    System.Console.WriteLine(query);
-
-                    cmd.CommandText = query;
-                    cmd.ExecuteNonQuery();
-                
-                }
-            }
+            var pgresData = new PostgresData();
+            pgresData.InsertData(idsList);
             System.Console.ReadLine();
         }
-
-       
     }
 }

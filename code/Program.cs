@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using System.Linq;
+using DataImporter.Data;
 using Npgsql;
 
 namespace DataImporter.Console
@@ -19,30 +20,9 @@ namespace DataImporter.Console
     {
         static void Main(string[] args)
         {
-            var idsList = new HashSet<string>();
+            var accessData = new AccessData();
 
-            using (var accessconn = new OleDbConnection())
-            {
-                accessconn.ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;" +
-                                              @"Data source= C:\Users\aidan\Dropbox\foam\TheDatabase\" +
-                                              @"Project replica August 2016.mdb";
-
-              accessconn.Open();
-                using (var cmd = new OleDbCommand())
-                {
-                    cmd.Connection = accessconn;
-                    cmd.CommandText = "Select distinct group from weights";
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var item = reader.GetString(0);
-                            System.Console.WriteLine(item + " Added: " + idsList.Add(item));
-
-                        }
-                    }
-                }
-            }
+            var idsList = accessData.GetGroups();
             System.Console.WriteLine("Total Groups: " + idsList.Count);
 
             using (var npgsqlConnection = new NpgsqlConnection("Host=localhost;Username=postgres;Password=Dctagl04;Database=FoAM"))
@@ -69,5 +49,7 @@ namespace DataImporter.Console
             }
             System.Console.ReadLine();
         }
+
+       
     }
 }

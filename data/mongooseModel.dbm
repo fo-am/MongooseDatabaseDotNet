@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="874,345" last-zoom="0.95"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="new_database">
 </database>
@@ -19,7 +19,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="880" y="443"/>
+	<position x="1020" y="500"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -37,7 +37,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1320" y="680"/>
+	<position x="1840" y="480"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -52,7 +52,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="pack_id" index="3"/>
+		<object name="pack_id" index="1"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -72,23 +72,28 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1880" y="480"/>
+	<position x="2420" y="500"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="litter_id" not-null="true">
-		<type name="integer" length="0"/>
-	</column>
 	<constraint name="individual_pk" type="pk-constr" table="mongoose.individual">
 		<columns names="individual_id" ref-type="src-columns"/>
 	</constraint>
+
+	<customidxs object-type="column">
+		<object name="litter_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="litter_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="litter_has_many_individuals" type="rel1n"
-	 src-col-pattern="{sc}_{st}"
+	 src-col-pattern="{sc}"
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
@@ -103,7 +108,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1260" y="400"/>
+	<position x="1760" y="120"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -118,8 +123,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="individual_id_individual" index="4"/>
-		<object name="pack_id" index="3"/>
+		<object name="individual_id_individual" index="2"/>
+		<object name="pack_id" index="1"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -149,7 +154,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="431.579" y="452.474"/>
+	<position x="1180" y="780"/>
 	<column name="interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -194,7 +199,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="920" y="753.684"/>
+	<position x="400" y="840"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -229,7 +234,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_event_code">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="420" y="770.526"/>
+	<position x="360" y="1300"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -257,7 +262,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2260" y="420"/>
+	<position x="3100" y="840"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -272,8 +277,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="individual_event_code_id" index="4"/>
-		<object name="individual_id" index="1"/>
+		<object name="individual_event_code_id" index="1"/>
+		<object name="individual_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -294,7 +299,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2283.16" y="662.105"/>
+	<position x="3100" y="1320"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -318,7 +323,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="820"/>
+	<position x="2120" y="820"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

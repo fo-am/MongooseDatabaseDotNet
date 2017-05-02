@@ -2,7 +2,7 @@ using System;
 
 namespace psDataImporter.Contracts.Access
 {
-    internal class NewLifeHistory
+    public class NewLifeHistory
     {
         public string Code;
         public DateTime Date;

@@ -66,5 +66,11 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\psDataImporter.Contracts\psDataImporter.Contracts.csproj">
+      <Project>{d9a58f31-4b33-41ef-a251-428fd101a693}</Project>
+      <Name>psDataImporter.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

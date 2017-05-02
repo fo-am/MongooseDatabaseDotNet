@@ -17,7 +17,7 @@ namespace psDataImporter.Console
 
 
             var weights = accessdata.GetWeights();
-            
+            postgresData.ProcessWeights(weights);
             Logger.Info("done");
             System.Console.ReadLine();
         }

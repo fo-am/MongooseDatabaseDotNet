@@ -42,10 +42,9 @@
   <ItemGroup>
     <Compile Include="Access\NewLifeHistory.cs" />
     <Compile Include="Access\Weights.cs" />
+    <Compile Include="Postgres\Pack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Postgres\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

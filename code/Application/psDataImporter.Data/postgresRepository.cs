@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using Dapper;
 using NLog;
 using Npgsql;
 using psDataImporter.Contracts.Access;
+using psDataImporter.Contracts.Postgres;
 
 namespace psDataImporter.Data
 {
@@ -18,7 +20,7 @@ namespace psDataImporter.Data
             try
             {
                 using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["accessConnectionString"]
+                    .ConnectionStrings["postgresConnectionString"]
                     .ConnectionString))
                 {
                     conn.Open();
@@ -39,6 +41,39 @@ namespace psDataImporter.Data
             {
                 Logger.Error(ex, "postgres error" + ex.Message);
             }
+        }
+
+        public void ProcessWeights(IEnumerable<Weights> weights)
+        {
+            // add packs
+
+            var pgPacks = new List<Pack>();
+
+            foreach (var group in weights.Select(s => s.Group).Distinct())
+            {
+                pgPacks.Add(NewPack(group));
+                Logger.Info($"created pack: {@group}");
+            }
+
+            int i = 5;
+            // add individuals
+            // get litters for new indivs
+            // get pack memebership
+            // add wieights
+            // turn lat/long into geography
+            // turn date and time into one datetime
+        }
+
+        private Pack NewPack(string group)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+             var newid=   conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@val) RETURNING pack_id ", new {val = group});
+                return new Pack(newid,group);
+            }
+
         }
     }
 }

@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="1062,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="new_database">
 </database>
@@ -348,6 +348,56 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#83af1f"
 	 src-table="mongoose.litter"
 	 dst-table="mongoose.pregnancy"
+	 src-required="false" dst-required="false"/>
+
+<table name="weight">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3120" y="140"/>
+	<column name="weight_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="weight" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="accuracy">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="session">
+		<type name="text" length="0"/>
+	</column>
+	<column name="collar_weight">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="weight_pk" type="pk-constr" table="mongoose.weight">
+		<columns names="weight_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="individual_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="individual_has_many_weights" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.weight"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

@@ -2,7 +2,7 @@
 
 namespace psDataImporter.Contracts.Access
 {
-    internal class Weights
+    public class Weights
     {
         public string Group { get; set; }
         public DateTime Date { get; set; }

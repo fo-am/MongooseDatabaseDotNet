@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Access\NewLifeHistory.cs" />
-    <Compile Include="Access\weights.cs" />
+    <Compile Include="Access\Weights.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

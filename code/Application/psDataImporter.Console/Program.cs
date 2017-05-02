@@ -6,6 +6,7 @@ using System.Data.OleDb;
 using Dapper;
 using NLog;
 using Npgsql;
+using psDataImporter.Contracts.Access;
 
 namespace psDataImporter.Console
 {
@@ -57,7 +58,7 @@ namespace psDataImporter.Console
                 foreach (var item in data)
                     try
                     {
-                        conn.Execute("insert into mongoose.pack (name) values (@PACK)", new {item.PACK});
+                        conn.Execute("insert into mongoose.pack (name) values (@PACK)", new {PACK = item.Pack});
                     }
                     catch (Exception ex)
                     {
@@ -76,21 +77,12 @@ namespace psDataImporter.Console
             {
                 conn.Open();
                 var results = conn.Query<NewLifeHistory>(
-                    @"SELECT [PACK], [DATE], [INDIV], [CODE], [LITTER]  FROM [NEW LIFE HISTORY] WHERE [CODE] = ""FPREG"" ");
+                    @"SELECT [NEW LIFE HISTORY].PACK, [NEW LIFE HISTORY].INDIV, [NEW LIFE HISTORY].SEX, [NEW LIFE HISTORY].[AGE CAT] as AgeCat, [NEW LIFE HISTORY].STATUS, [NEW LIFE HISTORY].[START/END] as StartEnd, [NEW LIFE HISTORY].CODE, [NEW LIFE HISTORY].EXACT, [NEW LIFE HISTORY].LSEEN, [NEW LIFE HISTORY].CAUSE, [NEW LIFE HISTORY].LITTER, [NEW LIFE HISTORY].[PREV NAME] as PrevName, [NEW LIFE HISTORY].COMMENT, [NEW LIFE HISTORY].EDITED, [NEW LIFE HISTORY].Latitude, [NEW LIFE HISTORY].Longitude FROM [NEW LIFE HISTORY] WHERE [START/END] is not null");// [NEW LIFE HISTORY].CODE = ""FPREG"" ");
                 conn.Close();
 
                 return results;
             }
         }
-    }
-
-    internal class NewLifeHistory
-    {
-        public string CODE;
-        public DateTime DATE;
-        public string INDIV;
-        public string LITTER;
-        public string PACK;
     }
 }
 

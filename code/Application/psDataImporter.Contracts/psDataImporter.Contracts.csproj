@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Access\NewLifeHistory.cs" />
     <Compile Include="Access\Weights.cs" />
+    <Compile Include="Postgres\Individual.cs" />
     <Compile Include="Postgres\Pack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

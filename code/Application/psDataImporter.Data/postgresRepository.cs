@@ -52,16 +52,35 @@ namespace psDataImporter.Data
             foreach (var group in weights.Select(s => s.Group).Distinct())
             {
                 pgPacks.Add(NewPack(group));
-                Logger.Info($"created pack: {@group}");
+                Logger.Info($"created pack: {group}");
             }
 
-            int i = 5;
+
             // add individuals
+            var pgIndividuals = new List<Individual>();
+            foreach (var indiv in weights.Select(s => s.Indiv).Distinct())
+            {
+                pgIndividuals.Add(NewIndividual(indiv));
+                Logger.Info($"created indiv: {indiv}");
+            }
+
             // get litters for new indivs
             // get pack memebership
             // add wieights
             // turn lat/long into geography
             // turn date and time into one datetime
+        }
+
+        private Individual NewIndividual(string indiv)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                var newid = conn.ExecuteScalar<int>(
+                    "Insert into mongoose.individual (name) values (@val) RETURNING individual_id ", new {val = indiv});
+                return new Individual(newid, indiv);
+            }
         }
 
         private Pack NewPack(string group)
@@ -70,10 +89,10 @@ namespace psDataImporter.Data
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-             var newid=   conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@val) RETURNING pack_id ", new {val = group});
-                return new Pack(newid,group);
+                var newid = conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@val) RETURNING pack_id ",
+                    new {val = group});
+                return new Pack(newid, group);
             }
-
         }
     }
 }

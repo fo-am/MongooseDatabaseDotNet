@@ -48,7 +48,7 @@ namespace psDataImporter.Data
                 {
                     conn.Open();
                     weights = conn.Query<Weights>(
-                        @"SELECT * FROM WEIGHTS"); 
+                        @"SELECT *, [DATE]+[TIME] as [TimeMeasured] FROM WEIGHTS"); 
                     conn.Close();
 
 

@@ -16,5 +16,6 @@ namespace psDataImporter.Contracts.Access
         public string Comment { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
+        public DateTime TimeMeasured { get; set; }
     }
 }

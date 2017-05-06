@@ -44,6 +44,7 @@
     <Compile Include="Access\Weights.cs" />
     <Compile Include="Postgres\Individual.cs" />
     <Compile Include="Postgres\Pack.cs" />
+    <Compile Include="Postgres\PackHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

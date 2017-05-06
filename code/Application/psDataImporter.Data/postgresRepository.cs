@@ -66,6 +66,26 @@ namespace psDataImporter.Data
 
             // get litters for new indivs
             // get pack memebership
+            foreach (var membership in weights.Select((grp) => new {group = grp.Group, indiv = grp.Indiv, date = grp.TimeMeasured  }))
+            {
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    var pack = conn.ExecuteScalar<PackHistory>(
+                        "SELECT pack_id, individual_id, date_joined from mongoose.pack_history where pack_id = @pack and individual_id = @individual", new { pack = membership.group, individual = membership.indiv });
+                    
+             
+                //select and see if we have an entry
+
+               
+                    // if not insert new info
+
+                    //if we do then check the date, if our date is older then update with the new older date
+                }
+            }
+
+
             // add wieights
             // turn lat/long into geography
             // turn date and time into one datetime

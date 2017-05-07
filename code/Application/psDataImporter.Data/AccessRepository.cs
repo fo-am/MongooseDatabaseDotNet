@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using Dapper;
 using NLog;
 using psDataImporter.Contracts.Access;
+using System.Linq;
 
 namespace psDataImporter.Data
 {
@@ -58,7 +59,7 @@ namespace psDataImporter.Data
             {
                 Logger.Error(ex, "Access error" + ex.Message);
             }
-            return weights;
+            return weights.Take(100);
         }
     }
 }

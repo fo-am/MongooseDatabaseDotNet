@@ -66,26 +66,68 @@ namespace psDataImporter.Data
 
             // get litters for new indivs
             // get pack memebership
-            foreach (var membership in weights.Select((grp) => new {group = grp.Group, indiv = grp.Indiv, date = grp.TimeMeasured  }))
-            {
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["postgresConnectionString"]
-                    .ConnectionString))
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                   .ConnectionStrings["postgresConnectionString"]
+                   .ConnectionString))
+
+            {   //select and see if we have an entry
+
+                foreach (var membership in weights.Select((grp) => new { group = grp.Group, indiv = grp.Indiv, date = grp.TimeMeasured }).OrderByDescending(g => g.date))
                 {
-                    var pack = conn.ExecuteScalar<PackHistory>(
-                        "SELECT pack_id, individual_id, date_joined from mongoose.pack_history where pack_id = @pack and individual_id = @individual", new { pack = membership.group, individual = membership.indiv });
-                    
-             
-                //select and see if we have an entry
+                    int packId = pgPacks.Single(p => p.Name == membership.group).PackId;
+                    int individualId = pgIndividuals.Single(i => i.Name == membership.indiv).IndividualId;
+                    var packHistory = conn.Query<PackHistory>(
+                        "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
+                        new { pack = packId, individual = individualId }).FirstOrDefault();
 
-               
-                    // if not insert new info
 
-                    //if we do then check the date, if our date is older then update with the new older date
+                    if (packHistory != null)
+                    {
+                        if (packHistory.DateJoined < membership.date)
+                        {     //if we do then check the date, if our date is older then update with the new older date
+                            conn.Execute("update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId", new { date = packHistory.DateJoined, packHistoryId = packHistory.PackHistoryId });
+                            Logger.Info($"update pack history: {packHistory.PackHistoryId}");
+                        }
+                    }
+                    else
+                    {
+                        // if not insert new info
+
+                        conn.Execute("Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
+                            new { PackId = packId, IndividualId = individualId, DateJoined = membership.date });
+
+                        Logger.Info($"Insert pack history: {membership.date}");
+
+                    }
+
+
+
+
                 }
             }
 
+            foreach (var weight in weights)
+            {
 
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                  .ConnectionStrings["postgresConnectionString"]
+                  .ConnectionString))
+
+                {
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.AllResultTypesAreUnknown = true;
+                        int individualId = pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
+                       
+
+                        conn.Execute(@"Insert into mongoose.weight (individual_id, weight, time, accuracy, session, collar_weight, location, comment)
+                                                        values (@IndividualId, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Location, @Comment)",
+                                new { IndividualId = individualId, Weight = weight.Weight, Time = weight.TimeMeasured, Accuracy = weight.Accuracy, Session = weight.Session, CollarWeight = weight.Collar, Location = $"ST_GeographyFromText('SRID=4326;POINT({ weight.Latitude} {weight.Longitude})')", Comment = weight.Comment });
+                    }
+                    Logger.Info($"Insert weight for: {weight.Indiv} weight {weight.Weight}");
+                }
+            }
             // add wieights
             // turn lat/long into geography
             // turn date and time into one datetime

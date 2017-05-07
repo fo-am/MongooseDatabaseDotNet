@@ -3,9 +3,9 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="1062,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="532,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
-<database name="new_database">
+<database name="Foam_auto">
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -26,18 +26,21 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="pack_created_date" not-null="true">
+	<column name="pack_created_date">
 		<type name="timestamp" length="0"/>
 	</column>
 	<constraint name="pack_pk" type="pk-constr" table="mongoose.pack">
 		<columns names="pack_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="name_unique" type="uq-constr" table="mongoose.pack">
+		<columns names="name" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1840" y="480"/>
+	<position x="1820" y="540"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -112,10 +115,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<column name="individual_id" not-null="true">
-		<type name="integer" length="0"/>
-	</column>
-	<column name="date_joined" not-null="true">
+	<column name="date_joined">
 		<type name="timestamp" length="0"/>
 	</column>
 	<constraint name="packhistory_pk" type="pk-constr" table="mongoose.pack_history">
@@ -123,7 +123,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="individual_id_individual" index="2"/>
+		<object name="individual_id" index="2"/>
 		<object name="pack_id" index="1"/>
 	</customidxs>
 
@@ -143,13 +143,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-required="false" dst-required="false"/>
 
 <relationship name="individual_has_many_packhistory" type="rel1n"
-	 src-col-pattern="{sc}_{st}"
+	 src-col-pattern="{sc}"
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.pack_history"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <table name="interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
@@ -350,7 +354,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="mongoose.pregnancy"
 	 src-required="false" dst-required="false"/>
 
-<table name="weight">
+<table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
 	<position x="3120" y="140"/>
@@ -373,7 +377,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="integer" length="0"/>
 	</column>
 	<column name="location">
-		<type name="geography" length="0"/>
+		<type name="geography" length="0" spatial-type="POINT" variation="0" srid="4326"/>
 	</column>
 	<column name="comment">
 		<type name="text" length="0"/>

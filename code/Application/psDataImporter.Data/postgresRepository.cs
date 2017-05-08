@@ -108,22 +108,34 @@ namespace psDataImporter.Data
 
             foreach (var weight in weights)
             {
+                var sql = $"Insert into mongoose.weight (individual_id, weight, time, accuracy, session, collar_weight, comment, location)" +
+                    $" values (@IndividualId, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Comment, ST_GeographyFromText('SRID=4326;POINT({ weight.Latitude} {weight.Longitude})'))";
 
 
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                using (var conn = new NpgsqlConnection(ConfigurationManager
                   .ConnectionStrings["postgresConnectionString"]
                   .ConnectionString))
 
                 {
                     using (var cmd = new NpgsqlCommand())
                     {
+                        cmd.Connection = conn;
+                        conn.Open();
                         cmd.AllResultTypesAreUnknown = true;
                         int individualId = pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
+
+                        cmd.CommandText = sql;
                        
 
-                        conn.Execute(@"Insert into mongoose.weight (individual_id, weight, time, accuracy, session, collar_weight, location, comment)
-                                                        values (@IndividualId, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Location, @Comment)",
-                                new { IndividualId = individualId, Weight = weight.Weight, Time = weight.TimeMeasured, Accuracy = weight.Accuracy, Session = weight.Session, CollarWeight = weight.Collar, Location = $"ST_GeographyFromText('SRID=4326;POINT({ weight.Latitude} {weight.Longitude})')", Comment = weight.Comment });
+                        cmd.Parameters.AddWithValue("IndividualId" , individualId);
+                        cmd.Parameters.AddWithValue("Weight", weight.Weight);
+                        cmd.Parameters.AddWithValue("Time" , weight.TimeMeasured);
+                        cmd.Parameters.AddWithValue("Accuracy" , weight.Accuracy);
+                        cmd.Parameters.AddWithValue("Session" ,weight.Session);
+                        cmd.Parameters.AddWithValue("CollarWeight" , weight.Collar);
+                        cmd.Parameters.AddWithValue("Comment", weight.Comment ?? string.Empty);
+
+                        cmd.ExecuteNonQuery();
                     }
                     Logger.Info($"Insert weight for: {weight.Indiv} weight {weight.Weight}");
                 }

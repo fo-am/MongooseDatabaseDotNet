@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.OleDb;
+using System.Linq;
 using Dapper;
 using NLog;
 using psDataImporter.Contracts.Access;
-using System.Linq;
 
 namespace psDataImporter.Data
 {
@@ -27,8 +27,6 @@ namespace psDataImporter.Data
                     lifeHistories = conn.Query<NewLifeHistory>(
                         @"SELECT [NEW LIFE HISTORY].PACK, [NEW LIFE HISTORY].INDIV, [NEW LIFE HISTORY].SEX, [NEW LIFE HISTORY].[AGE CAT] as AgeCat, [NEW LIFE HISTORY].STATUS, [NEW LIFE HISTORY].[START/END] as StartEnd, [NEW LIFE HISTORY].CODE, [NEW LIFE HISTORY].EXACT, [NEW LIFE HISTORY].LSEEN, [NEW LIFE HISTORY].CAUSE, [NEW LIFE HISTORY].LITTER, [NEW LIFE HISTORY].[PREV NAME] as PrevName, [NEW LIFE HISTORY].COMMENT, [NEW LIFE HISTORY].EDITED, [NEW LIFE HISTORY].Latitude, [NEW LIFE HISTORY].Longitude FROM [NEW LIFE HISTORY] WHERE [START/END] is not null"); // [NEW LIFE HISTORY].CODE = ""FPREG"" ");
                     conn.Close();
-
-
                 }
             }
             catch (Exception ex)
@@ -49,10 +47,8 @@ namespace psDataImporter.Data
                 {
                     conn.Open();
                     weights = conn.Query<Weights>(
-                        @"SELECT *, [DATE]+[TIME] as [TimeMeasured] FROM WEIGHTS"); 
+                        @"SELECT *, [DATE]+[TIME] as [TimeMeasured] FROM WEIGHTS");
                     conn.Close();
-
-
                 }
             }
             catch (Exception ex)

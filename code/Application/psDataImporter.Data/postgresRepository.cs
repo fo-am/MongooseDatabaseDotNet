@@ -114,7 +114,7 @@ namespace psDataImporter.Data
             foreach (var weight in weights)
             {
                 // create geography if lat and long are present.
-                var locationString = string.Empty;
+                var locationString = "NULL";
                 if (!string.IsNullOrEmpty(weight.Latitude) && !string.IsNullOrEmpty(weight.Longitude))
                 {
                     locationString = $"ST_GeographyFromText('SRID=4326;POINT({weight.Latitude} {weight.Longitude})')";

@@ -141,10 +141,10 @@ namespace psDataImporter.Data
                         cmd.Parameters.AddWithValue("IndividualId", individualId);
                         cmd.Parameters.AddWithValue("Weight", weight.Weight);
                         cmd.Parameters.AddWithValue("Time", weight.TimeMeasured);
-                        cmd.Parameters.AddWithValue("Accuracy", weight.Accuracy);
-                        cmd.Parameters.AddWithValue("Session", weight.Session);
-                        cmd.Parameters.AddWithValue("CollarWeight", weight.Collar);
-                        cmd.Parameters.AddWithValue("Comment", weight.Comment ?? string.Empty);
+                        cmd.Parameters.AddWithValue("Accuracy", (object) weight.Accuracy ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Session", (object) weight.Session ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("CollarWeight", (object) weight.Collar??DBNull.Value);
+                        cmd.Parameters.AddWithValue("Comment", (object) weight.Comment ?? DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                     }

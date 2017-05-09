@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.OleDb;
-using System.Linq;
 using Dapper;
 using NLog;
 using psDataImporter.Contracts.Access;
@@ -24,7 +23,7 @@ namespace psDataImporter.Data
                 {
                     conn.Open();
                     weights = conn.Query<Weights>(
-                        @"SELECT *, [DATE]+[TIME] as [TimeMeasured] FROM WEIGHTS");
+                        @"SELECT *, [DATE] + IIF(ISNULL([TIME]),0,[TIME]) as [TimeMeasured] FROM WEIGHTS"); // null times are turned to a value.
                     conn.Close();
                 }
             }
@@ -32,7 +31,7 @@ namespace psDataImporter.Data
             {
                 Logger.Error(ex, "Access error" + ex.Message);
             }
-            return weights.Take(100);
+            return weights;
         }
     }
 }

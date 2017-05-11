@@ -7,6 +7,7 @@ using Dapper;
 using NLog;
 using Npgsql;
 using psDataImporter.Contracts.Access;
+using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
 
 namespace psDataImporter.Data
@@ -15,102 +16,37 @@ namespace psDataImporter.Data
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public void PushLifeHistorysToPostgres(IEnumerable<NewLifeHistory> data)
+        public List<Pack> GetAllPacks()
         {
-            try
-            {
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["postgresConnectionString"]
-                    .ConnectionString))
-                {
-                    conn.Open();
-                    foreach (var item in data)
-                    {
-                        try
-                        {
-                            conn.Execute("insert into mongoose.pack (name) values (@PACK)", new {PACK = item.Pack});
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex, "insert error " + ex.Message);
-                        }
-                    }
-
-                    conn.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "postgres error" + ex.Message);
-            }
-        }
-
-        public void ProcessWeights(IEnumerable<Weights> weights)
-        {
-            weights = weights as IList<Weights> ?? weights.ToList();
-
-            // add packs
             var pgPacks = new List<Pack>();
-
-            foreach (var group in weights.Select(s => s.Group).Distinct())
-            {
-                pgPacks.Add(NewPack(group));
-                Logger.Info($"created pack: {group}");
-            }
-
-            // add individuals
-            var pgIndividuals = new List<Individual>();
-            foreach (var indiv in weights.Select(s => s.Indiv).Distinct())
-            {
-                pgIndividuals.Add(NewIndividual(indiv));
-                Logger.Info($"created indiv: {indiv}");
-            }
-
-            // get litters for new indivs
-            // get pack memebership
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
-
             {
-                //select and see if we have an entry
-
-                foreach (var membership in weights
-                    .Select(grp => new {group = grp.Group, indiv = grp.Indiv, date = grp.TimeMeasured})
-                    .OrderByDescending(g => g.date))
-                {
-                    var packId = pgPacks.Single(p => p.Name == membership.group).PackId;
-                    var individualId = pgIndividuals.Single(i => i.Name == membership.indiv).IndividualId;
-                    var packHistory = conn.Query<PackHistory>(
-                        "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
-                        new {pack = packId, individual = individualId}).FirstOrDefault();
-
-
-                    if (packHistory != null)
-                    {
-                        if (packHistory.DateJoined < membership.date)
-                        {
-                            //if we do then check the date, if our date is older then update with the new older date
-                            conn.Execute(
-                                "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                                new {date = packHistory.DateJoined, packHistoryId = packHistory.PackHistoryId});
-
-                            Logger.Info($"update pack history: {packHistory.PackHistoryId}");
-                        }
-                    }
-                    else
-                    {
-                        // if not insert new info
-
-                        conn.Execute(
-                            "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
-                            new {PackId = packId, IndividualId = individualId, DateJoined = membership.date});
-
-                        Logger.Info($"Insert pack history: {membership.date}");
-                    }
-                }
+                pgPacks = conn
+                    .Query<Pack>("Select pack_id as PackId, name, pack_created_date as CreatedDate from mongoose.pack")
+                    .ToList();
             }
-            // add wieights
+            return pgPacks;
+        }
+
+        public List<Individual> GetAllIndividuals()
+        {
+            var pgIndividuals = new List<Individual>();
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                pgIndividuals = conn
+                    .Query<Individual>(
+                        "Select individual_id as IndividualId, litter_id as LitterId, name, sex from mongoose.individual")
+                    .ToList();
+            }
+            return pgIndividuals;
+        }
+
+        public void AddWeights(IEnumerable<Weights> weights, List<Individual> pgIndividuals)
+        {
             foreach (var weight in weights)
             {
                 // create geography if lat and long are present.
@@ -143,7 +79,7 @@ namespace psDataImporter.Data
                         cmd.Parameters.AddWithValue("Time", weight.TimeMeasured);
                         cmd.Parameters.AddWithValue("Accuracy", (object) weight.Accuracy ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("Session", (object) weight.Session ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("CollarWeight", (object) weight.Collar??DBNull.Value);
+                        cmd.Parameters.AddWithValue("CollarWeight", (object) weight.Collar ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("Comment", (object) weight.Comment ?? DBNull.Value);
 
                         cmd.ExecuteNonQuery();
@@ -153,27 +89,80 @@ namespace psDataImporter.Data
             }
         }
 
-        private Individual NewIndividual(string indiv)
+        public void AddPackHistory(IEnumerable<PackHistoryDto> packHistorys, IEnumerable<Pack> pgPacks,
+            IEnumerable<Individual> pgIndividuals)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
+
             {
-                var newid = conn.ExecuteScalar<int>(
-                    "Insert into mongoose.individual (name) values (@val) RETURNING individual_id ", new {val = indiv});
-                return new Individual(newid, indiv);
+                //select and see if we have an entry
+
+                foreach (var membership in packHistorys.OrderByDescending(ph => ph.DateJoined))
+                {
+                    var packId = pgPacks.Single(p => p.Name == membership.PackName).PackId;
+                    var individualId = pgIndividuals.Single(i => i.Name == membership.IndividualName).IndividualId;
+
+                    var packHistory = conn.Query<PackHistory>(
+                        "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
+                        new {pack = packId, individual = individualId}).FirstOrDefault();
+
+
+                    if (packHistory != null)
+                    {
+                        if (packHistory.DateJoined < membership.DateJoined)
+                        {
+                            //if we do then check the date, if our date is older then update with the new older date
+                            conn.Execute(
+                                "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
+                                new {date = packHistory.DateJoined, packHistoryId = packHistory.PackHistoryId});
+
+                            Logger.Info($"update pack history: {packHistory.PackHistoryId}");
+                        }
+                    }
+                    else
+                    {
+                        // if not insert new info
+
+                        conn.Execute(
+                            "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
+                            new {PackId = packId, IndividualId = individualId, membership.DateJoined});
+
+                        Logger.Info($"Insert pack history: {membership.DateJoined}");
+                    }
+                }
             }
         }
 
-        private Pack NewPack(string group)
+        public void AddIndividuals(IEnumerable<Individual> individuals)
         {
-            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                .ConnectionStrings["postgresConnectionString"]
-                .ConnectionString))
+            foreach (var indiv in individuals)
             {
-                var newid = conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@val) RETURNING pack_id ",
-                    new {val = group});
-                return new Pack(newid, group);
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.ExecuteScalar<int>(
+                        "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
+                        new {indiv.Name, indiv.Sex});
+                }
+                Logger.Info($"created indiv: {indiv.Name}");
+            }
+        }
+
+        public void AddGroups(IEnumerable<string> packNames)
+        {
+            foreach (var packName in packNames)
+            {
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
+                        new {name = packName});
+                }
+                Logger.Info($"created pack: {packName}");
             }
         }
     }

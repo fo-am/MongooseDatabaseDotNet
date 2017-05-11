@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D9A58F31-4B33-41EF-A251-428FD101A693}</ProjectGuid>
+    <ProjectGuid>{07BCDEE6-58F4-44EF-878F-ADE153889068}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>psDataImporter.Contracts</RootNamespace>
-    <AssemblyName>psDataImporter.Contracts</AssemblyName>
+    <RootNamespace>pgDataImporter.Core</RootNamespace>
+    <AssemblyName>pgDataImporter.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,16 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Access\Ultrasound.cs" />
-    <Compile Include="Access\NewLifeHistory.cs" />
-    <Compile Include="Access\Weights.cs" />
-    <Compile Include="dtos\PackHistoryDto.cs" />
-    <Compile Include="Postgres\Individual.cs" />
-    <Compile Include="Postgres\Pack.cs" />
-    <Compile Include="Postgres\PackHistory.cs" />
-    <Compile Include="Postgres\Weight.cs" />
+    <Compile Include="PostgresCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\psDataImporter.Contracts\psDataImporter.Contracts.csproj">
+      <Project>{D9A58F31-4B33-41EF-A251-428FD101A693}</Project>
+      <Name>psDataImporter.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\psDataImporter.Data\psDataImporter.Data.csproj">
+      <Project>{a8b9e290-7183-4a0d-a0be-8c84fd8154be}</Project>
+      <Name>psDataImporter.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,6 +2,10 @@
 {
     public class Individual
     {
+        public Individual()
+        {
+        }
+
         public Individual(int pgIndivididualId, string name, string sex, int? litterId = null)
         {
             IndividualId = pgIndivididualId;

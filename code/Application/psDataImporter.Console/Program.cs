@@ -1,4 +1,5 @@
 ﻿using NLog;
+using pgDataImporter.Core;
 using psDataImporter.Data;
 
 namespace psDataImporter.Console
@@ -10,14 +11,13 @@ namespace psDataImporter.Console
         private static void Main(string[] args)
         {
             var accessdata = new AccessRepository();
-            var postgresData = new PostgresRepository();
+            var postgresData = new PostgresCore();
 
-   //         var lifeHistories = accessdata.GetNewLifeHistories();
-  //          postgresData.PushLifeHistorysToPostgres(lifeHistories);
+       //     var weights = accessdata.GetWeights();
+       //     postgresData.ProcessWeights(weights);
 
+            var ultrasound = accessdata.GetUltrasounds();
 
-            var weights = accessdata.GetWeights();
-            postgresData.ProcessWeights(weights);
             Logger.Info("done");
             System.Console.ReadLine();
         }

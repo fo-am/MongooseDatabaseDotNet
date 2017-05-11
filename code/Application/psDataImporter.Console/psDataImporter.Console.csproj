@@ -69,6 +69,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\pgDataImporter.Core\pgDataImporter.Core.csproj">
+      <Project>{07BCDEE6-58F4-44EF-878F-ADE153889068}</Project>
+      <Name>pgDataImporter.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\psDataImporter.Contracts\psDataImporter.Contracts.csproj">
       <Project>{d9a58f31-4b33-41ef-a251-428fd101a693}</Project>
       <Name>psDataImporter.Contracts</Name>

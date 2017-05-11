@@ -4,6 +4,10 @@ namespace psDataImporter.Contracts.Postgres
 {
     public class Pack
     {
+        public Pack()
+        {
+        }
+
         public Pack(int newid, string name)
         {
             PackId = newid;

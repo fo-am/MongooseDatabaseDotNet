@@ -13,10 +13,11 @@ namespace psDataImporter.Console
             var accessdata = new AccessRepository();
             var postgresData = new PostgresCore();
 
-       //     var weights = accessdata.GetWeights();
-       //     postgresData.ProcessWeights(weights);
+            var weights = accessdata.GetWeights();
+            postgresData.ProcessWeights(weights);
 
-            var ultrasound = accessdata.GetUltrasounds();
+            var ultrasoundData = accessdata.GetUltrasounds();
+            postgresData.ProccessUltrasoundData(ultrasoundData);
 
             Logger.Info("done");
             System.Console.ReadLine();

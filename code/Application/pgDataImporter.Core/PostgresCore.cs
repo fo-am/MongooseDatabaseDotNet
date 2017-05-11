@@ -11,16 +11,33 @@ namespace pgDataImporter.Core
     {
         public void ProcessWeights(IEnumerable<Weights> weights)
         {
+            weights = weights as IList<Weights> ?? weights.ToList();
             var pg = new PostgresRepository();
+           
 
-             weights = weights as IList<Weights> ?? weights.ToList();
-            pg.AddGroups(weights.Select(s => s.Group).Distinct());
-            pg.AddIndividuals(weights.Select(s => new Individual{ Name = s.Indiv, Sex = s.Sex }).Distinct());
+            pg.AddPacks(weights.Select(s => s.Group).Distinct());
+            pg.AddIndividuals(weights.GroupBy(s => new {Name = s.Indiv, s.Sex})
+                .Select(i => new Individual {Name = i.Key.Name, Sex = i.Key.Sex}));
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
-            pg.AddPackHistory(weights.Select(ph=>new PackHistoryDto( ph.Group, ph.Indiv, ph.TimeMeasured)), pgPacks, pgIndividuals);
+            pg.AddPackHistory(weights.Select(ph=>new PackHistoryDto(ph.Indiv, ph.Group, ph.TimeMeasured)), pgPacks, pgIndividuals);
+
             pg.AddWeights(weights, pgIndividuals);
+        }
+
+        public void ProccessUltrasoundData(IEnumerable<Ultrasound> ultrasoundData)
+        {
+            ultrasoundData = ultrasoundData as IList<Ultrasound> ?? ultrasoundData.ToList();
+            var pg = new PostgresRepository();
+            pg.AddPacks(ultrasoundData.Select(s => s.PACK).Distinct());
+            pg.AddIndividuals(ultrasoundData.Select(s => new Individual { Name = s.INDIV}).Distinct());
+
+            var pgPacks = pg.GetAllPacks();
+            var pgIndividuals = pg.GetAllIndividuals();
+            pg.AddPackHistory(ultrasoundData.Select(ph => new PackHistoryDto(ph.INDIV, ph.PACK, ph.DATE)), pgPacks, pgIndividuals);
+
+
         }
     }
 }

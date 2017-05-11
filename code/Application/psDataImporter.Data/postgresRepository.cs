@@ -111,12 +111,12 @@ namespace psDataImporter.Data
 
                     if (packHistory != null)
                     {
-                        if (packHistory.DateJoined < membership.DateJoined)
+                        if (packHistory.DateJoined > membership.DateJoined)
                         {
                             //if we do then check the date, if our date is older then update with the new older date
                             conn.Execute(
                                 "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                                new {date = packHistory.DateJoined, packHistoryId = packHistory.PackHistoryId});
+                                new {date = membership.DateJoined, packHistoryId = packHistory.PackHistoryId});
 
                             Logger.Info($"update pack history: {packHistory.PackHistoryId}");
                         }
@@ -137,21 +137,40 @@ namespace psDataImporter.Data
 
         public void AddIndividuals(IEnumerable<Individual> individuals)
         {
-            foreach (var indiv in individuals)
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
             {
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["postgresConnectionString"]
-                    .ConnectionString))
+                foreach (var newIndividual in individuals)
                 {
+                    // see if we have the individual
+                    // if so do we have all the data we have at this point?
+                    // if not then update it with what we have...
+                    // what if we have the same data but it conflicts (Sex eg)
+                    // 
+                    var inDatabaseIndividual = conn.Query<Individual>("Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
+                        new {newIndividual.Name}).SingleOrDefault();
+
+                    if (inDatabaseIndividual != null)
+                    {
+                        //If database has no sex, but our new individual does
+                        if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
+                        {
+                            conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
+                                new {sex = newIndividual.Sex, id = newIndividual.IndividualId});
+                        } 
+                        // if litter id is set then do the litter thing... worry about that when I have some data!
+                    }
+
                     conn.ExecuteScalar<int>(
                         "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                        new {indiv.Name, indiv.Sex});
+                        new {newIndividual.Name, newIndividual.Sex});
+                    Logger.Info($"created indiv: {newIndividual.Name}");
                 }
-                Logger.Info($"created indiv: {indiv.Name}");
             }
         }
 
-        public void AddGroups(IEnumerable<string> packNames)
+        public void AddPacks(IEnumerable<string> packNames)
         {
             foreach (var packName in packNames)
             {

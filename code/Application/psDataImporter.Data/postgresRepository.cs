@@ -212,5 +212,16 @@ namespace psDataImporter.Data
                     });
             }
         }
+
+        public void RemoveUltrasoundData()
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute("truncate mongoose.ultrasound");
+                Logger.Info("Truncated ultrasound table");
+            }
+        }
     }
 }

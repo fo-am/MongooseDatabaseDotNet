@@ -51,6 +51,7 @@ namespace pgDataImporter.Core
         private void AddUltrasoundData(IEnumerable<Ultrasound> ultrasoundData, List<Individual> pgIndividuals,
             PostgresRepository pg)
         {
+            pg.RemoveUltrasoundData();
             foreach (var ultrasound in ultrasoundData)
             {
                 var individualId = pgIndividuals.Single(i => i.Name == ultrasound.INDIV).IndividualId;

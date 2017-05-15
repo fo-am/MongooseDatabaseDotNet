@@ -185,5 +185,32 @@ namespace psDataImporter.Data
                 Logger.Info($"created pack: {packName}");
             }
         }
+
+        public void AddFoetus(int individualId, int foetusNumber, DateTime ultrasoundDate, string foetusSize,
+            float? crossViewWidth, float? crossViewLength, float? longViewLength, float? longViewWidth,
+            string comment, string observer)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(
+                    "Insert into mongoose.ultrasound (individual_id, observation_date, foetus_number, foetus_size, cross_view_length, cross_view_width, long_view_length, long_view_width, observer, comment)" +
+                    " values(@individualId, @observationDate, @foetusNumber, @foetusSize, @crossViewLength, @crossViewWidth, @longViewLength, @longViewWidth, @Observer, @comment)",
+                    new
+                    {
+                        individualId,
+                        observationDate = ultrasoundDate,
+                        foetusNumber,
+                        foetusSize,
+                        crossViewWidth,
+                        crossViewLength,
+                        longViewLength,
+                        longViewWidth,
+                        comment,
+                        observer
+                    });
+            }
+        }
     }
 }

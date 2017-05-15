@@ -32,7 +32,7 @@ namespace psDataImporter.Data
             {
                 Logger.Error(ex, "Access error" + ex.Message);
             }
-            return weights.Take(100);
+            return weights;
         }
 
         public IEnumerable<Ultrasound> GetUltrasounds()

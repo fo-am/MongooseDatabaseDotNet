@@ -22,6 +22,7 @@ namespace psDataImporter.Data
                     .ConnectionStrings["accessConnectionString"]
                     .ConnectionString))
                 {
+                    Logger.Info("Getting weight data");
                     conn.Open();
                     weights = conn.Query<Weights>(
                         @"SELECT *, [DATE] + IIF(ISNULL([TIME]),0,[TIME]) as [TimeMeasured] FROM WEIGHTS"); // null times are turned to a value.
@@ -44,6 +45,7 @@ namespace psDataImporter.Data
                     .ConnectionStrings["accessConnectionString"]
                     .ConnectionString))
                 {
+                    Logger.Info("Getting ultrasound data");
                     conn.Open();
                     ultrasounds = conn.Query<Ultrasound>(
                         @"SELECT 
@@ -88,6 +90,27 @@ namespace psDataImporter.Data
                 Logger.Error(ex, "Access error" + ex.Message);
             }
             return ultrasounds;
+        }
+
+        public IEnumerable<RadioCollar> GetRadioCollars()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Radio Collar data");
+                return conn.Query<RadioCollar>(@" 
+                                        SELECT
+                                        PACK,
+                                        INDIVIDUAL,
+                                        FREQUENCY,
+                                        [TURNED ON] AS TURNED_ON,
+                                        FITTED,
+                                        REMOVED,
+                                        [WEIGHT(G)] AS WEIGHT,
+                                        DATE_ENTERED
+                                        FROM [RADIOCOLLAR RECORDS]").ToList();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using psDataImporter.Contracts.Access;
@@ -24,7 +25,8 @@ namespace pgDataImporter.Core
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
-            AddPackHistories(weights.Select(ph => new PackHistoryDto(ph.Indiv, ph.Group, ph.TimeMeasured)), pgPacks,
+            AddPackHistories(
+                weights.Select(weight => new PackHistoryDto(weight.Indiv, weight.Group, weight.TimeMeasured)), pgPacks,
                 pgIndividuals, pg);
 
             pg.AddWeights(weights, pgIndividuals);
@@ -41,11 +43,52 @@ namespace pgDataImporter.Core
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
-            AddPackHistories(ultrasoundData.Select(ph => new PackHistoryDto(ph.INDIV, ph.PACK, ph.DATE)), pgPacks,
+            AddPackHistories(
+                ultrasoundData.Select(
+                    ultrasound => new PackHistoryDto(ultrasound.INDIV, ultrasound.PACK, ultrasound.DATE)), pgPacks,
                 pgIndividuals, pg);
 
             AddUltrasoundData(ultrasoundData, pgIndividuals, pg);
             Logger.Info("Done adding ultrasound data.");
+        }
+
+        public void ProccessRadioCollarData(IEnumerable<RadioCollar> radioCollarData)
+        {
+            Logger.Info("Starting to add radio collar data.");
+            radioCollarData = radioCollarData as IList<RadioCollar> ?? radioCollarData.ToList();
+            var pg = new PostgresRepository();
+            pg.AddPacks(radioCollarData.Select(s => s.PACK).Distinct());
+            pg.AddIndividuals(radioCollarData.Select(s => new Individual {Name = s.INDIVIDUAL}).Distinct());
+
+            var pgPacks = pg.GetAllPacks();
+            var pgIndividuals = pg.GetAllIndividuals();
+
+            AddPackHistories(
+                radioCollarData.Select(collar => new PackHistoryDto(collar.INDIVIDUAL, collar.PACK,
+                    GetMinimumDateFromRadioCollar(collar))), pgPacks,
+                pgIndividuals, pg);
+
+            AddRadioCollarData(radioCollarData, pgIndividuals, pg);
+
+            Logger.Info("Done adding radio collar data.");
+        }
+
+        private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals, PostgresRepository pg)
+        {
+            foreach (var radioCollar in radioCollarData)
+            {
+                var individualId = pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
+
+                pg.AddRadioCollar(individualId, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
+                    radioCollar.FREQUENCY,
+                    radioCollar.WEIGHT, radioCollar.DATE_ENTERED, radioCollar.COMMENT);
+            }
+        }
+
+        private static DateTime GetMinimumDateFromRadioCollar(RadioCollar ph)
+        {
+            return new List<DateTime?> {ph.DATE_ENTERED, ph.FITTED, ph.REMOVED, ph.TURNED_ON}.Min()
+                .GetValueOrDefault();
         }
 
         private void AddUltrasoundData(IEnumerable<Ultrasound> ultrasoundData, List<Individual> pgIndividuals,

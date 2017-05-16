@@ -223,5 +223,16 @@ namespace psDataImporter.Data
                 Logger.Info("Truncated ultrasound table");
             }
         }
+
+        public void AddRadioCollar(int individualId, DateTime? radioCollarFitted, DateTime? radioCollarTurnedOn, DateTime? radioCollarRemoved, int? radioCollarFrequency, int radioCollarWeight, DateTime? radioCollarDateEntered, string radioCollarComment)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute("", new { });
+            }
+
+        }
     }
 }

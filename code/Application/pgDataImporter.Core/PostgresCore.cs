@@ -73,10 +73,16 @@ namespace pgDataImporter.Core
             Logger.Info("Done adding radio collar data.");
         }
 
-        private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals, PostgresRepository pg)
+        private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals,
+            PostgresRepository pg)
         {
             foreach (var radioCollar in radioCollarData)
             {
+                if (string.IsNullOrEmpty(radioCollar.INDIVIDUAL))
+                {
+                    Logger.Warn("individual name null");
+                    continue;
+                }
                 var individualId = pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
 
                 pg.AddRadioCollar(individualId, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
@@ -207,6 +213,12 @@ namespace pgDataImporter.Core
 
             foreach (var membership in packHistorys.OrderByDescending(ph => ph.DateJoined))
             {
+                if (string.IsNullOrEmpty(membership.IndividualName) || string.IsNullOrEmpty(membership.PackName))
+                {
+                    Logger.Warn(
+                        $"Null found entering pack history. pack name:{membership.PackName} individual name {membership.IndividualName}");
+                    continue;
+                }
                 var packId = pgPacks.Single(p => p.Name == membership.PackName).PackId;
                 var individualId = pgIndividuals.Single(i => i.Name == membership.IndividualName).IndividualId;
 

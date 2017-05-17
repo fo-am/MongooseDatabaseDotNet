@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="1075,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="816,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto">
 </database>
@@ -464,6 +464,56 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.ultrasound"
+	 src-required="false" dst-required="false"/>
+
+<table name="radiocollar" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="2100" y="1080"/>
+	<column name="radiocollar_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="frequency">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="weight">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="fitted">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="turned_on">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="removed">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<column name="dateEntered">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="radiocollar_pk" type="pk-constr" table="mongoose.radiocollar">
+		<columns names="radiocollar_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="individual_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="individual_has_many_radiocollars" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.radiocollar"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

@@ -142,6 +142,11 @@ namespace psDataImporter.Data
             {
                 foreach (var newIndividual in individuals)
                 {
+                    if (string.IsNullOrEmpty(newIndividual.Name))
+                    {
+                        Logger.Warn("Individual with null name.");
+                        continue;
+                    }
                     // see if we have the individual
                     // if so do we have all the data we have at this point?
                     // if not then update it with what we have...
@@ -175,6 +180,11 @@ namespace psDataImporter.Data
         {
             foreach (var packName in packNames)
             {
+                if (string.IsNullOrEmpty(packName))
+                {
+                    Logger.Warn("Tried to create a null pack.");
+                    continue;
+                }
                 using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                     .ConnectionStrings["postgresConnectionString"]
                     .ConnectionString))
@@ -224,15 +234,19 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddRadioCollar(int individualId, DateTime? radioCollarFitted, DateTime? radioCollarTurnedOn, DateTime? radioCollarRemoved, int? radioCollarFrequency, int radioCollarWeight, DateTime? radioCollarDateEntered, string radioCollarComment)
+        public void AddRadioCollar(int individualId, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
+            int? frequency, int weight, DateTime? dateEntered, string comment)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                conn.Execute("", new { });
+                conn.Execute(
+                    "insert into mongoose.radiocollar (individual_id, frequency, weight, fitted, turned_on, removed, comment, date_entered) " +
+                    "values (@individualId, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
+                    new {individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered});
+                Logger.Info("Added radio collar data.");
             }
-
         }
     }
 }

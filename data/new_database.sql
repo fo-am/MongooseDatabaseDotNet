@@ -7,9 +7,9 @@
 
 -- Database creation must be done outside an multicommand file.
 -- These commands were put in this file only for convenience.
--- -- object: new_database | type: DATABASE --
--- -- DROP DATABASE IF EXISTS new_database;
--- CREATE DATABASE new_database
+-- -- object: "Foam_auto" | type: DATABASE --
+-- -- DROP DATABASE IF EXISTS "Foam_auto";
+-- CREATE DATABASE "Foam_auto"
 -- ;
 -- -- ddl-end --
 -- 
@@ -34,8 +34,9 @@ SET search_path TO pg_catalog,public,mongoose;
 CREATE TABLE mongoose.pack(
 	pack_id serial NOT NULL,
 	name text NOT NULL,
-	pack_created_date timestamp NOT NULL,
-	CONSTRAINT pack_pk PRIMARY KEY (pack_id)
+	pack_created_date timestamp,
+	CONSTRAINT pack_pk PRIMARY KEY (pack_id),
+	CONSTRAINT name_unique UNIQUE (name)
 
 );
 -- ddl-end --
@@ -69,7 +70,9 @@ CREATE TABLE mongoose.individual(
 	individual_id serial NOT NULL,
 	litter_id integer,
 	name text NOT NULL,
-	CONSTRAINT individual_pk PRIMARY KEY (individual_id)
+	sex text,
+	CONSTRAINT individual_pk PRIMARY KEY (individual_id),
+	CONSTRAINT unique_name UNIQUE (name)
 
 );
 -- ddl-end --
@@ -88,9 +91,8 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 CREATE TABLE mongoose.pack_history(
 	pack_history_id serial NOT NULL,
 	pack_id integer,
-	individual_id_individual integer,
-	individual_id integer NOT NULL,
-	date_joined timestamp NOT NULL,
+	individual_id integer,
+	date_joined timestamp,
 	CONSTRAINT packhistory_pk PRIMARY KEY (pack_history_id)
 
 );
@@ -107,7 +109,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- object: individual_fk | type: CONSTRAINT --
 -- ALTER TABLE mongoose.pack_history DROP CONSTRAINT IF EXISTS individual_fk CASCADE;
-ALTER TABLE mongoose.pack_history ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id_individual)
+ALTER TABLE mongoose.pack_history ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id)
 REFERENCES mongoose.individual (individual_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
@@ -239,6 +241,86 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- ALTER TABLE mongoose.pregnancy DROP CONSTRAINT IF EXISTS litter_fk CASCADE;
 ALTER TABLE mongoose.pregnancy ADD CONSTRAINT litter_fk FOREIGN KEY (litter_id)
 REFERENCES mongoose.litter (litter_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: mongoose.weight | type: TABLE --
+-- DROP TABLE IF EXISTS mongoose.weight CASCADE;
+CREATE TABLE mongoose.weight(
+	weight_id serial NOT NULL,
+	individual_id integer,
+	weight integer NOT NULL,
+	"time" timestamp NOT NULL,
+	accuracy smallint,
+	session text,
+	collar_weight integer,
+	location geography(POINT, 4326),
+	comment text,
+	CONSTRAINT weight_pk PRIMARY KEY (weight_id)
+
+);
+-- ddl-end --
+ALTER TABLE mongoose.weight OWNER TO postgres;
+-- ddl-end --
+
+-- object: individual_fk | type: CONSTRAINT --
+-- ALTER TABLE mongoose.weight DROP CONSTRAINT IF EXISTS individual_fk CASCADE;
+ALTER TABLE mongoose.weight ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id)
+REFERENCES mongoose.individual (individual_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: mongoose.ultrasound | type: TABLE --
+-- DROP TABLE IF EXISTS mongoose.ultrasound CASCADE;
+CREATE TABLE mongoose.ultrasound(
+	ultrasound_id serial NOT NULL,
+	individual_id integer,
+	observation_date timestamp NOT NULL,
+	foetus_number smallint,
+	foetus_size text,
+	cross_view_length decimal,
+	cross_view_width decimal,
+	long_view_length decimal,
+	long_view_width decimal,
+	observer text,
+	comment text,
+	CONSTRAINT ultrasound_pk PRIMARY KEY (ultrasound_id)
+
+);
+-- ddl-end --
+ALTER TABLE mongoose.ultrasound OWNER TO postgres;
+-- ddl-end --
+
+-- object: individual_fk | type: CONSTRAINT --
+-- ALTER TABLE mongoose.ultrasound DROP CONSTRAINT IF EXISTS individual_fk CASCADE;
+ALTER TABLE mongoose.ultrasound ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id)
+REFERENCES mongoose.individual (individual_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: mongoose.radiocollar | type: TABLE --
+-- DROP TABLE IF EXISTS mongoose.radiocollar CASCADE;
+CREATE TABLE mongoose.radiocollar(
+	radiocollar_id serial NOT NULL,
+	individual_id integer,
+	frequency smallint,
+	weight smallint,
+	fitted timestamp,
+	turned_on timestamp,
+	removed timestamp,
+	comment text,
+	date_entered timestamp,
+	CONSTRAINT radiocollar_pk PRIMARY KEY (radiocollar_id)
+
+);
+-- ddl-end --
+ALTER TABLE mongoose.radiocollar OWNER TO postgres;
+-- ddl-end --
+
+-- object: individual_fk | type: CONSTRAINT --
+-- ALTER TABLE mongoose.radiocollar DROP CONSTRAINT IF EXISTS individual_fk CASCADE;
+ALTER TABLE mongoose.radiocollar ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id)
+REFERENCES mongoose.individual (individual_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 

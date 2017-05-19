@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8BA2FC00-7008-447C-A988-2A31055C74C3}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>psDataImporter.Console</RootNamespace>
-    <AssemblyName>psDataImporter.Console</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <ProjectGuid>{07BCDEE6-58F4-44EF-878F-ADE153889068}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>pgDataImporter.Core</RootNamespace>
+    <AssemblyName>pgDataImporter.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,21 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
-    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.8\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.2.2.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.3.2.2\lib\net451\Npgsql.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,31 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="PostgresCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\pgDataImporter.Core\pgDataImporter.Core.csproj">
-      <Project>{07BCDEE6-58F4-44EF-878F-ADE153889068}</Project>
-      <Name>pgDataImporter.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\psDataImporter.Contracts\psDataImporter.Contracts.csproj">
-      <Project>{d9a58f31-4b33-41ef-a251-428fd101a693}</Project>
+      <Project>{D9A58F31-4B33-41EF-A251-428FD101A693}</Project>
       <Name>psDataImporter.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\psDataImporter.Data\psDataImporter.Data.csproj">
       <Project>{a8b9e290-7183-4a0d-a0be-8c84fd8154be}</Project>
       <Name>psDataImporter.Data</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

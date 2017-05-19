@@ -491,7 +491,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="comment">
 		<type name="text" length="0"/>
 	</column>
-	<column name="dateEntered">
+	<column name="date_entered">
 		<type name="timestamp" length="0"/>
 	</column>
 	<constraint name="radiocollar_pk" type="pk-constr" table="mongoose.radiocollar">

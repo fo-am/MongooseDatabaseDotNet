@@ -4,22 +4,22 @@ namespace psDataImporter.Contracts.Access
 {
     public class NewLifeHistory
     {
-        public string Code;
-        public DateTime Date;
-        public string Indiv;
-        public string Litter;
-        public string Pack;
-        public string Sex;
         public string AgeCat;
-        public string Status;
-        public string StartEnd;
-        public string Exact;
-        public string Lseen;
         public string Cause;
-        public string PrevName;
+        public string Code;
         public string Comment;
+        public DateTime Date;
         public string Edited;
+        public string Exact;
+        public string Indiv;
         public string Latitude;
+        public string Litter;
         public string Longitude;
+        public string Lseen;
+        public string Pack;
+        public string PrevName;
+        public string Sex;
+        public string StartEnd;
+        public string Status;
     }
 }

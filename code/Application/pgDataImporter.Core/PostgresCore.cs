@@ -73,9 +73,48 @@ namespace pgDataImporter.Core
             Logger.Info("Done adding radio collar data.");
         }
 
+        public void ProcessLifeHistories(IEnumerable<NewLifeHistory> lifeHistories)
+        {
+            Logger.Info("Starting to add life history data.");
+            lifeHistories = lifeHistories as IList<NewLifeHistory> ?? lifeHistories.ToList();
+            var pg = new PostgresRepository();
+            pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
+            pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv})
+                .Select(s => new Individual {Name = s.Key.Indiv}));
+               
+
+            AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
+                l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter}).ToList(),pg);
+
+            var pgPacks = pg.GetAllPacks();
+            var pgIndividuals = pg.GetAllIndividuals();
+            Logger.Info("Done adding life history data.");
+        }
+
+        private void AddLitterInfo(IEnumerable<LifeHistoryDto> litters, PostgresRepository pg)
+        {
+            var pgPacks = pg.GetAllPacks();
+            var pgIndividuals = pg.GetAllIndividuals();
+
+            foreach (var litter in litters)
+            {
+                if (string.IsNullOrEmpty(litter.Pack)|| string.IsNullOrEmpty(litter.Individual)||string.IsNullOrEmpty(litter.Litter))
+                {
+                    Logger.Warn($"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
+                    continue;
+                }
+                litter.pgIndividualId = pgIndividuals.Single(i => i.Name == litter.Individual).IndividualId;
+                litter.pgPackId = pgPacks.Single(p => p.Name == litter.Pack).PackId;
+                
+                pg.AddLitter(litter);
+            }
+        }
+
         private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals,
             PostgresRepository pg)
         {
+            pg.RemoveRadioCollarData();
+
             foreach (var radioCollar in radioCollarData)
             {
                 if (string.IsNullOrEmpty(radioCollar.INDIVIDUAL))
@@ -238,5 +277,7 @@ namespace pgDataImporter.Core
                 }
             }
         }
+
+      
     }
 }

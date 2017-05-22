@@ -162,6 +162,9 @@ namespace psDataImporter.Data
                         //If database has no sex, but our new individual does
                         if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
                         {
+                            Logger.Info(
+                                $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
+
                             conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
                                 new {sex = newIndividual.Sex, id = newIndividual.IndividualId});
                         }
@@ -234,6 +237,17 @@ namespace psDataImporter.Data
             }
         }
 
+        public void RemoveRadioCollarData()
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute("truncate mongoose.radiocollar");
+                Logger.Info("Truncated radiocollar table");
+            }
+        }
+
         public void AddRadioCollar(int individualId, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
             int? frequency, int weight, DateTime? dateEntered, string comment)
         {
@@ -246,6 +260,25 @@ namespace psDataImporter.Data
                     "values (@individualId, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
                     new {individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered});
                 Logger.Info("Added radio collar data.");
+            }
+        }
+
+
+        public void AddLitter(LifeHistoryDto litter)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                //Insert new litter and get back Id
+                var litterId = conn.Execute<int>(
+                    "insert into mongoose.litter (pack_id, name)" +
+                    "values (@individualId, @packId, @name)",
+                    new {packid = litter.pgPackId, name = litter.Litter});
+
+                //update individual with litter id
+
+                Logger.Info($"Added litter {litter.Litter}.");
             }
         }
     }

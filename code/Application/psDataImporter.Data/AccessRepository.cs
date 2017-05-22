@@ -112,5 +112,38 @@ namespace psDataImporter.Data
                                         FROM [RADIOCOLLAR RECORDS]").ToList();
             }
         }
+
+        public List<NewLifeHistory> GetLifeHistorys()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Life History data");
+
+                return conn.Query<NewLifeHistory>(@" 
+                                      SELECT DATE, 
+                                            PACK, 
+                                            INDIV, 
+                                            SEX, 
+                                            [AGE CAT] as AgeCat, 
+                                            STATUS, 
+                                            [START/END] as StartEnd, 
+                                            CODE, 
+                                            EXACT, 
+                                            LSEEN, 
+                                            CAUSE, 
+                                            LITTER, 
+                                            [PREV NAME] as PrevName, 
+                                            COMMENT, 
+                                            EDITED, 
+                                            Latitude,
+                                            Longitude,
+                                            date_entered
+                                            FROM [NEW LIFE HISTORY];
+                                            ").ToList();
+            }
+
+        }
     }
 }

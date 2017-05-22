@@ -21,8 +21,11 @@ namespace psDataImporter.Console
    //         var ultrasoundData = accessdata.GetUltrasounds();
   //          postgresData.ProccessUltrasoundData(ultrasoundData);
 
-            var radioCollarData = accessdata.GetRadioCollars();
-            postgresData.ProccessRadioCollarData(radioCollarData);
+      //      var radioCollarData = accessdata.GetRadioCollars();
+        //    postgresData.ProccessRadioCollarData(radioCollarData);
+
+            var lifeHistories = accessdata.GetLifeHistorys();
+            postgresData.ProcessLifeHistories(lifeHistories);
 
             Logger.Info("done");
             System.Console.ReadLine();

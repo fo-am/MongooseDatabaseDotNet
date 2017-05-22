@@ -44,6 +44,7 @@
     <Compile Include="Access\Ultrasound.cs" />
     <Compile Include="Access\NewLifeHistory.cs" />
     <Compile Include="Access\Weights.cs" />
+    <Compile Include="dtos\LifeHistoryDto.cs" />
     <Compile Include="dtos\PackHistoryDto.cs" />
     <Compile Include="Postgres\Individual.cs" />
     <Compile Include="Postgres\Pack.cs" />

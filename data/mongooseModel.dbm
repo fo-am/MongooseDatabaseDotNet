@@ -47,7 +47,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="dateformed" not-null="true">
+	<column name="dateformed">
 		<type name="date" length="0"/>
 	</column>
 	<constraint name="litter_pk" type="pk-constr" table="mongoose.litter">

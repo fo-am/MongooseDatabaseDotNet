@@ -271,12 +271,15 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 //Insert new litter and get back Id
-                var litterId = conn.Execute<int>(
+                var litterId = conn.ExecuteScalar<int>(
                     "insert into mongoose.litter (pack_id, name)" +
-                    "values (@individualId, @packId, @name)",
+                    "values (@packId, @name) RETURNING litter_id",
                     new {packid = litter.pgPackId, name = litter.Litter});
 
                 //update individual with litter id
+                conn.Execute(
+                    "update mongoose.individual set litter_id = @litterId where individual_id = @individual_id",
+                    new {litterId, individual_id = litter.pgIndividualId});
 
                 Logger.Info($"Added litter {litter.Litter}.");
             }

@@ -86,8 +86,7 @@ namespace pgDataImporter.Core
             AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
                 l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter}).ToList(),pg);
 
-            var pgPacks = pg.GetAllPacks();
-            var pgIndividuals = pg.GetAllIndividuals();
+          
             Logger.Info("Done adding life history data.");
         }
 

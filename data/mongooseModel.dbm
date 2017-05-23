@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="816,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto">
 </database>
@@ -40,7 +40,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1820" y="544"/>
+	<position x="1760" y="484"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -469,7 +469,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2100" y="1080"/>
+	<position x="2100" y="1084"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

@@ -220,7 +220,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="date" length="0"/>
 	</column>
 	<column name="exact">
-		<type name="boolean" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="status">
 		<type name="text" length="0"/>

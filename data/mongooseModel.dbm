@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,156" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,280" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto">
 </database>
@@ -222,6 +222,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="exact">
 		<type name="boolean" length="0"/>
 	</column>
+	<column name="status">
+		<type name="text" length="0"/>
+	</column>
 	<column name="location">
 		<type name="geography" length="0"/>
 	</column>
@@ -233,8 +236,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 
 	<customidxs object-type="column">
+		<object name="pack_event_code_id" index="2"/>
 		<object name="pack_id" index="1"/>
-		<object name="packeventcode_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
@@ -276,19 +279,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<columns names="code" ref-type="src-columns"/>
 	</constraint>
 </table>
-
-<relationship name="packeventcode_has_many_packevents" type="rel1n"
-	 src-col-pattern="packeventcode_id"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.pack_event_code"
-	 dst-table="mongoose.pack_event"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="-2.83841" y="2.58934"/>
-	</label>
-</relationship>
 
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
@@ -535,6 +525,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.radiocollar"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="pack_event_code_has_many_pack_events" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_event_code"
+	 dst-table="mongoose.pack_event"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

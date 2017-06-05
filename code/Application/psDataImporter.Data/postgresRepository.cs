@@ -120,6 +120,26 @@ namespace psDataImporter.Data
             }
         }
 
+        public void AddIndividualEventCodes(IEnumerable<string> codes)
+        {
+            foreach (var code in codes)
+            {
+                if (!string.IsNullOrEmpty(code))
+                {
+                    Logger.Info($"Adding individual code: {code}");
+
+                    using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                        .ConnectionStrings["postgresConnectionString"]
+                        .ConnectionString))
+                    {
+                        conn.Execute(
+                            "Insert into mongoose.individual_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
+                            new { codeValue = code });
+                    }
+                }
+            }
+        }
+
         public PackHistory GetPackHistory(int packId, int individualId)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -162,6 +182,9 @@ namespace psDataImporter.Data
                         //If database has no sex, but our new individual does
                         if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
                         {
+                            Logger.Info(
+                                $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
+
                             conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
                                 new {sex = newIndividual.Sex, id = newIndividual.IndividualId});
                         }
@@ -234,6 +257,17 @@ namespace psDataImporter.Data
             }
         }
 
+        public void RemoveRadioCollarData()
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute("truncate mongoose.radiocollar");
+                Logger.Info("Truncated radiocollar table");
+            }
+        }
+
         public void AddRadioCollar(int individualId, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
             int? frequency, int weight, DateTime? dateEntered, string comment)
         {
@@ -246,6 +280,85 @@ namespace psDataImporter.Data
                     "values (@individualId, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
                     new {individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered});
                 Logger.Info("Added radio collar data.");
+            }
+        }
+
+
+        public void AddLitter(LifeHistoryDto litter)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                //Insert new litter and get back Id
+                var litterId = conn.ExecuteScalar<int>(
+                    "insert into mongoose.litter (pack_id, name)"
+                    + "  values(@packId, @name)"
+                    + " on conflict(name) do update set name = @name  RETURNING litter_id",
+                    new {packid = litter.pgPackId, name = litter.Litter});
+
+                //update individual with litter id
+                conn.Execute(
+                    "update mongoose.individual set litter_id = @litterId where individual_id = @individual_id",
+                    new {litterId, individual_id = litter.pgIndividualId});
+
+                Logger.Info($"Added litter {litter.Litter}.");
+            }
+        }
+
+        public void AddPackEventCodes(IEnumerable<string> codes)
+        {
+            foreach (var code in codes)
+            {
+                if (!string.IsNullOrEmpty(code))
+                {
+                    Logger.Info($"Adding pack code:{code}");
+
+                    using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                        .ConnectionStrings["postgresConnectionString"]
+                        .ConnectionString))
+                    {
+                        conn.Execute(
+                            "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
+                            new {codeValue = code});
+                    }
+                }
+            }
+        }
+
+        public List<PackEventCode> GetPackEventCodes()
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn.Query<PackEventCode>(
+                        "Select pack_event_code_id as PackEventCodeId, code, detail from mongoose.pack_event_code")
+                    .ToList();
+            }
+        }
+
+        public void linkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
+            string exact, string comment, string latitude, string longitude)
+        {
+            // create geography if lat and long are present.
+            var locationString = "NULL";
+            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude))
+            {
+                locationString =
+                    $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
+            }
+
+            var sql =
+                "Insert into mongoose.pack_event (pack_id, pack_event_code_id, status, date, exact, comment, location )" +
+                $" values (@PackId, @packEventCodeId, @status, @date, @exact, @Comment, {locationString})";
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info($"Linking packId:{packId} with codeId:{packEventCodeId}");
+                conn.Execute(sql, new {packId, packEventCodeId, status, date, exact, comment});
             }
         }
     }

@@ -49,6 +49,7 @@
     <Compile Include="Postgres\Individual.cs" />
     <Compile Include="Postgres\Pack.cs" />
     <Compile Include="Postgres\PackHistory.cs" />
+    <Compile Include="Postgres\PackEventCode.cs" />
     <Compile Include="Postgres\Weight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

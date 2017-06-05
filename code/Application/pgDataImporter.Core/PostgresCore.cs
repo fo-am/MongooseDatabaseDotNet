@@ -81,13 +81,59 @@ namespace pgDataImporter.Core
             pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
             pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv})
                 .Select(s => new Individual {Name = s.Key.Indiv}));
-               
 
             AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
-                l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter}).ToList(),pg);
+                    l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter})
+                .ToList(),
+                pg);
 
-          
+            AddLitterEvents(lifeHistories.Where(l => string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
+                                                     !string.IsNullOrEmpty(l.Code)));
+            AddPackEvents( // note this contains IGI between packs... need to pull them out seperatly or something.
+                lifeHistories.Where(l => !string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
+                                         !string.IsNullOrEmpty(l.Code)), pg);
+            AddIndividualEvents(lifeHistories.Where(l => !string.IsNullOrEmpty(l.Indiv) &&
+                                                         !string.IsNullOrEmpty(l.Code) &&
+                                                         !string.IsNullOrEmpty(l.Pack)),pg);
+
+
             Logger.Info("Done adding life history data.");
+        }
+
+        private void AddIndividualEvents(IEnumerable<NewLifeHistory> individualEvents, PostgresRepository pg)
+        {
+            // add individual event codes
+            pg.AddIndividualEventCodes(individualEvents.Select(e => e.Code).Distinct());
+            // get individuals
+            var pgIndividuals = pg.GetAllIndividuals();
+
+         // add events with individual ids added
+         foreach(var individualEvent in individualEvents)
+            {
+               // pg.linkIndividualEvents();
+            }
+        }
+
+        private void AddPackEvents(IEnumerable<NewLifeHistory> packEvents, PostgresRepository pg)
+        {
+            pg.AddPackEventCodes(packEvents.Select(e => e.Code).Distinct());
+            // get pack codes and ids
+            var pgPackCodes = pg.GetPackEventCodes();
+            // get packs and ids
+            var pgPacks = pg.GetAllPacks();
+            // link packs to codes.
+            foreach (var packEvent in packEvents)
+            {
+                pg.linkPackEvents(pgPacks.Single(p => p.Name == packEvent.Pack).PackId,
+                    pgPackCodes.Single(p => p.Code == packEvent.Code).PackEventCodeId, packEvent.Status, packEvent.Date,
+                    packEvent.Exact,
+                    packEvent.Comment, packEvent.Latitude, packEvent.Longitude);
+            }
+        }
+
+        private void AddLitterEvents(IEnumerable<NewLifeHistory> litterEvents)
+        {
+            // do this some other time, there are 3 in the database and look like bad data.
         }
 
         private void AddLitterInfo(IEnumerable<LifeHistoryDto> litters, PostgresRepository pg)
@@ -97,14 +143,16 @@ namespace pgDataImporter.Core
 
             foreach (var litter in litters)
             {
-                if (string.IsNullOrEmpty(litter.Pack)|| string.IsNullOrEmpty(litter.Individual)||string.IsNullOrEmpty(litter.Litter))
+                if (string.IsNullOrEmpty(litter.Pack) || string.IsNullOrEmpty(litter.Individual) ||
+                    string.IsNullOrEmpty(litter.Litter))
                 {
-                    Logger.Warn($"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
+                    Logger.Warn(
+                        $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
                     continue;
                 }
                 litter.pgIndividualId = pgIndividuals.Single(i => i.Name == litter.Individual).IndividualId;
                 litter.pgPackId = pgPacks.Single(p => p.Name == litter.Pack).PackId;
-                
+
                 pg.AddLitter(litter);
             }
         }
@@ -276,7 +324,5 @@ namespace pgDataImporter.Core
                 }
             }
         }
-
-      
     }
 }

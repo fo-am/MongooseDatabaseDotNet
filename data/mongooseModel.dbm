@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,280" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta" last-position="0,126" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto">
 </database>
@@ -37,7 +37,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="litter">
+<table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
 	<position x="1760" y="504"/>
@@ -167,7 +167,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="480" y="280"/>
+	<position x="1280" y="1060"/>
 	<column name="interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

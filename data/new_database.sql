@@ -49,8 +49,9 @@ CREATE TABLE mongoose.litter(
 	litter_id serial NOT NULL,
 	pack_id integer,
 	name text NOT NULL,
-	dateformed date NOT NULL,
-	CONSTRAINT litter_pk PRIMARY KEY (litter_id)
+	dateformed date,
+	CONSTRAINT litter_pk PRIMARY KEY (litter_id),
+	CONSTRAINT "UQ_Litter_name_unique" UNIQUE (name)
 
 );
 -- ddl-end --
@@ -142,7 +143,12 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 CREATE TABLE mongoose.pack_event(
 	pack_event_id serial NOT NULL,
 	pack_id integer,
-	packeventcode_id integer,
+	pack_event_code_id integer,
+	date date NOT NULL,
+	exact text,
+	status text,
+	location geography,
+	comment text,
 	CONSTRAINT event_pk PRIMARY KEY (pack_event_id)
 
 );
@@ -162,18 +168,13 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 CREATE TABLE mongoose.pack_event_code(
 	pack_event_code_id serial NOT NULL,
 	code text NOT NULL,
-	CONSTRAINT packevnettypes_pk PRIMARY KEY (pack_event_code_id)
+	detail text,
+	CONSTRAINT packevnettypes_pk PRIMARY KEY (pack_event_code_id),
+	CONSTRAINT uq_code_is_unique UNIQUE (code)
 
 );
 -- ddl-end --
 ALTER TABLE mongoose.pack_event_code OWNER TO postgres;
--- ddl-end --
-
--- object: pack_event_code_fk | type: CONSTRAINT --
--- ALTER TABLE mongoose.pack_event DROP CONSTRAINT IF EXISTS pack_event_code_fk CASCADE;
-ALTER TABLE mongoose.pack_event ADD CONSTRAINT pack_event_code_fk FOREIGN KEY (packeventcode_id)
-REFERENCES mongoose.pack_event_code (pack_event_code_id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: mongoose.individual_event | type: TABLE --
@@ -321,6 +322,13 @@ ALTER TABLE mongoose.radiocollar OWNER TO postgres;
 -- ALTER TABLE mongoose.radiocollar DROP CONSTRAINT IF EXISTS individual_fk CASCADE;
 ALTER TABLE mongoose.radiocollar ADD CONSTRAINT individual_fk FOREIGN KEY (individual_id)
 REFERENCES mongoose.individual (individual_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: pack_event_code_fk | type: CONSTRAINT --
+-- ALTER TABLE mongoose.pack_event DROP CONSTRAINT IF EXISTS pack_event_code_fk CASCADE;
+ALTER TABLE mongoose.pack_event ADD CONSTRAINT pack_event_code_fk FOREIGN KEY (pack_event_code_id)
+REFERENCES mongoose.pack_event_code (pack_event_code_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 

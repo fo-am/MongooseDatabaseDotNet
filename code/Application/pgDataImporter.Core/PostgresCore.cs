@@ -104,13 +104,19 @@ namespace pgDataImporter.Core
         {
             // add individual event codes
             pg.AddIndividualEventCodes(individualEvents.Select(e => e.Code).Distinct());
+
+            //get all the codes
+            var pgIndividualCodes = pg.GetIndividualCodes();
             // get individuals
             var pgIndividuals = pg.GetAllIndividuals();
 
          // add events with individual ids added
          foreach(var individualEvent in individualEvents)
             {
-               // pg.linkIndividualEvents();
+                pg.LinkIndividualEvents(pgIndividuals.Single(i => i.Name == individualEvent.Indiv).IndividualId,
+                    pgIndividualCodes.Single(ic => ic.Code == individualEvent.Code).IndividualEventCodeId,
+                    individualEvent.Latitude, individualEvent.Longitude, individualEvent.Status,
+                    individualEvent.Date, individualEvent.Exact, individualEvent.Comment);
             }
         }
 

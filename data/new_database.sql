@@ -183,6 +183,9 @@ CREATE TABLE mongoose.individual_event(
 	individual_event_id serial NOT NULL,
 	individual_event_code_id integer,
 	individual_id integer,
+	date date NOT NULL,
+	exact text,
+	status text,
 	location geography,
 	comment text,
 	CONSTRAINT individualevent_pk PRIMARY KEY (individual_event_id)

@@ -77,10 +77,10 @@ namespace psDataImporter.Data
                         cmd.Parameters.AddWithValue("IndividualId", individualId);
                         cmd.Parameters.AddWithValue("Weight", weight.Weight);
                         cmd.Parameters.AddWithValue("Time", weight.TimeMeasured);
-                        cmd.Parameters.AddWithValue("Accuracy", (object) weight.Accuracy ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("Session", (object) weight.Session ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("CollarWeight", (object) weight.Collar ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("Comment", (object) weight.Comment ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Accuracy", (object)weight.Accuracy ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Session", (object)weight.Session ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("CollarWeight", (object)weight.Collar ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Comment", (object)weight.Comment ?? DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -98,7 +98,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
-                    new {PackId = packId, IndividualId = individualId, membership.DateJoined});
+                    new { PackId = packId, IndividualId = individualId, membership.DateJoined });
 
                 Logger.Info($"Insert pack history: {membership.DateJoined}");
             }
@@ -114,11 +114,12 @@ namespace psDataImporter.Data
                 //if we do then check the date, if our date is older then update with the new older date
                 conn.Execute(
                     "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                    new {date = membership.DateJoined, packHistoryId = packHistory.PackHistoryId});
+                    new { date = membership.DateJoined, packHistoryId = packHistory.PackHistoryId });
 
                 Logger.Info($"update pack history: {packHistory.PackHistoryId}");
             }
         }
+
 
         public void AddIndividualEventCodes(IEnumerable<string> codes)
         {
@@ -149,7 +150,7 @@ namespace psDataImporter.Data
             {
                 return conn.Query<PackHistory>(
                     "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
-                    new {pack = packId, individual = individualId}).FirstOrDefault();
+                    new { pack = packId, individual = individualId }).FirstOrDefault();
             }
         }
 
@@ -175,7 +176,7 @@ namespace psDataImporter.Data
                     var inDatabaseIndividual = conn
                         .Query<Individual>(
                             "Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
-                            new {newIndividual.Name}).SingleOrDefault();
+                            new { newIndividual.Name }).SingleOrDefault();
 
                     if (inDatabaseIndividual != null)
                     {
@@ -186,14 +187,14 @@ namespace psDataImporter.Data
                                 $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
 
                             conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
-                                new {sex = newIndividual.Sex, id = newIndividual.IndividualId});
+                                new { sex = newIndividual.Sex, id = newIndividual.IndividualId });
                         }
                         // if litter id is set then do the litter thing... worry about that when I have some data!
                     }
 
                     conn.ExecuteScalar<int>(
                         "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                        new {newIndividual.Name, newIndividual.Sex});
+                        new { newIndividual.Name, newIndividual.Sex });
                     Logger.Info($"created indiv: {newIndividual.Name}");
                 }
             }
@@ -213,7 +214,7 @@ namespace psDataImporter.Data
                     .ConnectionString))
                 {
                     conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
-                        new {name = packName});
+                        new { name = packName });
                 }
                 Logger.Info($"created pack: {packName}");
             }
@@ -278,7 +279,7 @@ namespace psDataImporter.Data
                 conn.Execute(
                     "insert into mongoose.radiocollar (individual_id, frequency, weight, fitted, turned_on, removed, comment, date_entered) " +
                     "values (@individualId, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
-                    new {individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered});
+                    new { individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered });
                 Logger.Info("Added radio collar data.");
             }
         }
@@ -295,12 +296,12 @@ namespace psDataImporter.Data
                     "insert into mongoose.litter (pack_id, name)"
                     + "  values(@packId, @name)"
                     + " on conflict(name) do update set name = @name  RETURNING litter_id",
-                    new {packid = litter.pgPackId, name = litter.Litter});
+                    new { packid = litter.pgPackId, name = litter.Litter });
 
                 //update individual with litter id
                 conn.Execute(
                     "update mongoose.individual set litter_id = @litterId where individual_id = @individual_id",
-                    new {litterId, individual_id = litter.pgIndividualId});
+                    new { litterId, individual_id = litter.pgIndividualId });
 
                 Logger.Info($"Added litter {litter.Litter}.");
             }
@@ -320,12 +321,22 @@ namespace psDataImporter.Data
                     {
                         conn.Execute(
                             "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                            new {codeValue = code});
+                            new { codeValue = code });
                     }
                 }
             }
         }
-
+        public List<IndividualEventCode> GetIndividualCodes()
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+               .ConnectionStrings["postgresConnectionString"]
+               .ConnectionString))
+            {
+                return conn.Query<IndividualEventCode>(
+                        "Select individual_event_code_id as IndividualEventCodeId, code from mongoose.individual_event_code")
+                    .ToList();
+            }
+        }
         public List<PackEventCode> GetPackEventCodes()
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -337,6 +348,29 @@ namespace psDataImporter.Data
                     .ToList();
             }
         }
+        public void LinkIndividualEvents(int individualId, int individualEventCodeId, string latitude, string longitude, string status, DateTime date, string exact, string comment)
+        {
+            // create geography if lat and long are present.
+            var locationString = "NULL";
+            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude))
+            {
+                locationString =
+                    $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
+            }
+
+            var sql =
+                "Insert into mongoose.individual_event (individual_id, individual_event_code_id, status, date, exact, comment, location )" +
+                $" values (@individualId, @individualEventCodeId, @status, @date, @exact, @Comment, {locationString})";
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info($"Linking individualId: {individualId} with codeId: {individualEventCodeId}");
+                conn.Execute(sql, new { individualId, individualEventCodeId, status, date, exact, comment });
+            }
+        }
+    
 
         public void linkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
             string exact, string comment, string latitude, string longitude)

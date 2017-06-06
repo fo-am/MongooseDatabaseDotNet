@@ -47,6 +47,7 @@
     <Compile Include="dtos\LifeHistoryDto.cs" />
     <Compile Include="dtos\PackHistoryDto.cs" />
     <Compile Include="Postgres\Individual.cs" />
+    <Compile Include="Postgres\IndividualEventCode.cs" />
     <Compile Include="Postgres\Pack.cs" />
     <Compile Include="Postgres\PackHistory.cs" />
     <Compile Include="Postgres\PackEventCode.cs" />

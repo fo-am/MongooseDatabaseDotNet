@@ -15,14 +15,14 @@ namespace psDataImporter.Console
             var accessdata = new AccessRepository();
             var postgresData = new PostgresCore();
 
- //           var weights = accessdata.GetWeights();
-  //          postgresData.ProcessWeights(weights);
-//
-   //         var ultrasoundData = accessdata.GetUltrasounds();
-  //          postgresData.ProccessUltrasoundData(ultrasoundData);
+             var weights = accessdata.GetWeights();
+             postgresData.ProcessWeights(weights);
 
-      //      var radioCollarData = accessdata.GetRadioCollars();
-        //    postgresData.ProccessRadioCollarData(radioCollarData);
+             var ultrasoundData = accessdata.GetUltrasounds();
+             postgresData.ProccessUltrasoundData(ultrasoundData);
+
+             var radioCollarData = accessdata.GetRadioCollars();
+            postgresData.ProccessRadioCollarData(radioCollarData);
 
             var lifeHistories = accessdata.GetLifeHistorys();
             postgresData.ProcessLifeHistories(lifeHistories);

@@ -1,0 +1,18 @@
+version: '3'
+services:  
+    rabbit:
+       build:
+         context: .
+         dockerfile: Dockerfile-queue
+       container_name: foam_rabbitmq
+       hostname: rabbit      
+       environment:
+           - RABBITMQ_DEFAULT_USER = temp
+           - RABBITMQ_DEFAULT_PASS = temp
+       ports:
+           - "5672:5672"
+           - "15672:15672"
+     #  volumes:
+      #      - ./data:/var/lib/rabbitmq:rw
+      #   - ./definitions.json:/opt/definitions.json:ro
+      #   - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro

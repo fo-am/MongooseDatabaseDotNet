@@ -11,7 +11,7 @@ namespace DataPipe.Main
 
     public static string DbFile
     {
-        get { return "~\\..\\..\\..\\..\\..\\TestDatabase.db"; }
+        get { return "~\\..\\..\\..\\..\\TestDatabase.db"; }
     }
 
     public static SQLiteConnection SimpleDbConnection()

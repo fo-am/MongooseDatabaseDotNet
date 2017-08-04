@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using Dapper.Contrib;
-using Dapper.Contrib.Extensions;
+
+using DapperExtensions;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -15,7 +15,6 @@ namespace DataPipe.Main
     { 
         public Data()
         {
-            DapperExtensions.SqlDialect = new DapperExtensions.Sql.SqliteDialect();
         }
 
         public static string DbFile
@@ -25,7 +24,8 @@ namespace DataPipe.Main
 
         public static SQLiteConnection SimpleDbConnection()
         {
-           
+            DapperExtensions.DapperExtensions.SqlDialect = new DapperExtensions.Sql.SqliteDialect();
+
             return new SQLiteConnection("Data Source=" + DbFile);
 
         }

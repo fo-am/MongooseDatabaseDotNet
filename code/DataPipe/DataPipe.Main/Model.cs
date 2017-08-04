@@ -1,9 +1,4 @@
-﻿
-using System;
-using System.Data.SQLite;
-using Dapper;
-using Dapper.Contrib;
-using Dapper.Contrib.Extensions;
+﻿using Dapper.Contrib.Extensions;
 
 namespace DataPipe.Main
 {

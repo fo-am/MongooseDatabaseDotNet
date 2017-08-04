@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace DataPipe.Main
 {
@@ -9,32 +10,27 @@ namespace DataPipe.Main
     {
         static void Main(string[] args)
         {
+            
             // Get data not yet sent from the database
             // place the data on a queue
             // mark the data sent
             var send = new Sender();
-          
 
-           foreach(var data in GetData())
+
+            foreach (sync_entity entity in Data.GetUnsyncedEntitys())
             {
                 //http://www.rabbitmq.com/blog/2011/02/10/introducing-publisher-confirms/
-                send.Publish(data.data);
+                send.PublishEntity(entity);
+                Console.WriteLine(entity);
             }
-          
+            foreach (sync_value_varchar entity in Data.GetUnsyncedEntityValueVarchars())
+            {
+                //http://www.rabbitmq.com/blog/2011/02/10/introducing-publisher-confirms/
+                send.PublishEntityVarchar(entity);
+                Console.WriteLine(entity);
+            }
             Console.ReadLine();
         }
-        public static IEnumerable<Model> GetData()
-        {
-         
-            if (!File.Exists(Path.GetFullPath(Model.DbFile))) return null;
 
-            using (var cnn = Model.SimpleDbConnection())
-            {
-                cnn.Open();
-                var result = cnn.Query<Model>(
-                    @"SELECT id, data FROM test");
-                return result;
-            }
-        }
     }
 }

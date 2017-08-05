@@ -1,13 +1,10 @@
 ﻿using Dapper;
-
 using DapperExtensions;
-using System;
+using Mono.Data.Sqlite;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using System.Configuration;
+
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataPipe.Main
 {
@@ -19,20 +16,20 @@ namespace DataPipe.Main
 
         public static string DbFile
         {
-            get { return "~\\..\\..\\..\\..\\mongoose.db"; }
+            get { return ConfigurationManager.AppSettings["SqliteLocation"]; }
         }
 
-        public static SQLiteConnection SimpleDbConnection()
+        public static SqliteConnection SimpleDbConnection()
         {
             DapperExtensions.DapperExtensions.SqlDialect = new DapperExtensions.Sql.SqliteDialect();
 
-            return new SQLiteConnection("Data Source=" + DbFile);
+            return new SqliteConnection("Data Source=" + DbFile);
 
         }
 
         internal static void MarkVarcharAsSent(sync_value_varchar message)
         {
-            message.sync = 1;
+            message.version = 99;
             using (var cnn = SimpleDbConnection())
             {
                 cnn.Open();
@@ -48,14 +45,14 @@ namespace DataPipe.Main
             {
                 cnn.Open();
                 var result = cnn.Query<sync_value_varchar>(
-                    @"SELECT id, entity_id, attribute_id, value, dirty, version, sync FROM sync_value_varchar where sync=0");
+                    @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_varchar where version != 99");
                 return result;
             }
         }
 
         internal static void MarkEntityAsSent(sync_entity message)
         {
-            message.sync = 1;
+            message.version = 99;
             using (var cnn = SimpleDbConnection())
             {
                 cnn.Open();
@@ -72,7 +69,7 @@ namespace DataPipe.Main
             {
                 cnn.Open();
                 var result = cnn.Query<sync_entity>(
-             @"SELECT entity_id, entity_type, unique_id, dirty, version, sync FROM sync_entity where sync=0");
+             @"SELECT entity_id, entity_type, unique_id, dirty, version FROM sync_entity where version != 99");
                 return result;
             }
         }

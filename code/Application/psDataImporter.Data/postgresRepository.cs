@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+
 using Dapper;
+
 using NLog;
+
 using Npgsql;
+
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
@@ -70,7 +74,9 @@ namespace psDataImporter.Data
                         cmd.Connection = conn;
                         conn.Open();
                         cmd.AllResultTypesAreUnknown = true;
-                        int pack_history_id = GetPackHistoryId(weight.Group, weight.Indiv);// pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
+                        int pack_history_id =
+                            GetPackHistoryId(weight.Group,
+                                weight.Indiv); // pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
 
                         cmd.CommandText = sql;
 
@@ -134,7 +140,6 @@ namespace psDataImporter.Data
             }
         }
 
-
         public void AddIndividualEventCodes(IEnumerable<string> codes)
         {
             foreach (var code in codes)
@@ -167,7 +172,6 @@ namespace psDataImporter.Data
                     new { pack = packId, individual = individualId }).FirstOrDefault();
             }
         }
-
 
         public void AddIndividuals(IEnumerable<Individual> individuals)
         {
@@ -205,11 +209,13 @@ namespace psDataImporter.Data
                         }
                         // if litter id is set then do the litter thing... worry about that when I have some data!
                     }
-
-                    conn.ExecuteScalar<int>(
-                        "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                        new { newIndividual.Name, newIndividual.Sex });
-                    Logger.Info($"created indiv: {newIndividual.Name}");
+                    else
+                    {
+                        conn.ExecuteScalar<int>(
+                            "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
+                            new { newIndividual.Name, newIndividual.Sex });
+                        Logger.Info($"created indiv: {newIndividual.Name}");
+                    }
                 }
             }
         }
@@ -283,7 +289,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddRadioCollar(int individualId, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
+        public void AddRadioCollar(int pack_history_id, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
             int? frequency, int weight, DateTime? dateEntered, string comment)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -291,13 +297,12 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.Execute(
-                    "insert into mongoose.radiocollar (individual_id, frequency, weight, fitted, turned_on, removed, comment, date_entered) " +
-                    "values (@individualId, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
-                    new { individualId, frequency, weight, fitted, turnedOn, removed, comment, dateEntered });
+                    "insert into mongoose.radiocollar (pack_history_id, frequency, weight, fitted, turned_on, removed, comment, date_entered) " +
+                    "values (@pack_history_id, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
+                    new { pack_history_id, frequency, weight, fitted, turnedOn, removed, comment, dateEntered });
                 Logger.Info("Added radio collar data.");
             }
         }
-
 
         public void AddLitter(LifeHistoryDto litter)
         {
@@ -340,17 +345,19 @@ namespace psDataImporter.Data
                 }
             }
         }
+
         public List<IndividualEventCode> GetIndividualCodes()
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-               .ConnectionStrings["postgresConnectionString"]
-               .ConnectionString))
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
             {
                 return conn.Query<IndividualEventCode>(
                         "Select individual_event_code_id as IndividualEventCodeId, code from mongoose.individual_event_code")
                     .ToList();
             }
         }
+
         public List<PackEventCode> GetPackEventCodes()
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -362,7 +369,9 @@ namespace psDataImporter.Data
                     .ToList();
             }
         }
-        public void LinkIndividualEvents(int individualId, int individualEventCodeId, string latitude, string longitude, string status, DateTime date, string exact, string comment)
+
+        public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude, string longitude,
+            string status, DateTime date, string exact, string comment)
         {
             // create geography if lat and long are present.
             var locationString = "NULL";
@@ -373,18 +382,17 @@ namespace psDataImporter.Data
             }
 
             var sql =
-                "Insert into mongoose.individual_event (individual_id, individual_event_code_id, status, date, exact, comment, location )" +
-                $" values (@individualId, @individualEventCodeId, @status, @date, @exact, @Comment, {locationString})";
+                "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, comment, location )" +
+                $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @Comment, {locationString})";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                Logger.Info($"Linking individualId: {individualId} with codeId: {individualEventCodeId}");
-                conn.Execute(sql, new { individualId, individualEventCodeId, status, date, exact, comment });
+                Logger.Info($"Linking individualId: {pack_history_id} with Individual Event codeId: {individualEventCodeId}");
+                conn.Execute(sql, new { pack_history_id, individualEventCodeId, status, date, exact, comment });
             }
         }
-    
 
         public void linkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
             string exact, string comment, string latitude, string longitude)
@@ -406,7 +414,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 Logger.Info($"Linking packId:{packId} with codeId:{packEventCodeId}");
-                conn.Execute(sql, new {packId, packEventCodeId, status, date, exact, comment});
+                conn.Execute(sql, new { packId, packEventCodeId, status, date, exact, comment });
             }
         }
     }

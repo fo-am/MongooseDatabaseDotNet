@@ -79,8 +79,14 @@ namespace pgDataImporter.Core
             lifeHistories = lifeHistories as IList<NewLifeHistory> ?? lifeHistories.ToList();
             var pg = new PostgresRepository();
             pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
-            pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv})
-                .Select(s => new Individual {Name = s.Key.Indiv}));
+            pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv,lh.Sex})
+                .Select(s => new Individual {Name = s.Key.Indiv,Sex = s.Key.Sex}));
+
+            var pgPacks = pg.GetAllPacks();
+            var pgIndividuals = pg.GetAllIndividuals();
+            AddPackHistories(
+                lifeHistories.Select(lh => new PackHistoryDto(lh.Indiv, lh.Pack, lh.Date)), pgPacks,
+                pgIndividuals, pg);
 
             AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
                     l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter})
@@ -113,7 +119,9 @@ namespace pgDataImporter.Core
          // add events with individual ids added
          foreach(var individualEvent in individualEvents)
             {
-                pg.LinkIndividualEvents(pgIndividuals.Single(i => i.Name == individualEvent.Indiv).IndividualId,
+                var pack_history_id = pg.GetPackHistoryId(individualEvent.Pack, individualEvent.Indiv);
+
+                pg.LinkIndividualEvents(pack_history_id,
                     pgIndividualCodes.Single(ic => ic.Code == individualEvent.Code).IndividualEventCodeId,
                     individualEvent.Latitude, individualEvent.Longitude, individualEvent.Status,
                     individualEvent.Date, individualEvent.Exact, individualEvent.Comment);
@@ -175,9 +183,9 @@ namespace pgDataImporter.Core
                     Logger.Warn("individual name null");
                     continue;
                 }
-                var individualId = pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
+                var pack_history_id = pg.GetPackHistoryId(radioCollar.PACK, radioCollar.INDIVIDUAL); //pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
 
-                pg.AddRadioCollar(individualId, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
+                pg.AddRadioCollar(pack_history_id, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
                     radioCollar.FREQUENCY,
                     radioCollar.WEIGHT, radioCollar.DATE_ENTERED, radioCollar.COMMENT);
             }

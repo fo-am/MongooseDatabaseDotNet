@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="1181,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="1089,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto">
 </database>
@@ -40,7 +40,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1480" y="780"/>
+	<position x="1635.71" y="640"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -78,7 +78,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2420" y="520"/>
+	<position x="2161.43" y="694.286"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -120,7 +120,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1780" y="440"/>
+	<position x="2081.43" y="434.286"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -283,7 +283,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2960" y="1040"/>
+	<position x="2537.14" y="514.286"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -308,28 +308,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 	<customidxs object-type="column">
 		<object name="individual_event_code_id" index="1"/>
-		<object name="individual_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
-		<object name="individual_event_code_fk" index="2"/>
-		<object name="individual_fk" index="1"/>
+		<object name="individual_event_code_fk" index="1"/>
 	</customidxs>
 </table>
-
-<relationship name="individual_has_many_individualevents" type="rel1n"
-	 src-col-pattern="{sc}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
-	 dst-table="mongoose.individual_event"
-	 src-required="false" dst-required="false"/>
 
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3080" y="1380"/>
+	<position x="2578.57" y="1074.29"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -353,7 +342,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2120" y="840"/>
+	<position x="2062.86" y="980"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -383,7 +372,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2434.29" y="100"/>
+	<position x="2600" y="135.714"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -416,7 +405,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3180" y="560"/>
+	<position x="2101.43" y="138.571"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -450,29 +439,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="ultrasound_pk" type="pk-constr" table="mongoose.ultrasound">
 		<columns names="ultrasound_id" ref-type="src-columns"/>
 	</constraint>
-
-	<customidxs object-type="column">
-		<object name="individual_id" index="1"/>
-	</customidxs>
-
-	<customidxs object-type="constraint">
-		<object name="individual_fk" index="1"/>
-	</customidxs>
 </table>
-
-<relationship name="individual_has_many_ultrasound" type="rel1n"
-	 src-col-pattern="{sc}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
-	 dst-table="mongoose.ultrasound"
-	 src-required="false" dst-required="false"/>
 
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2100" y="1100"/>
+	<position x="2898.57" y="320"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -500,24 +472,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="radiocollar_pk" type="pk-constr" table="mongoose.radiocollar">
 		<columns names="radiocollar_id" ref-type="src-columns"/>
 	</constraint>
-
-	<customidxs object-type="column">
-		<object name="individual_id" index="1"/>
-	</customidxs>
-
-	<customidxs object-type="constraint">
-		<object name="individual_fk" index="1"/>
-	</customidxs>
 </table>
-
-<relationship name="individual_has_many_radiocollars" type="rel1n"
-	 src-col-pattern="{sc}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
-	 dst-table="mongoose.radiocollar"
-	 src-required="false" dst-required="false"/>
 
 <relationship name="pack_event_code_has_many_pack_events" type="rel1n"
 	 src-col-pattern="{sc}"
@@ -535,6 +490,37 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.weight"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="pack_history_has_many_ultrasound" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.ultrasound"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="pack_history_has_many_radiocollar" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.radiocollar"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="pack_history_has_many_individual_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.individual_event"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

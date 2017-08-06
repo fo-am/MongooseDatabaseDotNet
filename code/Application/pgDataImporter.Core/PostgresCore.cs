@@ -29,7 +29,7 @@ namespace pgDataImporter.Core
                 weights.Select(weight => new PackHistoryDto(weight.Indiv, weight.Group, weight.TimeMeasured)), pgPacks,
                 pgIndividuals, pg);
 
-            pg.AddWeights(weights, pgIndividuals);
+            pg.AddWeights(weights);
             Logger.Info("Done adding weights.");
         }
 
@@ -48,7 +48,7 @@ namespace pgDataImporter.Core
                     ultrasound => new PackHistoryDto(ultrasound.INDIV, ultrasound.PACK, ultrasound.DATE)), pgPacks,
                 pgIndividuals, pg);
 
-            AddUltrasoundData(ultrasoundData, pgIndividuals, pg);
+            AddUltrasoundData(ultrasoundData, pg);
             Logger.Info("Done adding ultrasound data.");
         }
 
@@ -189,13 +189,13 @@ namespace pgDataImporter.Core
                 .GetValueOrDefault();
         }
 
-        private void AddUltrasoundData(IEnumerable<Ultrasound> ultrasoundData, List<Individual> pgIndividuals,
-            PostgresRepository pg)
+        private void AddUltrasoundData(IEnumerable<Ultrasound> ultrasoundData, PostgresRepository pg)
         {
             pg.RemoveUltrasoundData();
             foreach (var ultrasound in ultrasoundData)
             {
-                var individualId = pgIndividuals.Single(i => i.Name == ultrasound.INDIV).IndividualId;
+
+                int pack_history_id = pg.GetPackHistoryId(ultrasound.PACK, ultrasound.INDIV);
 
                 for (var i = 1; i <= 6; i++)
                 {
@@ -207,7 +207,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_1_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_1_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_1_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_1_LONG_VIEW_LENGTH,
@@ -223,7 +223,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_2_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_2_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_2_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_2_LONG_VIEW_LENGTH,
@@ -239,7 +239,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_3_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_3_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_3_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_3_LONG_VIEW_LENGTH,
@@ -255,7 +255,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_4_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_4_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_4_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_4_LONG_VIEW_LENGTH,
@@ -271,7 +271,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_5_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_5_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_5_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_5_LONG_VIEW_LENGTH,
@@ -287,7 +287,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_6_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(individualId, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_6_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_6_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_6_LONG_VIEW_LENGTH,

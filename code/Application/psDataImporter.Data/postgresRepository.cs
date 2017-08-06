@@ -45,7 +45,7 @@ namespace psDataImporter.Data
             return pgIndividuals;
         }
 
-        public void AddWeights(IEnumerable<Weights> weights, List<Individual> pgIndividuals)
+        public void AddWeights(IEnumerable<Weights> weights)
         {
             foreach (var weight in weights)
             {
@@ -89,7 +89,7 @@ namespace psDataImporter.Data
             }
         }
 
-        private int GetPackHistoryId(string weightPack, string weightIndiv)
+        public int GetPackHistoryId(string weightPack, string weightIndiv)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -234,7 +234,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddFoetus(int individualId, int foetusNumber, DateTime ultrasoundDate, string foetusSize,
+        public void AddFoetus(int pack_history_id, int foetusNumber, DateTime ultrasoundDate, string foetusSize,
             float? crossViewWidth, float? crossViewLength, float? longViewLength, float? longViewWidth,
             string comment, string observer)
         {
@@ -243,11 +243,11 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.Execute(
-                    "Insert into mongoose.ultrasound (individual_id, observation_date, foetus_number, foetus_size, cross_view_length, cross_view_width, long_view_length, long_view_width, observer, comment)" +
-                    " values(@individualId, @observationDate, @foetusNumber, @foetusSize, @crossViewLength, @crossViewWidth, @longViewLength, @longViewWidth, @Observer, @comment)",
+                    "Insert into mongoose.ultrasound (pack_history_id, observation_date, foetus_number, foetus_size, cross_view_length, cross_view_width, long_view_length, long_view_width, observer, comment)" +
+                    " values(@pack_history_id, @observationDate, @foetusNumber, @foetusSize, @crossViewLength, @crossViewWidth, @longViewLength, @longViewWidth, @Observer, @comment)",
                     new
                     {
-                        individualId,
+                        pack_history_id,
                         observationDate = ultrasoundDate,
                         foetusNumber,
                         foetusSize,

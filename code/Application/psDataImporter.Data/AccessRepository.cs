@@ -53,7 +53,7 @@ namespace psDataImporter.Data
                             [INDIV] ,
                             [PACK] ,
                             [FOETUS NUMBER] ,
-                            [FOETUS SIZE] ,
+                            [FOETUS SIZE] as FOETUS_SIZE,
                             [FOETUS 1 - CROSS VIEW LENGTH] as FOETUS_1_CROSS_VIEW_LENGTH ,
                             [FOETUS 1 - CROSS VIEW WIDTH] as FOETUS_1_CROSS_VIEW_WIDTH ,
                             [FOETUS 1 - LONG VIEW LENGTH] as FOETUS_1_LONG_VIEW_LENGTH ,

@@ -3,9 +3,133 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="1089,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="841,180" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
-<database name="Foam_auto">
+<database name="Foam_auto" append-at-eod="true">
+	<appended-sql><![CDATA[-- View: mongoose."WeightView"
+
+
+CREATE OR REPLACE VIEW mongoose."WeightView" AS
+ SELECT p.name AS "pack name",
+    w."time",
+    i.name AS "individual name",
+    i.sex,
+    w.weight,
+    w.accuracy,
+    w.session,
+    w.comment
+   FROM mongoose.pack_history ph
+     JOIN mongoose.weight w ON w.pack_history_id = ph.pack_history_id
+     JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+     JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+  ORDER BY w."time";
+
+ALTER TABLE mongoose."WeightView"
+    OWNER TO postgres;
+
+
+-- View: mongoose."UltrasoundView"
+
+
+CREATE OR REPLACE VIEW mongoose."UltrasoundView" AS
+ SELECT u.observation_date,
+    i.name AS "individual name",
+    p.name AS "pack name",
+    u.foetus_number,
+    u.foetus_size,
+    u.cross_view_length,
+    u.cross_view_width,
+    u.long_view_length,
+    u.long_view_width,
+    u.observer,
+    u.comment
+   FROM mongoose.pack_history ph
+     JOIN mongoose.ultrasound u ON u.pack_history_id = ph.pack_history_id
+     JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+     JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+  ORDER BY u.observation_date;
+
+ALTER TABLE mongoose."UltrasoundView"
+    OWNER TO postgres;
+
+
+-- View: mongoose."Radiocollar records"
+
+
+
+CREATE OR REPLACE VIEW mongoose."Radiocollar records" AS
+ SELECT p.name AS "pack name",
+    i.name AS "individual name",
+    r.frequency,
+    r.turned_on,
+    r.fitted,
+    r.removed,
+    r.weight AS "Weight (g)",
+    r.comment
+   FROM mongoose.pack_history ph
+     JOIN mongoose.radiocollar r ON r.pack_history_id = ph.pack_history_id
+     JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+     JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+  ORDER BY r.fitted;
+
+ALTER TABLE mongoose."Radiocollar records"
+    OWNER TO postgres;
+
+	-- View: mongoose."Indvidual Events"
+
+
+
+CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS
+ SELECT p.name AS "pack name",
+    i.name AS "individual name",
+    i.sex,
+    l.name AS "Litter name",
+    iec.code,
+    ie.date,
+    ie.exact,
+    ie.status,
+	ie.cause,
+    ie.location,
+    ie.comment
+   FROM mongoose.pack_history ph
+     JOIN mongoose.individual_event ie ON ie.pack_history_id = ph.pack_history_id
+     JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
+     JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+     JOIN mongoose.litter l ON l.litter_id = i.litter_id
+     JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+  ORDER BY ie.date DESC;
+
+ALTER TABLE mongoose."Indvidual Events"
+    OWNER TO postgres;
+
+
+-- View: mongoose."Pack events"
+
+
+
+CREATE OR REPLACE VIEW mongoose."Pack events" AS
+ SELECT p.name AS "pack name",
+    pec.code,
+    pe.date,
+    pe.exact,
+    pe.status,
+    pe.location,
+    pe.cause,
+    pe.comment,
+    l.name AS "Litter name"
+   FROM mongoose.pack p
+     JOIN mongoose.pack_event pe ON p.pack_id = pe.pack_id
+     JOIN mongoose.pack_event_code pec ON pe.pack_event_code_id = pec.pack_event_code_id
+     JOIN mongoose.litter l ON p.pack_id = l.pack_id
+  ORDER BY pe.date;
+
+ALTER TABLE mongoose."Pack events"
+    OWNER TO postgres;
+
+
+
+
+]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -19,7 +143,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1020" y="520"/>
+	<position x="897.143" y="407.286"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -40,7 +164,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1635.71" y="640"/>
+	<position x="1512.86" y="527.286"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -78,7 +202,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2161.43" y="694.286"/>
+	<position x="1967.14" y="555.857"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -120,7 +244,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2081.43" y="434.286"/>
+	<position x="1958.57" y="321.571"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -167,7 +291,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1280" y="1060"/>
+	<position x="1157.14" y="947.286"/>
 	<column name="interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -212,7 +336,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="400" y="860"/>
+	<position x="592.857" y="717.286"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -223,6 +347,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="text" length="0"/>
 	</column>
 	<column name="status">
+		<type name="text" length="0"/>
+	</column>
+	<column name="cause">
 		<type name="text" length="0"/>
 	</column>
 	<column name="location">
@@ -262,7 +389,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="360" y="1340"/>
+	<position x="467.143" y="898.714"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -283,7 +410,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2537.14" y="514.286"/>
+	<position x="2414.29" y="401.571"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -294,6 +421,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="text" length="0"/>
 	</column>
 	<column name="status">
+		<type name="text" length="0"/>
+	</column>
+	<column name="cause">
 		<type name="text" length="0"/>
 	</column>
 	<column name="location">
@@ -308,17 +438,19 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 	<customidxs object-type="column">
 		<object name="individual_event_code_id" index="1"/>
+		<object name="pack_history_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_event_code_fk" index="1"/>
+		<object name="pack_history_fk" index="2"/>
 	</customidxs>
 </table>
 
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2578.57" y="1074.29"/>
+	<position x="2574.29" y="590.143"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -342,7 +474,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2062.86" y="980"/>
+	<position x="1940" y="867.286"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -372,7 +504,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2600" y="135.714"/>
+	<position x="2477.15" y="23"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -405,7 +537,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2101.43" y="138.571"/>
+	<position x="1978.57" y="25.8571"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -444,7 +576,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2898.57" y="320"/>
+	<position x="2775.71" y="207.286"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

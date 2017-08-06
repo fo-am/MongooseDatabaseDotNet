@@ -371,7 +371,7 @@ namespace psDataImporter.Data
         }
 
         public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude, string longitude,
-            string status, DateTime date, string exact, string comment)
+            string status, DateTime date, string exact,string cause, string comment)
         {
             // create geography if lat and long are present.
             var locationString = "NULL";
@@ -382,20 +382,20 @@ namespace psDataImporter.Data
             }
 
             var sql =
-                "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, comment, location )" +
-                $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @Comment, {locationString})";
+                "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, cause, comment, location )" +
+                $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @cause, @Comment, {locationString})";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
                 Logger.Info($"Linking individualId: {pack_history_id} with Individual Event codeId: {individualEventCodeId}");
-                conn.Execute(sql, new { pack_history_id, individualEventCodeId, status, date, exact, comment });
+                conn.Execute(sql, new { pack_history_id, individualEventCodeId, status, date, exact, cause, comment });
             }
         }
 
         public void linkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
-            string exact, string comment, string latitude, string longitude)
+            string exact, string cause, string comment, string latitude, string longitude)
         {
             // create geography if lat and long are present.
             var locationString = "NULL";
@@ -406,15 +406,15 @@ namespace psDataImporter.Data
             }
 
             var sql =
-                "Insert into mongoose.pack_event (pack_id, pack_event_code_id, status, date, exact, comment, location )" +
-                $" values (@PackId, @packEventCodeId, @status, @date, @exact, @Comment, {locationString})";
+                "Insert into mongoose.pack_event (pack_id, pack_event_code_id, status, date, exact, cause, comment, location )" +
+                $" values (@PackId, @packEventCodeId, @status, @date, @exact, @cause, @Comment, {locationString})";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
                 Logger.Info($"Linking packId:{packId} with codeId:{packEventCodeId}");
-                conn.Execute(sql, new { packId, packEventCodeId, status, date, exact, comment });
+                conn.Execute(sql, new { packId, packEventCodeId, status, date, exact, cause, comment });
             }
         }
     }

@@ -124,7 +124,7 @@ namespace pgDataImporter.Core
                 pg.LinkIndividualEvents(pack_history_id,
                     pgIndividualCodes.Single(ic => ic.Code == individualEvent.Code).IndividualEventCodeId,
                     individualEvent.Latitude, individualEvent.Longitude, individualEvent.Status,
-                    individualEvent.Date, individualEvent.Exact, individualEvent.Comment);
+                    individualEvent.Date, individualEvent.Exact, individualEvent.Cause, individualEvent.Comment);
             }
         }
 
@@ -140,7 +140,7 @@ namespace pgDataImporter.Core
             {
                 pg.linkPackEvents(pgPacks.Single(p => p.Name == packEvent.Pack).PackId,
                     pgPackCodes.Single(p => p.Code == packEvent.Code).PackEventCodeId, packEvent.Status, packEvent.Date,
-                    packEvent.Exact,
+                    packEvent.Exact, packEvent.Cause,
                     packEvent.Comment, packEvent.Latitude, packEvent.Longitude);
             }
         }

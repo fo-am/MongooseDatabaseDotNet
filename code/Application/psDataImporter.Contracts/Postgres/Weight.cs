@@ -5,7 +5,7 @@ namespace psDataImporter.Contracts.Postgres
     public class Weight
     {
         public int WeightId { get; set; }
-        public int IndividualId { get; set; }
+        public int PackHistoryId { get; set; }
         public int WeightGrams { get; set; }
         public DateTime Time { get; set; }
         public int Accuracy { get; set; }

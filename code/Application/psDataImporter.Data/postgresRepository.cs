@@ -62,19 +62,19 @@ namespace psDataImporter.Data
                             $"ST_GeographyFromText('SRID=4326;POINT({weight.Latitude} {weight.Longitude})')";
                     }
                     var sql =
-                        "Insert into mongoose.weight (individual_id, weight, time, accuracy, session, collar_weight, comment, location)" +
-                        $" values (@IndividualId, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Comment, {locationString})";
+                        "Insert into mongoose.weight (pack_history_id, weight, time, accuracy, session, collar_weight, comment, location)" +
+                        $" values (@pack_history_id, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Comment, {locationString})";
 
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
                         conn.Open();
                         cmd.AllResultTypesAreUnknown = true;
-                        var individualId = pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
+                        int pack_history_id = GetPackHistoryId(weight.Group, weight.Indiv);// pgIndividuals.Single(i => i.Name == weight.Indiv).IndividualId;
 
                         cmd.CommandText = sql;
 
-                        cmd.Parameters.AddWithValue("IndividualId", individualId);
+                        cmd.Parameters.AddWithValue("pack_history_id", pack_history_id);
                         cmd.Parameters.AddWithValue("Weight", weight.Weight);
                         cmd.Parameters.AddWithValue("Time", weight.TimeMeasured);
                         cmd.Parameters.AddWithValue("Accuracy", (object)weight.Accuracy ?? DBNull.Value);
@@ -86,6 +86,20 @@ namespace psDataImporter.Data
                     }
                     Logger.Info($"Insert weight for: {weight.Indiv} weight {weight.Weight}");
                 }
+            }
+        }
+
+        private int GetPackHistoryId(string weightPack, string weightIndiv)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+                return conn.ExecuteScalar<int>(@"select ph.pack_history_id  from mongoose.pack_history ph 
+            join mongoose.pack p on p.pack_id = ph.pack_id
+            join mongoose.individual i on ph.individual_id = i.individual_id
+            where p.name = @packName and i.name = @individualName", new { packName = weightPack, individualName = weightIndiv });
             }
         }
 

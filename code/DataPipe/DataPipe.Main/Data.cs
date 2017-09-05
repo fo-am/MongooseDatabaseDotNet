@@ -1,75 +1,126 @@
-﻿using Dapper;
-using DapperExtensions;
-using Mono.Data.Sqlite;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
-
 using System.IO;
+using Dapper;
+using DapperExtensions;
+using DapperExtensions.Sql;
+using Mono.Data.Sqlite;
 
 namespace DataPipe.Main
 {
-    class Data
-    { 
-        public Data()
-        {
-        }
-
-        public static string DbFile
-        {
-            get { return ConfigurationManager.AppSettings["SqliteLocation"]; }
-        }
+    internal class Data
+    {
+        public static string DbFile => ConfigurationManager.AppSettings["SqliteLocation"];
 
         public static SqliteConnection SimpleDbConnection()
         {
-            DapperExtensions.DapperExtensions.SqlDialect = new DapperExtensions.Sql.SqliteDialect();
+            DapperExtensions.DapperExtensions.SqlDialect = new SqliteDialect();
 
             return new SqliteConnection("Data Source=" + DbFile);
-
         }
 
-        internal static void MarkVarcharAsSent(sync_value_varchar message)
+        public static void MarkAsSent<T>(T message) where T : class, ISendable
         {
-            message.version = 99;
+            message.sent = 1;
             using (var cnn = SimpleDbConnection())
             {
                 cnn.Open();
-                cnn.Update<sync_value_varchar>(message);
+                cnn.Update<T>(message);
             }
         }
 
-        public static IEnumerable<sync_value_varchar> GetUnsyncedEntityValueVarchars()
+        public static IEnumerable<stream_attribute> GetUnsyncedStreamAttribute()
         {
-            if (!File.Exists(Path.GetFullPath(Data.DbFile))) return null;
+            var sql = @"SELECT id, attribute_id, entity_type, attribute_type FROM stream_attribute where sent != 1";
+            return RunSql<stream_attribute>(sql);
+        }
 
-            using (var cnn = Data.SimpleDbConnection())
+        public static IEnumerable<stream_entity> GetUnsyncedStreamEntity()
+        {
+            var sql =
+                @"SELECT id, entity_id, entity_type, unique_id, dirty, version FROM stream_entity where sent != 1";
+
+            return RunSql<stream_entity>(sql);
+        }
+
+        public static IEnumerable<stream_value_file> GetUnsyncedStreamValueFile()
+        {
+            var sql =
+                @"SELECT id, entity_id, attribute_id, value, dirty, version FROM stream_value_file where sent != 1";
+            return RunSql<stream_value_file>(sql);
+        }
+
+        public static IEnumerable<stream_value_int> GetUnsyncedStreamValueInt()
+        {
+            var sql =
+                @"SELECT id, entity_id, attribute_id, value, dirty, version FROM stream_value_int where sent != 1";
+            return RunSql<stream_value_int>(sql);
+        }
+
+        public static IEnumerable<stream_value_real> GetUnsyncedStreamValueReal()
+        {
+            var sql =
+                @"SELECT id, entity_id, attribute_id, value, dirty, version FROM stream_value_real where sent != 1";
+            return RunSql<stream_value_real>(sql);
+        }
+
+        public static IEnumerable<stream_value_varchar> GetUnsyncedStreamValueVarchar()
+        {
+            var sql =
+                @"SELECT id, entity_id, attribute_id, value, dirty, version FROM stream_value_varchar where sent != 1";
+            return RunSql<stream_value_varchar>(sql);
+        }
+
+        public static IEnumerable<sync_attribute> GetUnsyncedSyncAttribute()
+        {
+            var sql = @"SELECT id, attribute_id, entity_type, attribute_type FROM sync_attribute where sent != 1";
+            return RunSql<sync_attribute>(sql);
+        }
+
+        public static IEnumerable<sync_entity> GetUnsyncedSyncEntity()
+        {
+            var sql = @"SELECT entity_id, entity_type, unique_id, dirty, version FROM sync_entity where sent != 1";
+            return RunSql<sync_entity>(sql);
+        }
+
+        public static IEnumerable<sync_value_file> GetUnsyncedSyncValueFile()
+        {
+            var sql = @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_file where sent != 1";
+            return RunSql<sync_value_file>(sql);
+        }
+
+        public static IEnumerable<sync_value_int> GetUnsyncedSyncValueInt()
+        {
+            var sql = @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_int where sent != 1";
+            return RunSql<sync_value_int>(sql);
+        }
+
+        public static IEnumerable<sync_value_real> GetUnsyncedSyncValueReal()
+        {
+            var sql = @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_real where sent != 1";
+            return RunSql<sync_value_real>(sql);
+        }
+
+        public static IEnumerable<sync_value_varchar> GetUnsyncedSyncValueVarchar()
+        {
+            var sql =
+                @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_varchar where sent != 1";
+            return RunSql<sync_value_varchar>(sql);
+        }
+
+
+        private static IEnumerable<T> RunSql<T>(string sql)
+        {
+            if (!File.Exists(Path.GetFullPath(DbFile)))
             {
-                cnn.Open();
-                var result = cnn.Query<sync_value_varchar>(
-                    @"SELECT id, entity_id, attribute_id, value, dirty, version FROM sync_value_varchar where version != 99");
-                return result;
+                return null;
             }
-        }
 
-        internal static void MarkEntityAsSent(sync_entity message)
-        {
-            message.version = 99;
             using (var cnn = SimpleDbConnection())
             {
                 cnn.Open();
-                cnn.Update<sync_entity>(message);
-            }
-        }
-
-        public static IEnumerable<sync_entity> GetUnsyncedEntitys()
-        {
-
-            if (!File.Exists(Path.GetFullPath(Data.DbFile))) return null;
-
-            using (var cnn = Data.SimpleDbConnection())
-            {
-                cnn.Open();
-                var result = cnn.Query<sync_entity>(
-             @"SELECT entity_id, entity_type, unique_id, dirty, version FROM sync_entity where version != 99");
+                var result = cnn.Query<T>(sql
+                );
                 return result;
             }
         }

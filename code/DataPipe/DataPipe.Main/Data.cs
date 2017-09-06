@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SQLite;
 
@@ -17,6 +18,7 @@ namespace DataPipe.Main
 			message.sent = 1;
 			using (var cnn = SimpleDbConnection())
 			{
+                Console.WriteLine(message);
 				cnn.Update(message);
 			}
 		}
@@ -30,7 +32,7 @@ namespace DataPipe.Main
 		public static IEnumerable<stream_entity> GetUnsyncedStreamEntity()
 		{
 			var sql =
-				@"SELECT id, entity_id, entity_type, unique_id, dirty, version FROM stream_entity where sent != 1";
+				@"SELECT entity_id, entity_type, unique_id, dirty, version FROM stream_entity where sent != 1";
 
 			return RunSql<stream_entity>(sql);
 		}
@@ -110,7 +112,8 @@ namespace DataPipe.Main
 			}
 			using (var cnn = SimpleDbConnection())
 			{
-				var result = cnn.Query<T>(sql);
+			    Console.WriteLine(sql);
+                var result = cnn.Query<T>(sql);
 				return result;
 			}
 		}

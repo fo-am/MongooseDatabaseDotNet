@@ -1,4 +1,5 @@
 ﻿using Dapper.Contrib.Extensions;
+using SQLite;
 
 namespace DataPipe.Main
 {
@@ -7,10 +8,10 @@ namespace DataPipe.Main
         int sent { get; set; }
     }
 
-    [Table("sync_entity")]
+    [Dapper.Contrib.Extensions.Table("sync_entity")]
     public class sync_entity : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int entity_id { get; set; }
 
         public string entity_type { get; set; }
@@ -21,11 +22,10 @@ namespace DataPipe.Main
     }
 
 
-
-    [Table("stream_attribute")]
+    [Dapper.Contrib.Extensions.Table("stream_attribute")]
     public class stream_attribute : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public string attribute_id { get; set; }
@@ -33,14 +33,13 @@ namespace DataPipe.Main
         public string attribute_type { get; set; }
         public int sent { get; set; }
     }
-
-    [Table("stream_entity")]
+      
+    [Dapper.Contrib.Extensions.Table("stream_entity")]
     public class stream_entity : ISendable
     {
-        [Key]
-        public int id { get; set; }
-
+        [PrimaryKey, AutoIncrement]
         public int entity_id { get; set; }
+
         public string entity_type { get; set; }
         public string unique_id { get; set; }
         public int dirty { get; set; }
@@ -48,10 +47,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("stream_value_file")]
+    [Dapper.Contrib.Extensions.Table("stream_value_file")]
     public class stream_value_file : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -62,10 +61,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("stream_value_int")]
+    [Dapper.Contrib.Extensions.Table("stream_value_int")]
     public class stream_value_int : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -76,10 +75,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("stream_value_real")]
+    [Dapper.Contrib.Extensions.Table("stream_value_real")]
     public class stream_value_real : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -90,10 +89,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("stream_value_varchar")]
+    [Dapper.Contrib.Extensions.Table("stream_value_varchar")]
     public class stream_value_varchar : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -104,10 +103,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("sync_attribute")]
+    [Dapper.Contrib.Extensions.Table("sync_attribute")]
     public class sync_attribute : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public string attribute_id { get; set; }
@@ -116,10 +115,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("sync_value_file")]
+    [Dapper.Contrib.Extensions.Table("sync_value_file")]
     public class sync_value_file : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -130,10 +129,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("sync_value_int")]
+    [Dapper.Contrib.Extensions.Table("sync_value_int")]
     public class sync_value_int : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -144,10 +143,10 @@ namespace DataPipe.Main
         public int sent { get; set; }
     }
 
-    [Table("sync_value_real")]
+    [Dapper.Contrib.Extensions.Table("sync_value_real")]
     public class sync_value_real : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -157,10 +156,11 @@ namespace DataPipe.Main
         public int version { get; set; }
         public int sent { get; set; }
     }
-    [Table("sync_value_varchar")]
+
+    [Dapper.Contrib.Extensions.Table("sync_value_varchar")]
     public class sync_value_varchar : ISendable
     {
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public int id { get; set; }
 
         public int entity_id { get; set; }
@@ -170,5 +170,4 @@ namespace DataPipe.Main
         public int version { get; set; }
         public int sent { get; set; }
     }
-
 }

@@ -3,9 +3,9 @@ using System.Threading;
 
 namespace DataPipe.Main
 {
-    internal class Program
+    class Program
     {
-        private static void Main(string[] args)
+        static void Main(string[] args)
         {
             // Get data not yet sent from the database
             // place the data on a queue
@@ -89,7 +89,7 @@ namespace DataPipe.Main
                 Console.WriteLine("Scanning for more data");
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
-            Console.ReadLine();
+          
         }
     }
 }

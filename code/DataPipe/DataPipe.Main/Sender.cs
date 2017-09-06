@@ -7,24 +7,20 @@ namespace DataPipe.Main
 {
     internal class Sender
     {
+        private AppSettings appSettings;
         public Sender()
         {
-            RabbitHostName = ConfigurationManager.AppSettings["RabbitHostName"];
-            RabbitUsername = ConfigurationManager.AppSettings["RabbitUsername"];
-            RabbitPassword = ConfigurationManager.AppSettings["RabbitPassword"];
+            appSettings = GetAppSettings.Get();
+           
         }
-
-        public string RabbitHostName { get; }
-        public string RabbitUsername { get; }
-        public string RabbitPassword { get; }
 
         public void PublishEntity<T>(T message) where T : class, ISendable
         {
             var factory = new ConnectionFactory
             {
-                HostName = RabbitHostName,
-                UserName = RabbitUsername,
-                Password = RabbitPassword
+                HostName = appSettings.RabbitHostName,
+                UserName = appSettings.RabbitUsername,
+                Password = appSettings.RabbitPassword
             };
             using (var connection = factory.CreateConnection())
             {

@@ -18,10 +18,11 @@ namespace DataPipe.Main
 
         public static void MarkAsSent<T>(T message) where T : class, ISendable
         {
+            var logger = LogManager.GetLogger("Data");
             message.sent = 1;
             using (var cnn = SimpleDbConnection())
             {
-                Console.WriteLine(message);
+                logger.Info($"Marking {message} as sent");
                 cnn.Update(message);
             }
         }

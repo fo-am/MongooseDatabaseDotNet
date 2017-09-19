@@ -120,7 +120,7 @@ namespace DataPipe.Main
                 catch (Exception exception)
                 {
                     logger.Error(exception, $"Could not get data from the database '{fullPath}' sql='{sql}'");
-                    throw;
+                    result = new List<T>();
                 }
 
                 return result;

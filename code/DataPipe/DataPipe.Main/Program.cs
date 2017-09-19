@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 
 using NLog;
@@ -51,76 +52,77 @@ namespace DataPipe.Main
 
         private static void PublishData()
         {
+            var numberToSend = 20;
             logger.Info("DataPipe started");
             var send = new Sender();
 
-            foreach (var entity in Data.GetUnsyncedStreamAttribute())
+            foreach (var entity in Data.GetUnsyncedStreamAttribute().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedStreamEntity())
+            foreach (var entity in Data.GetUnsyncedStreamEntity().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedStreamValueFile())
+            foreach (var entity in Data.GetUnsyncedStreamValueFile().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedStreamValueInt())
+            foreach (var entity in Data.GetUnsyncedStreamValueInt().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedStreamValueReal())
+            foreach (var entity in Data.GetUnsyncedStreamValueReal().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedStreamValueVarchar())
+            foreach (var entity in Data.GetUnsyncedStreamValueVarchar().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncAttribute())
+            foreach (var entity in Data.GetUnsyncedSyncAttribute().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncEntity())
+            foreach (var entity in Data.GetUnsyncedSyncEntity().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncValueFile())
+            foreach (var entity in Data.GetUnsyncedSyncValueFile().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncValueInt())
+            foreach (var entity in Data.GetUnsyncedSyncValueInt().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncValueReal())
+            foreach (var entity in Data.GetUnsyncedSyncValueReal().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");
             }
 
-            foreach (var entity in Data.GetUnsyncedSyncValueVarchar())
+            foreach (var entity in Data.GetUnsyncedSyncValueVarchar().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} {entity.entity_id}");

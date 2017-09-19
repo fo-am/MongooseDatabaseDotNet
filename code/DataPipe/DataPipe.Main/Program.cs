@@ -1,95 +1,133 @@
 ﻿using System;
 using System.Threading;
 
+using NLog;
+
 namespace DataPipe.Main
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static Logger logger;
+
+        private static void Main(string[] args)
         {
-            // Get data not yet sent from the database
-            // place the data on a queue
-            // mark the data sent
-            var send = new Sender();
-            while (true)
+            logger = LogManager.GetLogger("console");
+            logger.Info("DataPipe trying to start");
+
+            const string mutexId = @"Global\{{7588B7D1-9AC3-4CEF-A199-339EBA4D2571}}";
+
+            bool createdNew;
+            using (var mutex = new Mutex(false, mutexId, out createdNew))
             {
-                foreach (var entity in Data.GetUnsyncedStreamAttribute())
+                var hasHandle = false;
+                try
                 {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.id}");
-                }
+                    try
+                    {
+                        hasHandle = mutex.WaitOne(5000, false);
+                        if (!hasHandle)
+                        {
+                            logger.Error("Timeout waiting for exclusive access");
+                            throw new TimeoutException("Timeout waiting for exclusive access");
+                        }
+                    }
+                    catch (AbandonedMutexException)
+                    {
+                        hasHandle = true;
+                    }
 
-                foreach (var entity in Data.GetUnsyncedStreamEntity())
+                    // Perform your work here.
+                    PublishData();
+                }
+                finally
                 {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
+                    if (hasHandle)
+                    {
+                        mutex.ReleaseMutex();
+                    }
                 }
-
-                foreach (var entity in Data.GetUnsyncedStreamValueFile())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedStreamValueInt())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedStreamValueReal())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedStreamValueVarchar())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncAttribute())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncEntity())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncValueFile())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncValueInt())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncValueReal())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-                foreach (var entity in Data.GetUnsyncedSyncValueVarchar())
-                {
-                    send.PublishEntity(entity);
-                    Console.WriteLine($"{entity} {entity.entity_id}");
-                }
-
-
-                Console.WriteLine("Scanning for more data");
-                Thread.Sleep(TimeSpan.FromSeconds(10));
             }
-          
+        }
+
+        private static void PublishData()
+        {
+            logger.Info("DataPipe started");
+            var send = new Sender();
+
+            foreach (var entity in Data.GetUnsyncedStreamAttribute())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedStreamEntity())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedStreamValueFile())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedStreamValueInt())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedStreamValueReal())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedStreamValueVarchar())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncAttribute())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncEntity())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncValueFile())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncValueInt())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncValueReal())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            foreach (var entity in Data.GetUnsyncedSyncValueVarchar())
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} {entity.entity_id}");
+            }
+
+            logger.Info("DataPipe end");
+            Environment.Exit(0);
         }
     }
 }

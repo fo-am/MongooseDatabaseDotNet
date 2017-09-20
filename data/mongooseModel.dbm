@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0-beta2" last-position="841,180" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="682,94" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -143,7 +143,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="897.143" y="407.286"/>
+	<position x="960" y="460"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -164,7 +164,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1512.86" y="527.286"/>
+	<position x="1560" y="680"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -202,7 +202,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1967.14" y="555.857"/>
+	<position x="2200" y="680"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -244,7 +244,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1958.57" y="321.571"/>
+	<position x="1600" y="320"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -291,7 +291,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1157.14" y="947.286"/>
+	<position x="1220" y="1000"/>
 	<column name="interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -336,7 +336,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="592.857" y="717.286"/>
+	<position x="620" y="600"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -389,7 +389,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="467.143" y="898.714"/>
+	<position x="520" y="900"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -410,7 +410,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2414.29" y="401.571"/>
+	<position x="2480" y="460"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -450,7 +450,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2574.29" y="590.143"/>
+	<position x="2640" y="660"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -459,6 +459,9 @@ ALTER TABLE mongoose."Pack events"
 	</column>
 	<constraint name="individualeventcode_pk" type="pk-constr" table="mongoose.individual_event_code">
 		<columns names="individual_event_code_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="individual_event_code_unique" type="uq-constr" table="mongoose.individual_event_code">
+		<columns names="code" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -474,7 +477,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1940" y="867.286"/>
+	<position x="2040" y="1000"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -504,7 +507,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2477.15" y="23"/>
+	<position x="2540" y="80"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -537,7 +540,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1978.57" y="25.8571"/>
+	<position x="2040" y="80"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -576,7 +579,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2775.71" y="207.286"/>
+	<position x="2840" y="260"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

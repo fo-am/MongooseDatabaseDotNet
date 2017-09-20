@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Configuration;
+
 using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -9,24 +9,19 @@ namespace DataReciever.Main
 {
     internal class Reciever
     {
+        private AppSettings settings;
         public Reciever()
         {
-            RabbitHostName = ConfigurationManager.AppSettings["RabbitHostName"];
-            RabbitUsername = ConfigurationManager.AppSettings["RabbitUsername"];
-            RabbitPassword = ConfigurationManager.AppSettings["RabbitPassword"];
+            settings = GetAppSettings.Get();
         }
-
-        public string RabbitHostName { get; }
-        public string RabbitUsername { get; }
-        public string RabbitPassword { get; }
 
         public void Recieve<T>()
         {
             var factory = new ConnectionFactory
             {
-                HostName = RabbitHostName,
-                UserName = RabbitUsername,
-                Password = RabbitPassword
+                HostName = settings.RabbitHostName,
+                UserName = settings.RabbitUsername,
+                Password = settings.RabbitPassword
             };
 
             var connection = factory.CreateConnection();

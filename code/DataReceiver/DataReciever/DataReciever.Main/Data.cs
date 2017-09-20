@@ -6,7 +6,7 @@ namespace DataReciever.Main
 {
     internal class Data
     {
-        public static string DbFile => ConfigurationManager.AppSettings["SqliteLocation"];
+        public static string DbFile => GetAppSettings.Get().SqliteLocation;
 
         public static SQLiteConnection SimpleDbConnection()
         {

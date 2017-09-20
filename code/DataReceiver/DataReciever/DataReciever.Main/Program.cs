@@ -1,6 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.Linq;
 
 namespace DataReciever.Main
 {

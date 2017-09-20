@@ -69,7 +69,7 @@ namespace DataReciever.Main
 
         public int entity_id { get; set; }
         public string attribute_id { get; set; }
-        public int value { get; set; }
+        public int? value { get; set; }
         public int dirty { get; set; }
         public int version { get; set; }
         public int sent { get; set; }
@@ -83,7 +83,7 @@ namespace DataReciever.Main
 
         public int entity_id { get; set; }
         public string attribute_id { get; set; }
-        public double value { get; set; }
+        public double? value { get; set; }
         public int dirty { get; set; }
         public int version { get; set; }
         public int sent { get; set; }
@@ -137,7 +137,7 @@ namespace DataReciever.Main
 
         public int entity_id { get; set; }
         public string attribute_id { get; set; }
-        public int value { get; set; }
+        public int? value { get; set; }
         public int dirty { get; set; }
         public int version { get; set; }
         public int sent { get; set; }
@@ -151,7 +151,7 @@ namespace DataReciever.Main
 
         public int entity_id { get; set; }
         public string attribute_id { get; set; }
-        public double value { get; set; }
+        public double? value { get; set; }
         public int dirty { get; set; }
         public int version { get; set; }
         public int sent { get; set; }

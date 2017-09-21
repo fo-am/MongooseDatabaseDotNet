@@ -2,6 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 using NLog;
+using NLog.Config;
 using RabbitMQ.Client;
 
 namespace KeepAlive.Sender
@@ -13,6 +14,7 @@ namespace KeepAlive.Sender
 
         public Sender()
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("sender");
             appSettings = GetAppSettings.Get();
         }
@@ -56,7 +58,7 @@ namespace KeepAlive.Sender
             catch (Exception exception)
             {
                 logger.Error(exception,
-                    $"An error occured with queue '{appSettings.RabbitHostName}' and message type '{typeof(T)}'");
+                    $"An error occured with queue '{appSettings.RabbitHostName}' and message type '{typeof(T)}' StackTrace :{exception.Message}");
                 throw;
             }
         }

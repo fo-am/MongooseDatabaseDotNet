@@ -1,5 +1,6 @@
 ﻿using System;
 using NLog;
+using NLog.Config;
 
 namespace KeepAlive.Sender
 {
@@ -7,6 +8,7 @@ namespace KeepAlive.Sender
     {
         private static void Main(string[] args)
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             var logger = LogManager.GetLogger("KeepAlive.Sender");
             logger.Info("KeepAlive.Sender starting up");
 

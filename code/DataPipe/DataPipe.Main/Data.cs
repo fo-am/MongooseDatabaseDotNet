@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using NLog;
-
+using NLog.Config;
 using SQLite;
 
 namespace DataPipe.Main
@@ -18,6 +18,7 @@ namespace DataPipe.Main
 
         public static void MarkAsSent<T>(T message) where T : class, ISendable
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             var logger = LogManager.GetLogger("Data");
             message.sent = 1;
             using (var cnn = SimpleDbConnection())
@@ -102,7 +103,9 @@ namespace DataPipe.Main
 
         private static IEnumerable<T> RunSql<T>(string sql) where T : new()
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             var logger = LogManager.GetLogger("Data");
+            
             var dbFile = GetAppSettings.Get().SqliteLocation;
             var fullPath = Path.GetFullPath(dbFile);
             if (!File.Exists(fullPath))

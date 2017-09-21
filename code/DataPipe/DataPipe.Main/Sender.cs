@@ -4,7 +4,7 @@ using System.Text;
 using Newtonsoft.Json;
 
 using NLog;
-
+using NLog.Config;
 using RabbitMQ.Client;
 
 namespace DataPipe.Main
@@ -16,6 +16,7 @@ namespace DataPipe.Main
 
         public Sender()
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("sender");
             appSettings = GetAppSettings.Get();
         }

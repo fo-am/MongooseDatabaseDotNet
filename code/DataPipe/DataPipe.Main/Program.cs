@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 
 using NLog;
+using NLog.Config;
 
 namespace DataPipe.Main
 {
@@ -12,6 +13,7 @@ namespace DataPipe.Main
 
         private static void Main(string[] args)
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("console");
             logger.Info("DataPipe trying to start");
 

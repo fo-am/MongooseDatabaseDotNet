@@ -111,7 +111,7 @@ namespace DataPipe.Main
 
         public string attribute_id { get; set; }
         public string entity_type { get; set; }
-        public int attribute_type { get; set; }
+        public string attribute_type { get; set; }
         public int sent { get; set; }
     }
 

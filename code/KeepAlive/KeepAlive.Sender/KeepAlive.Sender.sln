@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeepAlive.Sender", "KeepAlive.Sender\KeepAlive.Sender.csproj", "{7D42C7A3-9DA6-4085-A36B-4EDEC63B1C33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D42C7A3-9DA6-4085-A36B-4EDEC63B1C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D42C7A3-9DA6-4085-A36B-4EDEC63B1C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D42C7A3-9DA6-4085-A36B-4EDEC63B1C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D42C7A3-9DA6-4085-A36B-4EDEC63B1C33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98651980-9342-423F-97C6-14BA5AA69C9B}
+	EndGlobalSection
+EndGlobal

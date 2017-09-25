@@ -78,32 +78,149 @@ namespace pgDataImporter.Core
             Logger.Info("Starting to add life history data.");
             lifeHistories = lifeHistories as IList<NewLifeHistory> ?? lifeHistories.ToList();
             var pg = new PostgresRepository();
-            pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
-            pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv,lh.Sex})
-                .Select(s => new Individual {Name = s.Key.Indiv,Sex = s.Key.Sex}));
 
-            var pgPacks = pg.GetAllPacks();
-            var pgIndividuals = pg.GetAllIndividuals();
-            AddPackHistories(
-                lifeHistories.Select(lh => new PackHistoryDto(lh.Indiv, lh.Pack, lh.Date)), pgPacks,
-                pgIndividuals, pg);
+            foreach (var lifeHistory in lifeHistories)
+            {
+                var duplicateCount = 0;
 
-            AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
-                    l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter})
-                .ToList(),
-                pg);
+                // save pack and get id
+                // save individual and get id
+                // link pack history get ids?
+                // add litter info?
+                if (LifeHistoryIsLitterEvent(lifeHistory))
+                {
+                    // these are ignored as they are probably bad data.
+                    Logger.Info("Litter Event");
+                    duplicateCount++;
 
-            AddLitterEvents(lifeHistories.Where(l => string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
-                                                     !string.IsNullOrEmpty(l.Code)));
-            AddPackEvents( // note this contains IGI between packs... need to pull them out seperatly or something.
-                lifeHistories.Where(l => !string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
-                                         !string.IsNullOrEmpty(l.Code)), pg);
-            AddIndividualEvents(lifeHistories.Where(l => !string.IsNullOrEmpty(l.Indiv) &&
-                                                         !string.IsNullOrEmpty(l.Code) &&
-                                                         !string.IsNullOrEmpty(l.Pack)),pg);
+
+                    // get ids
+                    // record individual event
+                }
+                if (LifeHistoryIsPackEvent(lifeHistory))
+                {
+                    Logger.Info("Pack Event");
+                    duplicateCount++;
+
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+
+                    pg.AddPackEventCode(lifeHistory.Code);
+
+
+                    // get pack codes and ids
+                    var packEventCodeId = pg.GetPackEventCodeId(lifeHistory.Code);
+                   
+
+                    // link packs to codes.
+
+                    pg.linkPackEvents(packId,
+                        packEventCodeId,
+                        lifeHistory.Status, lifeHistory.Date,
+                        lifeHistory.Exact, lifeHistory.Cause,
+                        lifeHistory.Comment, lifeHistory.Latitude, lifeHistory.Longitude);
+
+
+
+                    // record pack event
+                }
+                if (LifeHistoryIsIndividualEvent(lifeHistory))
+                {
+                    Logger.Info("Individual Event");
+                    duplicateCount++;
+
+                    pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
+
+                    pg.InsertSinglePack(lifeHistory.Pack);
+//add individual event code
+// get individual code
+
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+
+                    var individualId = pg.GetIndividualId(lifeHistory.Indiv);
+
+                    InsertpackHistory(packId, individualId, pg,
+                        new PackHistoryDto(lifeHistory.Indiv, lifeHistory.Pack, lifeHistory.Date));
+
+                    pg.AddLitter(new LifeHistoryDto
+                    {
+                        pgPackId = packId,
+                        Litter = lifeHistory.Litter,
+                        pgIndividualId = individualId
+                    });
+
+                    // get ids
+                    // record lifehistory
+                    var pack_history_id = pg.GetPackHistoryId(lifeHistory.Pack, lifeHistory.Indiv);
+                    var individual_event_code_id = pg.GetIndiviudalEventCodeId(lifeHistory.Code);
+
+                    pg.LinkIndividualEvents(pack_history_id,
+                       individual_event_code_id,
+                        lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.Status,
+                        lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment);
+
+                  
+
+                }
+
+                if (duplicateCount == 0)
+                {
+                    Logger.Error($"LifeHistory type not determined:{lifeHistory}");
+                }
+                if (duplicateCount > 1)
+                {
+                    Logger.Error($"LifeEvent was of multiple types:{lifeHistory}");
+                    Console.WriteLine("Too many types");
+                }
+            }
+
+     
+            //pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
+            //pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv, lh.Sex})
+            //    .Select(s => new Individual {Name = s.Key.Indiv, Sex = s.Key.Sex}));
+
+            //var pgPacks = pg.GetAllPacks();
+            //var pgIndividuals = pg.GetAllIndividuals();
+
+            //AddPackHistories(
+            //    lifeHistories.Select(lh => new PackHistoryDto(lh.Indiv, lh.Pack, lh.Date)), pgPacks,
+            //    pgIndividuals, pg);
+
+            //AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
+            //            l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter})
+            //        .ToList(),
+            //    pg);
+
+            //AddLitterEvents(lifeHistories.Where(l => string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
+            //                                         !string.IsNullOrEmpty(l.Code)));
+            //AddPackEvents( // note this contains IGI between packs... need to pull them out seperatly or something.
+            //    lifeHistories.Where(l => !string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
+            //                             !string.IsNullOrEmpty(l.Code)), pg);
+            //AddIndividualEvents(lifeHistories.Where(l => !string.IsNullOrEmpty(l.Indiv) &&
+            //                                             !string.IsNullOrEmpty(l.Code) &&
+            //                                             !string.IsNullOrEmpty(l.Pack)), pg);
 
 
             Logger.Info("Done adding life history data.");
+        }
+
+        private static bool LifeHistoryIsIndividualEvent(NewLifeHistory lifeHistory)
+        {
+            return !string.IsNullOrEmpty(lifeHistory.Indiv) &&
+                   !string.IsNullOrEmpty(lifeHistory.Code) &&
+                   !string.IsNullOrEmpty(lifeHistory.Pack);
+        }
+
+        private static bool LifeHistoryIsPackEvent(NewLifeHistory lifeHistory)
+        {
+            return !string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv) &&
+                   !string.IsNullOrEmpty(lifeHistory.Code);
+        }
+
+        private static bool LifeHistoryIsLitterEvent(NewLifeHistory lifeHistory)
+        {
+            return string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv) &&
+                   !string.IsNullOrEmpty(lifeHistory.Code);
         }
 
         private void AddIndividualEvents(IEnumerable<NewLifeHistory> individualEvents, PostgresRepository pg)
@@ -116,8 +233,8 @@ namespace pgDataImporter.Core
             // get individuals
             var pgIndividuals = pg.GetAllIndividuals();
 
-         // add events with individual ids added
-         foreach(var individualEvent in individualEvents)
+            // add events with individual ids added
+            foreach (var individualEvent in individualEvents)
             {
                 var pack_history_id = pg.GetPackHistoryId(individualEvent.Pack, individualEvent.Indiv);
 
@@ -183,7 +300,10 @@ namespace pgDataImporter.Core
                     Logger.Warn("individual name null");
                     continue;
                 }
-                var pack_history_id = pg.GetPackHistoryId(radioCollar.PACK, radioCollar.INDIVIDUAL); //pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
+                var pack_history_id =
+                    pg.GetPackHistoryId(radioCollar.PACK,
+                        radioCollar
+                            .INDIVIDUAL); //pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
 
                 pg.AddRadioCollar(pack_history_id, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
                     radioCollar.FREQUENCY,
@@ -202,8 +322,7 @@ namespace pgDataImporter.Core
             pg.RemoveUltrasoundData();
             foreach (var ultrasound in ultrasoundData)
             {
-
-                int pack_history_id = pg.GetPackHistoryId(ultrasound.PACK, ultrasound.INDIV);
+                var pack_history_id = pg.GetPackHistoryId(ultrasound.PACK, ultrasound.INDIV);
 
                 for (var i = 1; i <= 6; i++)
                 {
@@ -313,29 +432,36 @@ namespace pgDataImporter.Core
 
             foreach (var membership in packHistorys.OrderByDescending(ph => ph.DateJoined))
             {
-                if (string.IsNullOrEmpty(membership.IndividualName) || string.IsNullOrEmpty(membership.PackName))
-                {
-                    Logger.Warn(
-                        $"Null found entering pack history. pack name:{membership.PackName} individual name {membership.IndividualName}");
-                    continue;
-                }
                 var packId = pgPacks.Single(p => p.Name == membership.PackName).PackId;
                 var individualId = pgIndividuals.Single(i => i.Name == membership.IndividualName).IndividualId;
 
-                var databasePackHistory = pg.GetPackHistory(packId, individualId);
+                InsertpackHistory(packId, individualId, pg, membership);
+            }
+        }
 
-                if (databasePackHistory != null)
+        private  void InsertpackHistory(int packId, int individualId, PostgresRepository pg,
+            PackHistoryDto membership)
+        {
+            if (string.IsNullOrEmpty(membership.IndividualName) || string.IsNullOrEmpty(membership.PackName))
+            {
+                Logger.Warn(
+                    $"Null found entering pack history. pack name:{membership.PackName} individual name {membership.IndividualName}");
+                return;
+            }
+          
+            var databasePackHistory = pg.GetPackHistory(packId, individualId);
+
+            if (databasePackHistory != null)
+            {
+                if (databasePackHistory.DateJoined > membership.DateJoined)
                 {
-                    if (databasePackHistory.DateJoined > membership.DateJoined)
-                    {
-                        pg.UpdatePackHistory(membership, databasePackHistory);
-                    }
+                    pg.UpdatePackHistory(membership, databasePackHistory);
                 }
-                else
-                {
-                    // if not insert new info
-                    pg.InsertPackHistory(packId, individualId, membership);
-                }
+            }
+            else
+            {
+                // if not insert new info
+                pg.InsertPackHistory(packId, individualId, membership);
             }
         }
     }

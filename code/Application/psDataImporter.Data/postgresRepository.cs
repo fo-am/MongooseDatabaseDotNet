@@ -95,7 +95,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public int GetPackHistoryId(string weightPack, string weightIndiv)
+        public int GetPackHistoryId(string pack, string individual)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -105,7 +105,7 @@ namespace psDataImporter.Data
                 return conn.ExecuteScalar<int>(@"select ph.pack_history_id  from mongoose.pack_history ph 
             join mongoose.pack p on p.pack_id = ph.pack_id
             join mongoose.individual i on ph.individual_id = i.individual_id
-            where p.name = @packName and i.name = @individualName", new { packName = weightPack, individualName = weightIndiv });
+            where p.name = @packName and i.name = @individualName", new { packName = pack, individualName = individual });
             }
         }
 
@@ -144,18 +144,23 @@ namespace psDataImporter.Data
         {
             foreach (var code in codes)
             {
-                if (!string.IsNullOrEmpty(code))
-                {
-                    Logger.Info($"Adding individual code: {code}");
+                AddIndividualEventCode(code);
+            }
+        }
 
-                    using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                        .ConnectionStrings["postgresConnectionString"]
-                        .ConnectionString))
-                    {
-                        conn.Execute(
-                            "Insert into mongoose.individual_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                            new { codeValue = code });
-                    }
+        private static void AddIndividualEventCode(string code)
+        {
+            if (!string.IsNullOrEmpty(code))
+            {
+                Logger.Info($"Adding individual code: {code}");
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.Execute(
+                        "Insert into mongoose.individual_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
+                        new { codeValue = code });
                 }
             }
         }
@@ -175,47 +180,53 @@ namespace psDataImporter.Data
 
         public void AddIndividuals(IEnumerable<Individual> individuals)
         {
+
+            foreach (var newIndividual in individuals)
+            {
+                InsertIndividual(newIndividual);
+            }
+        }
+
+        public void InsertIndividual(Individual newIndividual)
+        {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                foreach (var newIndividual in individuals)
+                if (string.IsNullOrEmpty(newIndividual.Name))
                 {
-                    if (string.IsNullOrEmpty(newIndividual.Name))
-                    {
-                        Logger.Warn("Individual with null name.");
-                        continue;
-                    }
-                    // see if we have the individual
-                    // if so do we have all the data we have at this point?
-                    // if not then update it with what we have...
-                    // what if we have the same data but it conflicts (Sex eg)
-                    // 
-                    var inDatabaseIndividual = conn
-                        .Query<Individual>(
-                            "Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
-                            new { newIndividual.Name }).SingleOrDefault();
+                    Logger.Warn("Individual with null name.");
+                    return;
+                }
+                // see if we have the individual
+                // if so do we have all the data we have at this point?
+                // if not then update it with what we have...
+                // what if we have the same data but it conflicts (Sex eg)
+                // 
+                var inDatabaseIndividual = conn
+                    .Query<Individual>(
+                        "Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
+                        new { newIndividual.Name }).SingleOrDefault();
 
-                    if (inDatabaseIndividual != null)
+                if (inDatabaseIndividual != null)
+                {
+                    //If database has no sex, but our new individual does
+                    if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
                     {
-                        //If database has no sex, but our new individual does
-                        if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
-                        {
-                            Logger.Info(
-                                $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
+                        Logger.Info(
+                            $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
 
-                            conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
-                                new { sex = newIndividual.Sex, id = newIndividual.IndividualId });
-                        }
-                        // if litter id is set then do the litter thing... worry about that when I have some data!
+                        conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
+                            new { sex = newIndividual.Sex, id = newIndividual.IndividualId });
                     }
-                    else
-                    {
-                        conn.ExecuteScalar<int>(
-                            "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                            new { newIndividual.Name, newIndividual.Sex });
-                        Logger.Info($"created indiv: {newIndividual.Name}");
-                    }
+                    // if litter id is set then do the litter thing... worry about that when I have some data!
+                }
+                else
+                {
+                    conn.ExecuteScalar<int>(
+                        "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
+                        new { newIndividual.Name, newIndividual.Sex });
+                    Logger.Info($"created indiv: {newIndividual.Name}");
                 }
             }
         }
@@ -224,20 +235,25 @@ namespace psDataImporter.Data
         {
             foreach (var packName in packNames)
             {
-                if (string.IsNullOrEmpty(packName))
-                {
-                    Logger.Warn("Tried to create a null pack.");
-                    continue;
-                }
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["postgresConnectionString"]
-                    .ConnectionString))
-                {
-                    conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
-                        new { name = packName });
-                }
-                Logger.Info($"created pack: {packName}");
+                InsertSinglePack(packName);
             }
+        }
+
+        public void InsertSinglePack(string packName)
+        {
+            if (string.IsNullOrEmpty(packName))
+            {
+                Logger.Warn("Tried to create a null pack.");
+                return;
+            }
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
+                    new { name = packName });
+            }
+            Logger.Info($"created pack: {packName}");
         }
 
         public void AddFoetus(int pack_history_id, int foetusNumber, DateTime ultrasoundDate, string foetusSize,
@@ -306,6 +322,13 @@ namespace psDataImporter.Data
 
         public void AddLitter(LifeHistoryDto litter)
         {
+            if (string.IsNullOrEmpty(litter.Pack) || string.IsNullOrEmpty(litter.Individual) ||
+                string.IsNullOrEmpty(litter.Litter))
+            {
+                Logger.Warn(
+                    $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
+               return;
+            }
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
@@ -330,18 +353,23 @@ namespace psDataImporter.Data
         {
             foreach (var code in codes)
             {
-                if (!string.IsNullOrEmpty(code))
-                {
-                    Logger.Info($"Adding pack code:{code}");
+                AddPackEventCode(code);
+            }
+        }
 
-                    using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                        .ConnectionStrings["postgresConnectionString"]
-                        .ConnectionString))
-                    {
-                        conn.Execute(
-                            "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                            new { codeValue = code });
-                    }
+        public void AddPackEventCode(string code)
+        {
+            if (!string.IsNullOrEmpty(code))
+            {
+                Logger.Info($"Adding pack code:{code}");
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.Execute(
+                        "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
+                        new { codeValue = code });
                 }
             }
         }
@@ -367,6 +395,17 @@ namespace psDataImporter.Data
                 return conn.Query<PackEventCode>(
                         "Select pack_event_code_id as PackEventCodeId, code, detail from mongoose.pack_event_code")
                     .ToList();
+            }
+        }
+
+        public int GetPackEventCodeId(string code)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn.ExecuteScalar<int>(
+                    "Select pack_event_code_id  from mongoose.pack_event_code where code = @code", new { code });
             }
         }
 
@@ -415,6 +454,48 @@ namespace psDataImporter.Data
             {
                 Logger.Info($"Linking packId:{packId} with codeId:{packEventCodeId}");
                 conn.Execute(sql, new { packId, packEventCodeId, status, date, exact, cause, comment });
+            }
+        }
+
+        public int GetPackId(string packName)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn.ExecuteScalar<int>(
+                    "Select pack_id from mongoose.pack where name = @packName", new { packName });
+
+            }
+         
+        }
+
+        public int GetIndividualId(string individualName)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn
+                    .ExecuteScalar<int>("Select individual_id from mongoose.individual where name = @individualName",
+                        new { individualName });
+
+            }
+           
+        }
+
+        public int GetIndiviudalEventCodeId(string individualEventCode)
+        {
+            AddIndividualEventCode(individualEventCode);
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn
+                    .ExecuteScalar<int>("Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
+                        new { lifeHistoryCode = individualEventCode });
+
             }
         }
     }

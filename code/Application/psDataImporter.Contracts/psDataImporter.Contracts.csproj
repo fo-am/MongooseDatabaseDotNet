@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Access\Oestrus.cs" />
     <Compile Include="Access\RadioCollar.cs" />
     <Compile Include="Access\Ultrasound.cs" />
     <Compile Include="Access\NewLifeHistory.cs" />

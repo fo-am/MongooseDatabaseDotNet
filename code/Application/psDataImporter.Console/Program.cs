@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using NLog;
+﻿using NLog;
 using pgDataImporter.Core;
-using psDataImporter.Contracts.Access;
 using psDataImporter.Data;
 
 namespace psDataImporter.Console
@@ -15,17 +13,20 @@ namespace psDataImporter.Console
             var accessdata = new AccessRepository();
             var postgresData = new PostgresCore();
 
-             var weights = accessdata.GetWeights();
-             postgresData.ProcessWeights(weights);
+            var weights = accessdata.GetWeights();
+            postgresData.ProcessWeights(weights);
 
-             var ultrasoundData = accessdata.GetUltrasounds();
-             postgresData.ProccessUltrasoundData(ultrasoundData);
+            var ultrasoundData = accessdata.GetUltrasounds();
+            postgresData.ProccessUltrasoundData(ultrasoundData);
 
-             var radioCollarData = accessdata.GetRadioCollars();
+            var radioCollarData = accessdata.GetRadioCollars();
             postgresData.ProccessRadioCollarData(radioCollarData);
 
             var lifeHistories = accessdata.GetLifeHistorys();
             postgresData.ProcessLifeHistories(lifeHistories);
+
+            var oestruses = accessdata.GetOestruses();
+            postgresData.ProcessOestursData(oestruses);
 
             Logger.Info("done");
             System.Console.ReadLine();

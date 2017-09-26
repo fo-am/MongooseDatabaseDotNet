@@ -109,7 +109,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void InsertPackHistory(int packId, int individualId, PackHistoryDto membership)
+        public void InsertPackHistory(int packId, int individualId, DateTime? date)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -118,23 +118,22 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
-                    new { PackId = packId, IndividualId = individualId, membership.DateJoined });
+                    new { PackId = packId, IndividualId = individualId, date });
 
-                Logger.Info($"Insert pack history: {membership.DateJoined}");
+                Logger.Info($"Insert pack history: {date}");
             }
         }
 
-        public void UpdatePackHistory(PackHistoryDto membership, PackHistory packHistory)
+        public void UpdatePackHistoryDate(DateTime date, PackHistory packHistory)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
 
             {
-                //if we do then check the date, if our date is older then update with the new older date
                 conn.Execute(
                     "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                    new { date = membership.DateJoined, packHistoryId = packHistory.PackHistoryId });
+                    new {date, packHistoryId = packHistory.PackHistoryId });
 
                 Logger.Info($"update pack history: {packHistory.PackHistoryId}");
             }
@@ -226,7 +225,7 @@ namespace psDataImporter.Data
                     conn.ExecuteScalar<int>(
                         "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
                         new { newIndividual.Name, newIndividual.Sex });
-                    Logger.Info($"created indiv: {newIndividual.Name}");
+                    Logger.Info($"created indivual : {newIndividual.Name}");
                 }
             }
         }

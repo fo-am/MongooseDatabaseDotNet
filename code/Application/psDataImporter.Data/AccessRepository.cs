@@ -143,7 +143,38 @@ namespace psDataImporter.Data
                                             FROM [NEW LIFE HISTORY];
                                             ").ToList();
             }
+        }
 
+        public IEnumerable<Oestrus> GetOestruses()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Life History data");
+
+                return conn.Query<Oestrus>(@" 
+                                      SELECT 
+                                            DATE,
+                                            TIME,
+                                            GROUP,
+                                            [changes to data] as changes_to_data,   
+                                            COMMENT,                                
+                                            CONFIDENCE,                             
+                                            COPULATION,  
+                                            [FEMALE ID] as FEMALE_ID,               
+                                            [GUARD ID] as GUARD_ID,                 
+                                            Latitude,                               
+                                            Longitude,                              
+                                            [OESTRUS CODE] as OESTRUS_CODE,         
+                                            [PESTERER ID] as PESTERER_ID,           
+                                            [PESTERER ID 2] as PESTERER_ID_2,       
+                                            [PESTERER ID 3] as PESTERER_ID_3,       
+                                            [PESTERER ID 4] as PESTERER_ID_4,       
+                                            STRENGTH                                         
+                                            FROM [OESTRUS];
+                                            ").ToList();
+            }
         }
     }
 }

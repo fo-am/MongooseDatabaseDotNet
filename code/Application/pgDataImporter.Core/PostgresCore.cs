@@ -436,7 +436,7 @@ namespace pgDataImporter.Core
 
        
         
-    private void InsertpackHistory(int packId, int individualId, DateTime? date, PostgresRepository pg)
+    private void InsertpackHistory(int packId, int? individualId, DateTime? date, PostgresRepository pg)
         {
             var databasePackHistory = pg.GetPackHistory(packId, individualId);
 
@@ -454,7 +454,7 @@ namespace pgDataImporter.Core
             }
         }
 
-        public void ProcessOestursData(IEnumerable<Oestrus> oestruses)
+        public void ProcessOestrusData(IEnumerable<Oestrus> oestruses)
         {
             Logger.Info("Starting to add life history data.");
             oestruses = oestruses as IList<Oestrus> ?? oestruses.ToList();
@@ -462,6 +462,11 @@ namespace pgDataImporter.Core
             var pg = new PostgresRepository();
             foreach (var oestrus in oestruses)
             {
+                if (string.IsNullOrEmpty(oestrus.FEMALE_ID))
+                {
+                    Logger.Error("null femail id.");
+                    continue;
+                }
                 //Insert main female
                 pg.InsertIndividual(new Individual {Name = oestrus.FEMALE_ID, Sex = "F"});
                 var individualId = pg.GetIndividualId(oestrus.FEMALE_ID);
@@ -485,7 +490,7 @@ namespace pgDataImporter.Core
                 // add individual from copulation
                 pg.InsertIndividual(new Individual { Name = oestrus.COPULATION });
 
-
+                pg.AddOestrusEvent(oestrus);
                 // add oestrus record, add pesterers (many-many)
             }
         }

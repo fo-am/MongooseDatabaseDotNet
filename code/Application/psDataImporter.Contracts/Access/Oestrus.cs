@@ -9,7 +9,7 @@ namespace psDataImporter.Contracts.Access
         public string TIME;
         public string GROUP;
         public string COMMENT;
-        public string CONFIDENCE;
+        public int? CONFIDENCE;
         public string COPULATION;
         public string FEMALE_ID;
         public string GUARD_ID;
@@ -20,6 +20,6 @@ namespace psDataImporter.Contracts.Access
         public string PESTERER_ID_2;
         public string PESTERER_ID_3;
         public string PESTERER_ID_4;
-        public string STRENGTH;
+        public int? STRENGTH;
     }
 }

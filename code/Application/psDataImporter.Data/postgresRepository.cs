@@ -109,7 +109,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void InsertPackHistory(int packId, int individualId, DateTime? date)
+        public void InsertPackHistory(int packId, int? individualId, DateTime? date)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -118,7 +118,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
-                    new { PackId = packId, IndividualId = individualId, date });
+                    new { PackId = packId, IndividualId = individualId, DateJoined = date });
 
                 Logger.Info($"Insert pack history: {date}");
             }
@@ -133,7 +133,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                    new {date, packHistoryId = packHistory.PackHistoryId });
+                    new { date, packHistoryId = packHistory.PackHistoryId });
 
                 Logger.Info($"update pack history: {packHistory.PackHistoryId}");
             }
@@ -164,7 +164,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public PackHistory GetPackHistory(int packId, int individualId)
+        public PackHistory GetPackHistory(int packId, int? individualId)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -326,7 +326,7 @@ namespace psDataImporter.Data
             {
                 Logger.Warn(
                     $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
-               return;
+                return;
             }
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -409,7 +409,7 @@ namespace psDataImporter.Data
         }
 
         public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude, string longitude,
-            string status, DateTime date, string exact,string cause, string comment)
+            string status, DateTime date, string exact, string cause, string comment)
         {
             // create geography if lat and long are present.
             var locationString = "NULL";
@@ -466,21 +466,25 @@ namespace psDataImporter.Data
                     "Select pack_id from mongoose.pack where name = @packName", new { packName });
 
             }
-         
+
         }
 
-        public int GetIndividualId(string individualName)
+        public int? GetIndividualId(string individualName)
         {
+            if (string.IsNullOrEmpty(individualName ))
+            {
+                return null;
+            }
+            
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                return conn
+                 return conn
                     .ExecuteScalar<int>("Select individual_id from mongoose.individual where name = @individualName",
                         new { individualName });
 
             }
-           
         }
 
         public int GetIndiviudalEventCodeId(string individualEventCode)
@@ -495,6 +499,56 @@ namespace psDataImporter.Data
                     .ExecuteScalar<int>("Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
                         new { lifeHistoryCode = individualEventCode });
 
+            }
+        }
+
+        public void AddOestrusEvent(Oestrus oestrus)
+        {
+
+            //get pack history id (femailid and pack id)
+            var packhistoryid = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
+            var femailId = GetIndividualId(oestrus.FEMALE_ID);
+            //guardId
+            var guardid = GetIndividualId(oestrus.GUARD_ID);
+            //pesterir 1-4 id
+            var pesterer1Id = GetIndividualId(oestrus.PESTERER_ID);
+            var pesterer2Id = GetIndividualId(oestrus.PESTERER_ID_2);
+            var pesterer3Id = GetIndividualId(oestrus.PESTERER_ID_3);
+            var pesterer4Id = GetIndividualId(oestrus.PESTERER_ID_4);
+
+
+            // create geography if lat and long are present.
+            var locationString = "NULL";
+            if (!string.IsNullOrEmpty(oestrus.Latitude) && !string.IsNullOrEmpty(oestrus.Longitude))
+            {
+                locationString =
+                    $"ST_GeographyFromText('SRID=4326;POINT({oestrus.Latitude} {oestrus.Longitude})')";
+            }
+
+            var sql = $"INSERT INTO mongoose.oestrus("
+                   + $"pack_history_id, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)"
+                   + $"VALUES( @pack_history_id, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
+
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info($"Adding Oestrus event. {oestrus.OESTRUS_CODE} ");
+                conn.Execute(sql, new
+                {
+                    pack_history_id = packhistoryid,
+                    oestrus_code = oestrus.OESTRUS_CODE,
+                    guard_id = guardid,
+                    pesterer_id_1 = pesterer1Id,
+                    pesterer_id_2 = pesterer2Id,
+                    pesterer_id_3 = pesterer3Id,
+                    pesterer_id_4 = pesterer4Id,
+                    strength = oestrus.STRENGTH,
+                    confidence = oestrus.CONFIDENCE,
+                    copulation = oestrus.CONFIDENCE,
+                    comment = oestrus.COMMENT
+                });
             }
         }
     }

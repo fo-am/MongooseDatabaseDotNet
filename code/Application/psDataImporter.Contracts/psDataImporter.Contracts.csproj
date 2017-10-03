@@ -40,6 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Access\Jennis_blood_data.cs" />
+    <Compile Include="Access\Maternal_Condition_Experiment_Females.cs" />
+    <Compile Include="Access\Maternal_Condition_Experiment_Litters.cs" />
+    <Compile Include="Access\METEROLOGICAL_DATA.cs" />
+    <Compile Include="Access\POO_DATABASE.cs" />
+    <Compile Include="Access\Provisioning_data.cs" />
+    <Compile Include="Access\PupAssociation.cs" />
     <Compile Include="Access\Oestrus.cs" />
     <Compile Include="Access\RadioCollar.cs" />
     <Compile Include="Access\Ultrasound.cs" />

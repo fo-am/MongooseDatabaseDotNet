@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="391,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="100,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -692,11 +692,11 @@ ALTER TABLE mongoose."Pack events"
 	<column name="copulation">
 		<type name="text" length="0"/>
 	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
 	<column name="comment">
 		<type name="text" length="0"/>
-	</column>
-	<column name="female_id">
-		<type name="smallint" length="0"/>
 	</column>
 	<constraint name="oestrus_pk" type="pk-constr" table="mongoose.oestrus">
 		<columns names="oestrus_id" ref-type="src-columns"/>

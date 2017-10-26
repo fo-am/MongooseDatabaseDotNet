@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="100,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,52" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -288,11 +288,11 @@ ALTER TABLE mongoose."Pack events"
 	</label>
 </relationship>
 
-<table name="interaction" hide-ext-attribs="true">
+<table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1220" y="1000"/>
-	<column name="interaction_id" not-null="true">
+	<position x="1020" y="660"/>
+	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="secondpack_id">
@@ -307,8 +307,8 @@ ALTER TABLE mongoose."Pack events"
 	<column name="comment">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="interaction_pk" type="pk-constr" table="mongoose.interaction">
-		<columns names="interaction_id" ref-type="src-columns"/>
+	<constraint name="interaction_pk" type="pk-constr" table="mongoose.inter_group_interaction">
+		<columns names="inter_group_interaction_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
@@ -326,7 +326,7 @@ ALTER TABLE mongoose."Pack events"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack"
-	 dst-table="mongoose.interaction"
+	 dst-table="mongoose.inter_group_interaction"
 	 src-required="false" dst-required="false">
 	<label ref-type="src-label">
 		<position x="0" y="0"/>
@@ -720,8 +720,78 @@ ALTER TABLE mongoose."Pack events"
 	 dst-table="mongoose.oestrus"
 	 src-required="false" dst-required="false"/>
 
+<table name="litter_event_code" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1560" y="1040"/>
+	<column name="litter_event_code_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="litter_code_pk" type="pk-constr" table="mongoose.litter_event_code">
+		<columns names="litter_event_code_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="litter_code_unique" type="uq-constr" table="mongoose.litter_event_code">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="litter_event" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1380" y="840"/>
+	<column name="litter_event_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="cause">
+		<type name="text" length="0"/>
+	</column>
+	<column name="exact">
+		<type name="text" length="0"/>
+	</column>
+	<column name="last_seen">
+		<type name="date" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="litter_event_pk" type="pk-constr" table="mongoose.litter_event">
+		<columns names="litter_event_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="litter_event_code_id" index="2"/>
+		<object name="litter_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="litter_event_code_fk" index="2"/>
+		<object name="litter_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="litter_has_many_litter_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.litter"
+	 dst-table="mongoose.litter_event"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="litter_code_has_many_litter_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.litter_event_code"
+	 dst-table="mongoose.litter_event"
+	 src-required="false" dst-required="false"/>
+
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.interaction">
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">
 	<columns names="secondpack_id" ref-type="src-columns"/>
 	<columns names="pack_id" ref-type="dst-columns"/>
 </constraint>

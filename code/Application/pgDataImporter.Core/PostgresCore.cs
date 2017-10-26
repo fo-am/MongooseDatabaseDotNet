@@ -82,25 +82,39 @@ namespace pgDataImporter.Core
             foreach (var lifeHistory in lifeHistories)
             {
                 var duplicateCount = 0;
-
-                // save pack and get id
-                // save individual and get id
-                // link pack history get ids?
-                // add litter info?
+                if (lifeHistory.Litter == null && lifeHistory.Pack == null && lifeHistory.Indiv == null)
+                {
+                    Logger.Warn("No valid litter, pack or individual for life history event.");
+                    continue;
+                }
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
                     // these are ignored as they are probably bad data.
                     Logger.Info("Litter Event");
                     duplicateCount++;
+                    if (lifeHistory.Litter == "ESG0903")
+                    {
+                        Logger.Warn("No pack id for litter name ESG0903");
+                        return;
+                    }
+                    // Add pack info
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+                    // add litter info
+                    pg.InsertSingleLitter(lifeHistory.Litter, packId);
+                    int litterId = pg.GetLitterId(lifeHistory.Litter);
 
-
-                    // get ids
-                    // record individual event
+                    // add litter event
+                    pg.AddLitterEventCode(lifeHistory.Code);
+                    int litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
+                    // link litter event to litter.
+                    pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
                 }
                 if (LifeHistoryIsPackEvent(lifeHistory))
                 {
                     Logger.Info("Pack Event");
                     duplicateCount++;
+
 
                     pg.InsertSinglePack(lifeHistory.Pack);
                     var packId = pg.GetPackId(lifeHistory.Pack);
@@ -113,6 +127,12 @@ namespace pgDataImporter.Core
 
 
                     // link packs to codes.
+                    if (lifeHistory.Code == "IGI")
+                    {
+                        Logger.Info("event is IGI");
+                        // we have an intergroup interaction! CODE RED!
+                        continue;
+                    }
 
                     pg.linkPackEvents(packId,
                         packEventCodeId,
@@ -214,7 +234,11 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsLitterEvent(NewLifeHistory lifeHistory)
         {
-            return string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv) &&
+            // if pack and indiv are null but litter and code are filled
+            // also if indiv matches litter and has a value and code is filled.
+
+            return (string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv)) ||
+                   (lifeHistory.Indiv == lifeHistory.Litter && !string.IsNullOrEmpty(lifeHistory.Indiv)) &&
                    !string.IsNullOrEmpty(lifeHistory.Code);
         }
 
@@ -434,9 +458,8 @@ namespace pgDataImporter.Core
             }
         }
 
-       
-        
-    private void InsertpackHistory(int packId, int? individualId, DateTime? date, PostgresRepository pg)
+
+        private void InsertpackHistory(int packId, int? individualId, DateTime? date, PostgresRepository pg)
         {
             var databasePackHistory = pg.GetPackHistory(packId, individualId);
 
@@ -479,21 +502,20 @@ namespace pgDataImporter.Core
 
 
                 // add indiv from guard
-                pg.InsertIndividual(new Individual { Name = oestrus.GUARD_ID });
+                pg.InsertIndividual(new Individual {Name = oestrus.GUARD_ID});
 
                 // add individuals from pesterer 1-4
-                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID });
-                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_2 });
-                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_3 });
-                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_4 });
+                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID});
+                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_2});
+                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_3});
+                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_4});
 
                 // add individual from copulation
-                pg.InsertIndividual(new Individual { Name = oestrus.COPULATION });
+                pg.InsertIndividual(new Individual {Name = oestrus.COPULATION});
 
                 pg.AddOestrusEvent(oestrus);
                 // add oestrus record, add pesterers (many-many)
             }
         }
-
     }
 }

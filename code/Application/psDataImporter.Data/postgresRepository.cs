@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-
+using System.Net;
 using Dapper;
 
 using NLog;
@@ -179,7 +179,6 @@ namespace psDataImporter.Data
 
         public void AddIndividuals(IEnumerable<Individual> individuals)
         {
-
             foreach (var newIndividual in individuals)
             {
                 InsertIndividual(newIndividual);
@@ -464,26 +463,23 @@ namespace psDataImporter.Data
             {
                 return conn.ExecuteScalar<int>(
                     "Select pack_id from mongoose.pack where name = @packName", new { packName });
-
             }
-
         }
 
         public int? GetIndividualId(string individualName)
         {
-            if (string.IsNullOrEmpty(individualName ))
+            if (string.IsNullOrEmpty(individualName))
             {
                 return null;
             }
-            
+
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                 return conn
+                return conn
                     .ExecuteScalar<int>("Select individual_id from mongoose.individual where name = @individualName",
                         new { individualName });
-
             }
         }
 
@@ -496,17 +492,16 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 return conn
-                    .ExecuteScalar<int>("Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
+                    .ExecuteScalar<int>(
+                        "Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
                         new { lifeHistoryCode = individualEventCode });
-
             }
         }
 
         public void AddOestrusEvent(Oestrus oestrus)
         {
-
             //get pack history id (femailid and pack id)
-            var packhistoryid = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
+            var packHistoryId = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
             var femailId = GetIndividualId(oestrus.FEMALE_ID);
             //guardId
             var guardid = GetIndividualId(oestrus.GUARD_ID);
@@ -515,7 +510,6 @@ namespace psDataImporter.Data
             var pesterer2Id = GetIndividualId(oestrus.PESTERER_ID_2);
             var pesterer3Id = GetIndividualId(oestrus.PESTERER_ID_3);
             var pesterer4Id = GetIndividualId(oestrus.PESTERER_ID_4);
-
 
             // create geography if lat and long are present.
             var locationString = "NULL";
@@ -526,9 +520,8 @@ namespace psDataImporter.Data
             }
 
             var sql = $"INSERT INTO mongoose.oestrus("
-                   + $"pack_history_id, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)"
-                   + $"VALUES( @pack_history_id, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
-
+                      + $"pack_history_id, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)"
+                      + $"VALUES( @pack_history_id, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -537,7 +530,7 @@ namespace psDataImporter.Data
                 Logger.Info($"Adding Oestrus event. {oestrus.OESTRUS_CODE} ");
                 conn.Execute(sql, new
                 {
-                    pack_history_id = packhistoryid,
+                    pack_history_id = packHistoryId,
                     oestrus_code = oestrus.OESTRUS_CODE,
                     guard_id = guardid,
                     pesterer_id_1 = pesterer1Id,
@@ -549,6 +542,93 @@ namespace psDataImporter.Data
                     copulation = oestrus.CONFIDENCE,
                     comment = oestrus.COMMENT
                 });
+            }
+        }
+
+        public void InsertSingleLitter(string litterName, int packId)
+        {
+            if (string.IsNullOrEmpty(litterName))
+            {
+                Logger.Warn("Tried to create a null litter!");
+                return;
+            }
+
+            if (litterName == "ESD1502")
+            {
+                packId = GetPackId("11");
+            }
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.ExecuteScalar<int>(
+                    "Insert into mongoose.litter (name, pack_id) values (@name, @packId) ON CONFLICT DO NOTHING ",
+                    new { name = litterName, packId = packId });
+            }
+            Logger.Info($"created litter: {litterName}");
+        }
+
+        public int GetLitterId(string litterName)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+                return conn.ExecuteScalar<int>("select litter_id from mongoose.litter where name = @name",
+                    new { name = litterName });
+            }
+        }
+
+        public void AddLitterEventCode(string code)
+        {
+            if (!string.IsNullOrEmpty(code))
+            {
+                Logger.Info($"Adding litter event code: {code}");
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.Execute(
+                        "Insert into mongoose.litter_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
+                        new { codeValue = code });
+                }
+            }
+        }
+
+        public int GetLitterEventCodeId(string litterEventCode)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+                return conn.ExecuteScalar<int>("select litter_event_code_id from mongoose.litter_event_code where code = @code",
+                    new { code = litterEventCode });
+            }
+        }
+
+        public void LinkLitterEvent(int litterId, int litterEventCodeId, NewLifeHistory lifeHistory)
+        {
+            Logger.Info($"Linking litter with event");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(
+                    "Insert into mongoose.litter_event (litter_id, litter_event_code_id, cause, exact, last_seen, comment) values (@litterId, @litterEventCodeId, @cause, @exact, @lastSeen, @comment) ON CONFLICT DO NOTHING",
+                    new
+                    {
+                        litterId = litterId,
+                        litterEventCodeId = litterEventCodeId,
+                        cause = lifeHistory.Cause,
+                        exact = lifeHistory.Exact,
+                        lastSeen = lifeHistory.Lseen,
+                        comment = lifeHistory.Comment
+                    });
             }
         }
     }

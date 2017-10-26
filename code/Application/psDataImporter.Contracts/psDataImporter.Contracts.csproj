@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Access\CapturesNew2013.cs" />
+    <Compile Include="Access\BABYSITTING_RECORDS.cs" />
+    <Compile Include="Access\Antiparasite_experiment.cs" />
+    <Compile Include="Access\DiaryAndGrpComposition.cs" />
     <Compile Include="Access\DNA_SAMPLES.cs" />
     <Compile Include="Access\EXPERIMENTAL_LOG.cs" />
     <Compile Include="Access\HPA_samples.cs" />

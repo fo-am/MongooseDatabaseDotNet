@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using NLog;
+
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
@@ -20,8 +22,8 @@ namespace pgDataImporter.Core
             var pg = new PostgresRepository();
 
             pg.AddPacks(weights.Select(s => s.Group).Distinct());
-            pg.AddIndividuals(weights.GroupBy(s => new {Name = s.Indiv, s.Sex})
-                .Select(i => new Individual {Name = i.Key.Name, Sex = i.Key.Sex}));
+            pg.AddIndividuals(weights.GroupBy(s => new { Name = s.Indiv, s.Sex })
+                .Select(i => new Individual { Name = i.Key.Name, Sex = i.Key.Sex }));
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
@@ -39,7 +41,7 @@ namespace pgDataImporter.Core
             ultrasoundData = ultrasoundData as IList<Ultrasound> ?? ultrasoundData.ToList();
             var pg = new PostgresRepository();
             pg.AddPacks(ultrasoundData.Select(s => s.PACK).Distinct());
-            pg.AddIndividuals(ultrasoundData.Select(s => new Individual {Name = s.INDIV}).Distinct());
+            pg.AddIndividuals(ultrasoundData.Select(s => new Individual { Name = s.INDIV }).Distinct());
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
@@ -58,7 +60,7 @@ namespace pgDataImporter.Core
             radioCollarData = radioCollarData as IList<RadioCollar> ?? radioCollarData.ToList();
             var pg = new PostgresRepository();
             pg.AddPacks(radioCollarData.Select(s => s.PACK).Distinct());
-            pg.AddIndividuals(radioCollarData.Select(s => new Individual {Name = s.INDIVIDUAL}).Distinct());
+            pg.AddIndividuals(radioCollarData.Select(s => new Individual { Name = s.INDIVIDUAL }).Distinct());
 
             var pgPacks = pg.GetAllPacks();
             var pgIndividuals = pg.GetAllIndividuals();
@@ -115,16 +117,13 @@ namespace pgDataImporter.Core
                     Logger.Info("Pack Event");
                     duplicateCount++;
 
-
                     pg.InsertSinglePack(lifeHistory.Pack);
                     var packId = pg.GetPackId(lifeHistory.Pack);
 
                     pg.AddPackEventCode(lifeHistory.Code);
 
-
                     // get pack codes and ids
                     var packEventCodeId = pg.GetPackEventCodeId(lifeHistory.Code);
-
 
                     // link packs to codes.
                     if (lifeHistory.Code == "IGI")
@@ -141,7 +140,6 @@ namespace pgDataImporter.Core
                         lifeHistory.Exact, lifeHistory.Cause,
                         lifeHistory.Comment, lifeHistory.Latitude, lifeHistory.Longitude);
 
-
                     // record pack event
                 }
                 if (LifeHistoryIsIndividualEvent(lifeHistory))
@@ -149,7 +147,7 @@ namespace pgDataImporter.Core
                     Logger.Info("Individual Event");
                     duplicateCount++;
 
-                    pg.InsertIndividual(new Individual {Name = lifeHistory.Indiv, Sex = lifeHistory.Sex});
+                    pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
 
                     pg.InsertSinglePack(lifeHistory.Pack);
                     //add individual event code
@@ -190,7 +188,6 @@ namespace pgDataImporter.Core
                 }
             }
 
-
             //pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
             //pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv, lh.Sex})
             //    .Select(s => new Individual {Name = s.Key.Indiv, Sex = s.Key.Sex}));
@@ -215,7 +212,6 @@ namespace pgDataImporter.Core
             //AddIndividualEvents(lifeHistories.Where(l => !string.IsNullOrEmpty(l.Indiv) &&
             //                                             !string.IsNullOrEmpty(l.Code) &&
             //                                             !string.IsNullOrEmpty(l.Pack)), pg);
-
 
             Logger.Info("Done adding life history data.");
         }
@@ -333,7 +329,7 @@ namespace pgDataImporter.Core
 
         private static DateTime GetMinimumDateFromRadioCollar(RadioCollar ph)
         {
-            return new List<DateTime?> {ph.DATE_ENTERED, ph.FITTED, ph.REMOVED, ph.TURNED_ON}.Min()
+            return new List<DateTime?> { ph.DATE_ENTERED, ph.FITTED, ph.REMOVED, ph.TURNED_ON }.Min()
                 .GetValueOrDefault();
         }
 
@@ -459,7 +455,6 @@ namespace pgDataImporter.Core
             }
         }
 
-
         private void InsertpackHistory(int packId, int? individualId, DateTime? date, PostgresRepository pg)
         {
             var databasePackHistory = pg.GetPackHistory(packId, individualId);
@@ -492,7 +487,7 @@ namespace pgDataImporter.Core
                     continue;
                 }
                 //Insert main female
-                pg.InsertIndividual(new Individual {Name = oestrus.FEMALE_ID, Sex = "F"});
+                pg.InsertIndividual(new Individual { Name = oestrus.FEMALE_ID, Sex = "F" });
                 var individualId = pg.GetIndividualId(oestrus.FEMALE_ID);
 
                 // add individual to group
@@ -501,21 +496,34 @@ namespace pgDataImporter.Core
 
                 InsertpackHistory(packId, individualId, oestrus.DATE, pg);
 
-
                 // add indiv from guard
-                pg.InsertIndividual(new Individual {Name = oestrus.GUARD_ID});
+                pg.InsertIndividual(new Individual { Name = oestrus.GUARD_ID });
 
                 // add individuals from pesterer 1-4
-                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID});
-                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_2});
-                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_3});
-                pg.InsertIndividual(new Individual {Name = oestrus.PESTERER_ID_4});
+                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID });
+                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_2 });
+                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_3 });
+                pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_4 });
 
                 // add individual from copulation
-                pg.InsertIndividual(new Individual {Name = oestrus.COPULATION});
+                pg.InsertIndividual(new Individual { Name = oestrus.COPULATION });
 
                 pg.AddOestrusEvent(oestrus);
                 // add oestrus record, add pesterers (many-many)
+            }
+        }
+
+        public void ProcessCaptures(List<CapturesNew2013> captures)
+        {
+            foreach (var capture in captures)
+            {
+                // do individual
+                // do pack
+                // do transponder
+                if (capture.Capture_DATE != null)
+                {
+                    // capture has data
+                }
             }
         }
     }

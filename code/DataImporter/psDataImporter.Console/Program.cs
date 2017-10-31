@@ -1,5 +1,9 @@
-﻿using NLog;
+﻿using System.Collections.Generic;
+
+using NLog;
 using pgDataImporter.Core;
+
+using psDataImporter.Contracts.Access;
 using psDataImporter.Data;
 
 namespace psDataImporter.Console
@@ -20,14 +24,17 @@ namespace psDataImporter.Console
             //var radioCollarData = accessdata.GetRadioCollars();
             //postgresData.ProccessRadioCollarData(radioCollarData);
 
-            var lifeHistories = accessdata.GetLifeHistorys();
-            postgresData.ProcessLifeHistories(lifeHistories);
+            //  var lifeHistories = accessdata.GetLifeHistorys();
+            //  postgresData.ProcessLifeHistories(lifeHistories);
 
             //var weights = accessdata.GetWeights();
             //postgresData.ProcessWeights(weights);
 
             //var oestruses = accessdata.GetOestruses();
             //postgresData.ProcessOestrusData(oestruses);
+
+            List<CapturesNew2013> captures = accessdata.GetCaptures();
+            postgresData.ProcessCaptures(captures);
 
             Logger.Info("done");
             System.Console.ReadLine();

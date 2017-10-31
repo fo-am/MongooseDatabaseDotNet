@@ -457,7 +457,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public int? GetPackId(string packName)
+        public int GetPackId(string packName)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]

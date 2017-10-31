@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="347,137" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -202,7 +202,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2200" y="680"/>
+	<position x="2110" y="707.143"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -210,6 +210,9 @@ ALTER TABLE mongoose."Pack events"
 		<type name="text" length="0"/>
 	</column>
 	<column name="sex">
+		<type name="text" length="0"/>
+	</column>
+	<column name="transponder_id">
 		<type name="text" length="0"/>
 	</column>
 	<constraint name="individual_pk" type="pk-constr" table="mongoose.individual">
@@ -410,7 +413,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2480" y="460"/>
+	<position x="2287.14" y="457.143"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

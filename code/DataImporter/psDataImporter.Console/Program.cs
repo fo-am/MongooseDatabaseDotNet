@@ -17,7 +17,7 @@ namespace psDataImporter.Console
             var accessdata = new AccessRepository();
             var postgresData = new PostgresCore();
 
-
+            postgresData.AddStaticData();
             //var ultrasoundData = accessdata.GetUltrasounds();
             //postgresData.ProccessUltrasoundData(ultrasoundData);
 

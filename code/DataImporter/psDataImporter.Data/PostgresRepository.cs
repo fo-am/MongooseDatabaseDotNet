@@ -214,10 +214,10 @@ namespace psDataImporter.Data
                     if (string.IsNullOrEmpty(inDatabaseIndividual.Sex) && !string.IsNullOrEmpty(newIndividual.Sex))
                     {
                         Logger.Info(
-                            $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{newIndividual.IndividualId}'");
+                            $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{inDatabaseIndividual.IndividualId}'");
 
                         conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
-                            new { sex = newIndividual.Sex, id = newIndividual.IndividualId });
+                            new { sex = newIndividual.Sex, id = inDatabaseIndividual.IndividualId });
                     }
                     // if litter id is set then do the litter thing... worry about that when I have some data!
                 }
@@ -641,7 +641,6 @@ namespace psDataImporter.Data
             // if it is anything else add it to packs table then get its id
             // enter the ids into the table.
 
-
             Logger.Info($"Inserting an IGI");
 
             // , / or 
@@ -687,6 +686,28 @@ namespace psDataImporter.Data
                             comment = lifeHistory.Comment
                         });
                 }
+            }
+        }
+
+        public void AddTransponder(string captureTransponder, int? individualId)
+        {
+            if (individualId == null)
+            {
+                Logger.Warn($"Tried to add a Transponder to a null individualId. Transponder: {captureTransponder}");
+                return;
+            }
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(
+                    "Update mongoose.individual set transponder_id = @TransponderId where individual_id = @individualId",
+                    new
+                    {
+                        TransponderId = captureTransponder,
+                        individualId
+                    });
             }
         }
     }

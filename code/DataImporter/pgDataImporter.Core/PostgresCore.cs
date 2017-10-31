@@ -515,16 +515,34 @@ namespace pgDataImporter.Core
 
         public void ProcessCaptures(List<CapturesNew2013> captures)
         {
+            var pg = new PostgresRepository();
             foreach (var capture in captures)
             {
                 // do individual
+                pg.InsertIndividual(new Individual { Name = capture.INDIV, Sex = capture.SEX });
+                var individualId = pg.GetIndividualId(capture.INDIV);
                 // do pack
+                pg.InsertSinglePack(capture.PACK);
+                var packid = pg.GetPackId(capture.PACK);
+
+                // Link Pack and Individual
+                InsertpackHistory(packid, individualId, capture.Capture_DATE, pg);
+
                 // do transponder
+             
+                pg.AddTransponder(capture.TRANSPONDER, individualId);
+
                 if (capture.Capture_DATE != null)
                 {
                     // capture has data
                 }
             }
+        }
+
+        public void AddStaticData()
+        {
+        // add unknown pack
+        // add unknown (other things)
         }
     }
 }

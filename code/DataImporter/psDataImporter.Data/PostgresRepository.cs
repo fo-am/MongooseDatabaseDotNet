@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
+
 using Dapper;
 
 using NLog;
@@ -431,7 +433,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void linkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
+        public void LinkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
             string exact, string cause, string comment, string latitude, string longitude)
         {
             // create geography if lat and long are present.
@@ -455,7 +457,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public int GetPackId(string packName)
+        public int? GetPackId(string packName)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -629,6 +631,62 @@ namespace psDataImporter.Data
                         lastSeen = lifeHistory.Lseen,
                         comment = lifeHistory.Comment
                     });
+            }
+        }
+
+        public void AddIGI(NewLifeHistory lifeHistory)
+        {
+            // split if we have multiple secondarys
+            // for each .. if it is 'unk' then stick in a null
+            // if it is anything else add it to packs table then get its id
+            // enter the ids into the table.
+
+
+            Logger.Info($"Inserting an IGI");
+
+            // , / or 
+            var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
+
+            foreach (var secondpack in secondpacks)
+            {
+                if (secondpack.Contains("UNK"))
+                {
+                    continue;
+                }
+                InsertSinglePack(secondpack);
+            }
+
+            var secondPackIds = secondpacks.Select(GetPackId).Select(packId => (int?)packId).ToList();
+
+            if (lifeHistory.Cause.Contains("UNK"))
+            {
+                secondPackIds.Clear();
+                secondPackIds.Add(null);
+            }
+            foreach (var secondpack in secondPackIds)
+            {
+                // create geography if lat and long are present.
+                var locationString = "NULL";
+                if (!string.IsNullOrEmpty(lifeHistory.Latitude) && !string.IsNullOrEmpty(lifeHistory.Longitude))
+                {
+                    locationString =
+                        $"ST_GeographyFromText('SRID=4326;POINT({lifeHistory.Latitude} {lifeHistory.Longitude})')";
+                }
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    conn.Execute(
+                        $"Insert into mongoose.inter_group_interaction (focalpack_id, secondpack_id, time, location, comment) values (@focalpack_id, @secondpack_id, @time, {locationString}, @comment)",
+                        new
+                        {
+                            focalpack_id = GetPackId(lifeHistory.Pack),
+                            secondpack_id = secondpack,
+                            time = lifeHistory.Date,
+                            comment = lifeHistory.Comment
+                        });
+                }
             }
         }
     }

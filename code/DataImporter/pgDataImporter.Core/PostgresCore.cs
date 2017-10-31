@@ -131,10 +131,11 @@ namespace pgDataImporter.Core
                     {
                         Logger.Info("event is IGI");
                         // we have an intergroup interaction! CODE RED!
+                        pg.AddIGI(lifeHistory);
                         continue;
                     }
 
-                    pg.linkPackEvents(packId,
+                    pg.LinkPackEvents(packId,
                         packEventCodeId,
                         lifeHistory.Status, lifeHistory.Date,
                         lifeHistory.Exact, lifeHistory.Cause,
@@ -151,8 +152,8 @@ namespace pgDataImporter.Core
                     pg.InsertIndividual(new Individual {Name = lifeHistory.Indiv, Sex = lifeHistory.Sex});
 
                     pg.InsertSinglePack(lifeHistory.Pack);
-//add individual event code
-// get individual code
+                    //add individual event code
+                    // get individual code
 
                     var packId = pg.GetPackId(lifeHistory.Pack);
 
@@ -274,7 +275,7 @@ namespace pgDataImporter.Core
             // link packs to codes.
             foreach (var packEvent in packEvents)
             {
-                pg.linkPackEvents(pgPacks.Single(p => p.Name == packEvent.Pack).PackId,
+                pg.LinkPackEvents(pgPacks.Single(p => p.Name == packEvent.Pack).PackId,
                     pgPackCodes.Single(p => p.Code == packEvent.Code).PackEventCodeId, packEvent.Status, packEvent.Date,
                     packEvent.Exact, packEvent.Cause,
                     packEvent.Comment, packEvent.Latitude, packEvent.Longitude);

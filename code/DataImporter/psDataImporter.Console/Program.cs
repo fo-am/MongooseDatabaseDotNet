@@ -18,20 +18,20 @@ namespace psDataImporter.Console
             var postgresData = new PostgresCore();
 
             postgresData.AddStaticData();
-            //var ultrasoundData = accessdata.GetUltrasounds();
-            //postgresData.ProccessUltrasoundData(ultrasoundData);
+            var ultrasoundData = accessdata.GetUltrasounds();
+            postgresData.ProccessUltrasoundData(ultrasoundData);
 
-            //var radioCollarData = accessdata.GetRadioCollars();
-            //postgresData.ProccessRadioCollarData(radioCollarData);
+            var radioCollarData = accessdata.GetRadioCollars();
+            postgresData.ProccessRadioCollarData(radioCollarData);
 
-            //  var lifeHistories = accessdata.GetLifeHistorys();
-            //  postgresData.ProcessLifeHistories(lifeHistories);
+            var lifeHistories = accessdata.GetLifeHistorys();
+              postgresData.ProcessLifeHistories(lifeHistories);
 
-            //var weights = accessdata.GetWeights();
-            //postgresData.ProcessWeights(weights);
+            var weights = accessdata.GetWeights();
+            postgresData.ProcessWeights(weights);
 
-            //var oestruses = accessdata.GetOestruses();
-            //postgresData.ProcessOestrusData(oestruses);
+            var oestruses = accessdata.GetOestruses();
+            postgresData.ProcessOestrusData(oestruses);
 
             List<CapturesNew2013> captures = accessdata.GetCaptures();
             postgresData.ProcessCaptures(captures);

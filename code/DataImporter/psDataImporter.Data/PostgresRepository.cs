@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-
 using Dapper;
-
 using NLog;
-
 using Npgsql;
-
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
@@ -85,10 +79,10 @@ namespace psDataImporter.Data
                         cmd.Parameters.AddWithValue("pack_history_id", pack_history_id);
                         cmd.Parameters.AddWithValue("Weight", weight.Weight);
                         cmd.Parameters.AddWithValue("Time", weight.TimeMeasured);
-                        cmd.Parameters.AddWithValue("Accuracy", (object)weight.Accuracy ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("Session", (object)weight.Session ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("CollarWeight", (object)weight.Collar ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("Comment", (object)weight.Comment ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Accuracy", (object) weight.Accuracy ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Session", (object) weight.Session ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("CollarWeight", (object) weight.Collar ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("Comment", (object) weight.Comment ?? DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -107,7 +101,8 @@ namespace psDataImporter.Data
                 return conn.ExecuteScalar<int>(@"select ph.pack_history_id  from mongoose.pack_history ph 
             join mongoose.pack p on p.pack_id = ph.pack_id
             join mongoose.individual i on ph.individual_id = i.individual_id
-            where p.name = @packName and i.name = @individualName", new { packName = pack, individualName = individual });
+            where p.name = @packName and i.name = @individualName",
+                    new {packName = pack, individualName = individual});
             }
         }
 
@@ -120,7 +115,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@PackId, @IndividualId, @DateJoined)",
-                    new { PackId = packId, IndividualId = individualId, DateJoined = date });
+                    new {PackId = packId, IndividualId = individualId, DateJoined = date});
 
                 Logger.Info($"Insert pack history: {date}");
             }
@@ -135,7 +130,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute(
                     "update mongoose.pack_history set date_joined = @date where pack_history_id = @packHistoryId",
-                    new { date, packHistoryId = packHistory.PackHistoryId });
+                    new {date, packHistoryId = packHistory.PackHistoryId});
 
                 Logger.Info($"update pack history: {packHistory.PackHistoryId}");
             }
@@ -161,7 +156,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.individual_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code });
+                        new {codeValue = code});
                 }
             }
         }
@@ -175,7 +170,7 @@ namespace psDataImporter.Data
             {
                 return conn.Query<PackHistory>(
                     "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
-                    new { pack = packId, individual = individualId }).FirstOrDefault();
+                    new {pack = packId, individual = individualId}).FirstOrDefault();
             }
         }
 
@@ -206,7 +201,7 @@ namespace psDataImporter.Data
                 var inDatabaseIndividual = conn
                     .Query<Individual>(
                         "Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
-                        new { newIndividual.Name }).SingleOrDefault();
+                        new {newIndividual.Name}).SingleOrDefault();
 
                 if (inDatabaseIndividual != null)
                 {
@@ -217,7 +212,7 @@ namespace psDataImporter.Data
                             $"Added sex: '{newIndividual.Sex}' to individiual with Id : '{inDatabaseIndividual.IndividualId}'");
 
                         conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
-                            new { sex = newIndividual.Sex, id = inDatabaseIndividual.IndividualId });
+                            new {sex = newIndividual.Sex, id = inDatabaseIndividual.IndividualId});
                     }
                     // if litter id is set then do the litter thing... worry about that when I have some data!
                 }
@@ -225,7 +220,7 @@ namespace psDataImporter.Data
                 {
                     conn.ExecuteScalar<int>(
                         "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                        new { newIndividual.Name, newIndividual.Sex });
+                        new {newIndividual.Name, newIndividual.Sex});
                     Logger.Info($"created indivual : {newIndividual.Name}");
                 }
             }
@@ -251,7 +246,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
-                    new { name = packName });
+                    new {name = packName});
             }
             Logger.Info($"created pack: {packName}");
         }
@@ -315,7 +310,7 @@ namespace psDataImporter.Data
                 conn.Execute(
                     "insert into mongoose.radiocollar (pack_history_id, frequency, weight, fitted, turned_on, removed, comment, date_entered) " +
                     "values (@pack_history_id, @frequency, @weight, @fitted, @turnedOn, @removed, @comment, @dateEntered)",
-                    new { pack_history_id, frequency, weight, fitted, turnedOn, removed, comment, dateEntered });
+                    new {pack_history_id, frequency, weight, fitted, turnedOn, removed, comment, dateEntered});
                 Logger.Info("Added radio collar data.");
             }
         }
@@ -338,12 +333,12 @@ namespace psDataImporter.Data
                     "insert into mongoose.litter (pack_id, name)"
                     + "  values(@packId, @name)"
                     + " on conflict(name) do update set name = @name  RETURNING litter_id",
-                    new { packid = litter.pgPackId, name = litter.Litter });
+                    new {packid = litter.pgPackId, name = litter.Litter});
 
                 //update individual with litter id
                 conn.Execute(
                     "update mongoose.individual set litter_id = @litterId where individual_id = @individual_id",
-                    new { litterId, individual_id = litter.pgIndividualId });
+                    new {litterId, individual_id = litter.pgIndividualId});
 
                 Logger.Info($"Added litter {litter.Litter}.");
             }
@@ -369,7 +364,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code });
+                        new {codeValue = code});
                 }
             }
         }
@@ -405,11 +400,12 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 return conn.ExecuteScalar<int>(
-                    "Select pack_event_code_id  from mongoose.pack_event_code where code = @code", new { code });
+                    "Select pack_event_code_id  from mongoose.pack_event_code where code = @code", new {code});
             }
         }
 
-        public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude, string longitude,
+        public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude,
+            string longitude,
             string status, DateTime date, string exact, string cause, string comment)
         {
             // create geography if lat and long are present.
@@ -428,8 +424,9 @@ namespace psDataImporter.Data
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
-                Logger.Info($"Linking individualId: {pack_history_id} with Individual Event codeId: {individualEventCodeId}");
-                conn.Execute(sql, new { pack_history_id, individualEventCodeId, status, date, exact, cause, comment });
+                Logger.Info(
+                    $"Linking individualId: {pack_history_id} with Individual Event codeId: {individualEventCodeId}");
+                conn.Execute(sql, new {pack_history_id, individualEventCodeId, status, date, exact, cause, comment});
             }
         }
 
@@ -453,7 +450,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 Logger.Info($"Linking packId:{packId} with codeId:{packEventCodeId}");
-                conn.Execute(sql, new { packId, packEventCodeId, status, date, exact, cause, comment });
+                conn.Execute(sql, new {packId, packEventCodeId, status, date, exact, cause, comment});
             }
         }
 
@@ -464,7 +461,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 return conn.ExecuteScalar<int>(
-                    "Select pack_id from mongoose.pack where name = @packName", new { packName });
+                    "Select pack_id from mongoose.pack where name = @packName", new {packName});
             }
         }
 
@@ -481,7 +478,7 @@ namespace psDataImporter.Data
             {
                 return conn
                     .ExecuteScalar<int>("Select individual_id from mongoose.individual where name = @individualName",
-                        new { individualName });
+                        new {individualName});
             }
         }
 
@@ -496,7 +493,7 @@ namespace psDataImporter.Data
                 return conn
                     .ExecuteScalar<int>(
                         "Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
-                        new { lifeHistoryCode = individualEventCode });
+                        new {lifeHistoryCode = individualEventCode});
             }
         }
 
@@ -566,7 +563,7 @@ namespace psDataImporter.Data
             {
                 conn.ExecuteScalar<int>(
                     "Insert into mongoose.litter (name, pack_id) values (@name, @packId) ON CONFLICT DO NOTHING ",
-                    new { name = litterName, packId = packId });
+                    new {name = litterName, packId = packId});
             }
             Logger.Info($"created litter: {litterName}");
         }
@@ -579,7 +576,7 @@ namespace psDataImporter.Data
 
             {
                 return conn.ExecuteScalar<int>("select litter_id from mongoose.litter where name = @name",
-                    new { name = litterName });
+                    new {name = litterName});
             }
         }
 
@@ -595,7 +592,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.litter_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code });
+                        new {codeValue = code});
                 }
             }
         }
@@ -607,8 +604,9 @@ namespace psDataImporter.Data
                 .ConnectionString))
 
             {
-                return conn.ExecuteScalar<int>("select litter_event_code_id from mongoose.litter_event_code where code = @code",
-                    new { code = litterEventCode });
+                return conn.ExecuteScalar<int>(
+                    "select litter_event_code_id from mongoose.litter_event_code where code = @code",
+                    new {code = litterEventCode});
             }
         }
 
@@ -644,7 +642,7 @@ namespace psDataImporter.Data
             Logger.Info($"Inserting an IGI");
 
             // , / or 
-            var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
+            var secondpacks = lifeHistory.Cause.Split(new[] {"/", ",", " OR ", " or "}, StringSplitOptions.None);
 
             foreach (var secondpack in secondpacks)
             {
@@ -655,7 +653,7 @@ namespace psDataImporter.Data
                 InsertSinglePack(secondpack);
             }
 
-            var secondPackIds = secondpacks.Select(GetPackId).Select(packId => (int?)packId).ToList();
+            var secondPackIds = secondpacks.Select(GetPackId).Select(packId => (int?) packId).ToList();
 
             if (lifeHistory.Cause.Contains("UNK"))
             {
@@ -709,6 +707,91 @@ namespace psDataImporter.Data
                         individualId
                     });
             }
+        }
+
+        public void AddCaptureData(CapturesNew2013 capture, int packHistoryId)
+        {
+            Logger.Info($"Adding capture: {capture.Capture_DATE}, ");
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(
+                    @"INSERT INTO mongoose.capture(
+                            pack_history_id, date, trap_time, process_time, trap_location, bleed_time, release_time, examiner, age, drugs, reproductive_status, teats_ext, ultrasound, foetuses, foetus_size, weight, head_width, head_length, body_length, hind_foot_length, tail_length, tail_circumference, ticks, fleas, wounds_and_scars, plasma_sample_id, plasma_freeze_time, blood_sample_id, blood_sample_freeze_time, bucket, white_blood_count, white_blood_freeze_time, white_blood_cell_bucket, whisker_sample_id, ear_clip, tail_tip, ""2d4d_photo"", agd_photo, blood_sugar, red_cell_percentage, fat_neck_1, fat_neck_2, fat_armpit, fat_thigh, testes_length, testes_width, testes_depth, tooth_wear, comment)
+                            VALUES (@pack_history_id, @date, @trap_time, @process_time, @trap_location, @bleed_time, @release_time, @examiner, @age, @drugs, @reproductive_status, @teats_ext, @ultrasound, @foetuses, @foetus_size, @weight, @head_width, @head_length, @body_length, @hind_foot_length, @tail_length, @tail_circumference, @ticks, @fleas, @wounds_and_scars, @plasma_sample_id, @plasma_freeze_time, @blood_sample_id, @blood_sample_freeze_time, @bucket, @white_blood_count, @white_blood_freeze_time, @white_blood_cell_bucket, @whisker_sample_id, @ear_clip, @tail_tip, @dd_photo, @agd_photo, @blood_sugar, @red_cell_percentage, @fat_neck_1, @fat_neck_2, @fat_armpit, @fat_thigh, @testes_length, @testes_width, @testes_depth, @tooth_wear, @comment); "
+                    ,
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        date = capture.Capture_DATE,
+                        trap_time = capture.TRAP_TIME,
+                        process_time = capture.PROCESS_TIME,
+                        trap_location = capture.TRAP_LOCN,
+                        bleed_time = capture.BLEED_TIME,
+                        release_time = capture.RELEASE_TIME,
+                        examiner = capture.Examiner,
+                        age= capture.AGE,
+                        drugs = capture.DRUGS,
+                        reproductive_status = capture.REPRO_STATUS,
+                        teats_ext = capture.TEATS_EXT,
+                        ultrasound = capture.ULTRASOUND,
+                        foetuses = capture.FOETUSES,
+                        foetus_size = capture.FOET_SIZE,
+                        weight = capture.WEIGHT,
+                        head_width = capture.HEAD_WIDTH,
+                        head_length = capture.HEAD_LENGTH,
+                        body_length = capture.BODY_LENGTH,
+                        hind_foot_length = capture.HINDFOOT_LENGTH,
+                        tail_length = capture.TAIL_LENGTH,
+                        tail_circumference = capture.TAIL_CIRC,
+                        ticks = capture.TICKS,
+                        fleas = capture.FLEAS,
+                        wounds_and_scars = capture.SCARS_WOUNDS,
+                        plasma_sample_id = capture.PLASMA_SAMPLE_PL,
+                        plasma_freeze_time = capture.FREEZE_TIME_PL,
+                        blood_sample_id = capture.BLOOD_SAMPLE_BL,
+                        blood_sample_freeze_time = capture.FREEZE_TIME_BL,
+                        bucket = capture.BUCKET_PLxxx_AND_BLxxx,
+                        white_blood_count = capture.White_blood_WBC,
+                        white_blood_freeze_time = capture.FREEZE_TIME_WBC,
+                        white_blood_cell_bucket = capture.BUCKET_WBC,
+                        whisker_sample_id = capture.WHISKER_SAMPLE_WSK,
+                        ear_clip = Boolify(capture.EAR_CLIP_TAKEN),
+                        tail_tip = Boolify(capture.TAIL_TIP),
+                        dd_photo = Boolify(capture.twoDfourD_photos),
+                        agd_photo = Boolify(capture.AGD_photos),
+                        blood_sugar = capture.Blood_sugar,
+                        red_cell_percentage = capture.Red_cell_percentage,
+                        fat_neck_1 = capture.Fat_neck_1,
+                        fat_neck_2 = capture.Fat_neck_2,
+                        fat_armpit = capture.Fat_armpit,
+                        fat_thigh = capture.Fat_thigh,
+                        testes_length = capture.TESTES_L,
+                        testes_width = capture.TESTES_W,
+                        testes_depth = capture.TESTES_DEPTH,
+                        tooth_wear = capture.TOOTH_WEAR,
+                        comment = capture.COMMENTS
+                    });
+            }
+        }
+
+        private bool? Boolify(string valueToCheck)
+        {
+            var yesValues = new[] {"Y", "YES", "YE S", "YEYS", "1"};
+            var noValues = new[] {"N", "NO", "0", "-1"};
+
+
+            if (yesValues.Contains(valueToCheck))
+            {
+                return true;
+            }
+            if (noValues.Contains(valueToCheck))
+            {
+                return false;
+            }
+
+            return null;
         }
     }
 }

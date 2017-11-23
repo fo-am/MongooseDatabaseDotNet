@@ -9,7 +9,7 @@ namespace DataInput.Test
         [Fact]
         public void Test1()
         {
-            var data = new GetData();
+            var data = new GetSqliteData();
             Assert.NotNull(data);
         }
     }

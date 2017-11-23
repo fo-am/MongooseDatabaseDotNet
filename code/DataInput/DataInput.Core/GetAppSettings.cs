@@ -8,8 +8,8 @@ namespace DataInput.Core
     {
         public static AppSettings Get()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+             var builder = new ConfigurationBuilder()
+             //   .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 

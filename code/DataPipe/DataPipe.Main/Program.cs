@@ -57,77 +57,24 @@ namespace DataPipe.Main
             var numberToSend = 20;
             logger.Info("DataPipe started");
             var send = new Sender();
+            // look for all entities that are not sent
+            // make up objects for each entity
+            // queue each object.
 
-            foreach (var entity in Data.GetUnsyncedStreamAttribute().Take(numberToSend))
+            // list of objects
+            // new pack
+            // delete pack (!) 
+            // new individual
+            // renamed individual
+            // update to an individual(eg adding sex)
+
+            // when we send a new object we need to mark in the database which parts have been sent (setting sent = 1 on each row)
+            // so we need to gather that information when we construct the object... not sure hwo to do this.
+
+            foreach (IndividualCreated entity in Data.GetUnsyncedIndividuals().Take(20))
             {
                 send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedStreamEntity().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedStreamValueFile().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedStreamValueInt().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedStreamValueReal().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedStreamValueVarchar().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncAttribute().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncEntity().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncValueFile().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncValueInt().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncValueReal().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
-            }
-
-            foreach (var entity in Data.GetUnsyncedSyncValueVarchar().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} {entity.entity_id}");
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
             logger.Info("DataPipe end");

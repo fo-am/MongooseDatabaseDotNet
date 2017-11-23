@@ -1,173 +1,73 @@
-﻿using SQLite;
+﻿using System;
 
 namespace DataReciever.Main
 {
     public interface ISendable
     {
         int sent { get; set; }
+        string UniqueId { get; set; }
+        int entity_id { get; set; }
+        string entity_type { get; set; }
     }
 
-
-    public class sync_entity : ISendable
+    public class IndividualCreated : ISendable
     {
-        [PrimaryKey]
-        [AutoIncrement]
+        public string UniqueId { get; set; }
         public int entity_id { get; set; }
-
         public string entity_type { get; set; }
-        public string unique_id { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
+
+        public string Name { get; set; }
+        public string Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string LitterCode { get; set; }
+        public string ChipCode { get; set; }
+        public double? CollerWeight { get; set; }
         public int sent { get; set; }
+        public string PackCode { get; set; }
+        public string PackUniqueId { get; set; }
     }
 
-
-    public class stream_attribute : ISendable
+    public class IndividualUpdate : ISendable
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public string attribute_id { get; set; }
+        public string UniqueId { get; set; }
+        public int entity_id { get; set; }
         public string entity_type { get; set; }
-        public string attribute_type { get; set; }
+
+        public string Name { get; set; }
+        public string Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string LitterCode { get; set; }
+        public string ChipCode { get; set; }
+        public double? CollerWeight { get; set; }
         public int sent { get; set; }
     }
 
-    public class stream_entity : ISendable
+    public class IndividualDied : ISendable
     {
-        [PrimaryKey]
-        [AutoIncrement]
+        public string UniqueId { get; set; }
         public int entity_id { get; set; }
-
         public string entity_type { get; set; }
-        public string unique_id { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
+
+        public string Name { get; set; }
+        public DateTime DateOfDeath { get; set; }
+
         public int sent { get; set; }
     }
 
-    public class stream_value_file : ISendable
+    public class WeightMeasure : ISendable
     {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
+        public string UniqueId { get; set; }
         public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public string value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class stream_value_int : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public int? value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class stream_value_real : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public double? value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class stream_value_varchar : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public string value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class sync_attribute : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public string attribute_id { get; set; }
         public string entity_type { get; set; }
-        public int attribute_type { get; set; }
-        public int sent { get; set; }
-    }
 
-    public class sync_value_file : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
+        public string IndividualName { get; set; }
 
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public string value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
+        public int Weight { get; set; }
+        public int CollarWeight { get; set; }
+        public bool Accurate { get; set; }
 
-    public class sync_value_int : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public int? value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class sync_value_real : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public double? value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
-        public int sent { get; set; }
-    }
-
-    public class sync_value_varchar : ISendable
-    {
-        [PrimaryKey]
-        [AutoIncrement]
-        public int id { get; set; }
-
-        public int entity_id { get; set; }
-        public string attribute_id { get; set; }
-        public string value { get; set; }
-        public int dirty { get; set; }
-        public int version { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public int sent { get; set; }
     }
 }

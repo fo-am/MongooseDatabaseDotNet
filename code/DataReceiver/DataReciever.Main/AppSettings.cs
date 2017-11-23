@@ -4,6 +4,6 @@
         public string RabbitHostName { get; set; }
         public string RabbitUsername { get; set; }
         public string RabbitPassword { get; set; }
-        public string SqliteLocation { get; set; }
+        public string PostgresConnection { get; set; }
     }
 }

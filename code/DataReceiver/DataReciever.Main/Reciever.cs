@@ -1,7 +1,12 @@
 ﻿using System;
-
 using System.Text;
+
+using DataReciever.Main.Handlers;
+
 using Newtonsoft.Json;
+
+using NLog.LayoutRenderers.Wrappers;
+
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -10,6 +15,7 @@ namespace DataReciever.Main
     internal class Reciever
     {
         private AppSettings settings;
+
         public Reciever()
         {
             settings = GetAppSettings.Get();
@@ -43,7 +49,10 @@ namespace DataReciever.Main
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
 
-                Data.StoreEntity(output);
+                var handler = new GetHandler();
+                handler.Handle<T>(output);
+
+                //    Data.StoreEntity(output);
                 Console.WriteLine($"recieved {typeof(T).Name}");
 
                 channel.BasicAck(ea.DeliveryTag, false);

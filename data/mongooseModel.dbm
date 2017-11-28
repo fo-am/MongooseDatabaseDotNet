@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="343,504" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,450" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -153,11 +153,17 @@ ALTER TABLE mongoose."Pack events"
 	<column name="pack_created_date">
 		<type name="timestamp" length="0"/>
 	</column>
+	<column name="unique_id">
+		<type name="text" length="0"/>
+	</column>
 	<constraint name="pack_pk" type="pk-constr" table="mongoose.pack">
 		<columns names="pack_id" ref-type="src-columns"/>
 	</constraint>
 	<constraint name="name_unique" type="uq-constr" table="mongoose.pack">
 		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="unique_pack_unique_id" type="uq-constr" table="mongoose.pack">
+		<columns names="unique_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -202,7 +208,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2140" y="725"/>
+	<position x="2140" y="722.143"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -215,11 +221,17 @@ ALTER TABLE mongoose."Pack events"
 	<column name="transponder_id">
 		<type name="text" length="0"/>
 	</column>
+	<column name="unique_id">
+		<type name="text" length="0"/>
+	</column>
 	<constraint name="individual_pk" type="pk-constr" table="mongoose.individual">
 		<columns names="individual_id" ref-type="src-columns"/>
 	</constraint>
 	<constraint name="unique_name" type="uq-constr" table="mongoose.individual">
 		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="unique_individual_unique_id" type="uq-constr" table="mongoose.individual">
+		<columns names="unique_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
@@ -726,7 +738,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1580" y="1065"/>
+	<position x="1475.71" y="1095"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -796,7 +808,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="65"/>
+	<position x="110" y="85"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -965,6 +977,30 @@ ALTER TABLE mongoose."Pack events"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.capture"
 	 src-required="false" dst-required="false"/>
+
+<table name="event_log">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="168.571" y="971.429"/>
+	<column name="event_log_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="type" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="object" not-null="true">
+		<type name="json" length="0"/>
+	</column>
+	<column name="success">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="error">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="EventLog_pk" type="pk-constr" table="mongoose.event_log">
+		<columns names="event_log_id" ref-type="src-columns"/>
+	</constraint>
+</table>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">

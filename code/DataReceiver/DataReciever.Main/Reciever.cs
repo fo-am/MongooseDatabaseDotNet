@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 
+using DataReciever.Main.Data;
 using DataReciever.Main.Handlers;
 
 using Newtonsoft.Json;
@@ -49,10 +50,14 @@ namespace DataReciever.Main
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
 
+                int logId = PgRepository.StoreEntity(typeof(T).FullName, message);
+
                 var handler = new GetHandler();
+                // try 
                 handler.Handle<T>(output);
 
-                //    Data.StoreEntity(output);
+                // catch
+                // store exception.
                 Console.WriteLine($"recieved {typeof(T).Name}");
 
                 channel.BasicAck(ea.DeliveryTag, false);

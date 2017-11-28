@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Dapper;
+
 using NLog;
 using NLog.Config;
+
 using SQLite;
 
 namespace DataPipe.Main
@@ -114,31 +117,40 @@ namespace DataPipe.Main
                     LitterCode =
                         strings.SingleOrDefault(s => s.attribute_id == "litter-code" && s.uniqueId == uniqueCode)
                             ?.value,
-                    PackCode = GetPackId(strings
+                    PackCode = GetPackName(strings
                         .SingleOrDefault(s => s.attribute_id == "pack-id" && s.uniqueId == uniqueCode)?.value),
                     PackUniqueId = strings.SingleOrDefault(s => s.attribute_id == "pack-id" && s.uniqueId == uniqueCode)
                         ?.value,
                 };
                 if (!string.IsNullOrEmpty(newIndividual.Name))
                 {
-                    newIndividuals.Add(newIndividual);
+                    if (newIndividual.DateOfBirth != null && newIndividual.DateOfBirth != DateTime.MinValue)
+                    {
+                        newIndividuals.Add(newIndividual);
+                    }
                 }
+
                 else
                 {
-                    // new individual has no name. just dump it for now.
+                    // new individual has no name.
+                    // or no date of birth    
+                    // or date is min value
+                    //just dump it for now.
                 }
             }
             return newIndividuals;
         }
 
-        private static string GetPackId(string packUniqueId)
+        private static string GetPackName(string packUniqueId)
         {
             var sql = $@"
                         select svv.value from sync_entity se 
                         join sync_value_varchar svv on se.entity_id = svv.entity_id
                         where se.unique_id = ""{packUniqueId}""";
 
-            return RunSql<DatabaseRow<string>>(sql).FirstOrDefault()?.value;
+            var name = RunSql<DatabaseRow<string>>(sql).FirstOrDefault()?.value;
+
+            return name ?? "Unknown Pack";
         }
 
         private static DateTime? GetDate(string dateString)

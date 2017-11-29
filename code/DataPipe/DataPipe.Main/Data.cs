@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Dapper;
+using DataPipe.Main.Model;
 
 using NLog;
 using NLog.Config;
@@ -120,7 +120,7 @@ namespace DataPipe.Main
                     PackCode = GetPackName(strings
                         .SingleOrDefault(s => s.attribute_id == "pack-id" && s.uniqueId == uniqueCode)?.value),
                     PackUniqueId = strings.SingleOrDefault(s => s.attribute_id == "pack-id" && s.uniqueId == uniqueCode)
-                        ?.value,
+                        ?.value
                 };
                 if (!string.IsNullOrEmpty(newIndividual.Name))
                 {
@@ -128,14 +128,6 @@ namespace DataPipe.Main
                     {
                         newIndividuals.Add(newIndividual);
                     }
-                }
-
-                else
-                {
-                    // new individual has no name.
-                    // or no date of birth    
-                    // or date is min value
-                    //just dump it for now.
                 }
             }
             return newIndividuals;
@@ -146,7 +138,7 @@ namespace DataPipe.Main
             var sql = $@"
                         select svv.value from sync_entity se 
                         join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.unique_id = ""{packUniqueId}""";
+                        where se.unique_id = ""{packUniqueId}"" and svv.attribute_id = ""name""";
 
             var name = RunSql<DatabaseRow<string>>(sql).FirstOrDefault()?.value;
 
@@ -160,6 +152,40 @@ namespace DataPipe.Main
                 return dateTime;
             }
             return null;
+        }
+
+        public static IEnumerable<PackCreated> GetNewPacks()
+        {
+            var newPacks = new List<PackCreated>();
+            var stringsSql = @"
+                        select se.entity_id, se.unique_id as uniqueId,se.entity_type, svv.attribute_id as attribute_id ,svv.value
+                        from sync_entity se
+                        join sync_value_varchar svv on se.entity_id = svv.entity_id
+                        where se.entity_type = ""pack""
+                        group by se.unique_id , svv.attribute_id ,svv.value;";
+            var strings = RunSql<DatabaseRow<string>>(stringsSql).ToList();
+
+            foreach (var uniqueId in strings.Select(s => s.uniqueId).Distinct())
+            {
+                var pack = new PackCreated
+                {
+                    Name = strings.SingleOrDefault(s => s.uniqueId == uniqueId && s.attribute_id == "name")?.value,
+                    UniqueId = uniqueId,
+                    entity_id = strings.SingleOrDefault(s => s.uniqueId == uniqueId && s.attribute_id == "name").entity_id,
+                    entity_type = strings.SingleOrDefault(s => s.uniqueId == uniqueId && s.attribute_id == "name")?.entity_type
+                };
+                if (DateTime.TryParse(strings.SingleOrDefault(s => s.uniqueId == uniqueId && s.attribute_id == "time")?.value,
+                    out var dateCreated))
+                {
+                    pack.CreatedDate = dateCreated;
+                }
+                if (!string.IsNullOrEmpty(pack.Name) && pack.CreatedDate != null)
+                {
+                    newPacks.Add(pack);
+                }
+            }
+
+            return newPacks;
         }
     }
 

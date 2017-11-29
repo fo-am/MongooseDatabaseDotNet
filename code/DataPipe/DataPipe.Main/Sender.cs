@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 
+using DataPipe.Main.Model;
+
 using Newtonsoft.Json;
 
 using NLog;

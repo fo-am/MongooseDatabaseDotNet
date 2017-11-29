@@ -6,8 +6,6 @@ using DataReciever.Main.Handlers;
 
 using Newtonsoft.Json;
 
-using NLog.LayoutRenderers.Wrappers;
-
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -50,11 +48,18 @@ namespace DataReciever.Main
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
 
-                int logId = PgRepository.StoreEntity(typeof(T).FullName, message);
+                var logId = PgRepository.StoreEntity(typeof(T).FullName, message);
 
                 var handler = new GetHandler();
-                // try 
-                handler.Handle<T>(output);
+                try
+                {
+                    handler.Handle<T>(output);
+                    PgRepository.EntityHandled(logId);
+                }
+                catch (Exception ex)
+                {
+                    PgRepository.EntityException(logId, ex);
+                }
 
                 // catch
                 // store exception.

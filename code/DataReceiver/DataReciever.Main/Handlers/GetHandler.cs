@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using DataReciever.Main.Model;
+
 namespace DataReciever.Main.Handlers
 {
     internal class GetHandler
     {
+        private readonly Dictionary<Type, dynamic> handlers = new Dictionary<Type, dynamic>();
+
         public GetHandler()
         {
             handlers.Add(typeof(IndividualCreated), new IndividualCreatedHandler());
+            handlers.Add(typeof(PackCreated), new PackCreatedHandler());
         }
-
-        private readonly Dictionary<Type, dynamic> handlers = new Dictionary<Type, dynamic>();
 
         public void Handle<T>(T output)
         {

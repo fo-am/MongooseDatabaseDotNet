@@ -1,5 +1,7 @@
 ﻿using System;
 
+using DataReciever.Main.Model;
+
 namespace DataReciever.Main
 {
     internal class Program
@@ -8,8 +10,9 @@ namespace DataReciever.Main
         {
             var reciever = new Reciever();
 
+            reciever.Recieve<PackCreated>();
             reciever.Recieve<IndividualCreated>();
-            reciever.Recieve<IndividualDied>();
+         
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

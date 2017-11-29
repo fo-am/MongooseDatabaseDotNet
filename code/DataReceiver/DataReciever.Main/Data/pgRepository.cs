@@ -3,7 +3,8 @@ using System.Data;
 using System.Linq;
 
 using Dapper;
-using Dapper.Contrib.Extensions;
+
+using DataReciever.Main.Model;
 
 using Npgsql;
 
@@ -29,14 +30,19 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private int InsertPack(string packName, string packUniqueId, IDbConnection conn)
+        private int InsertPack(string packName, string packUniqueId, IDbConnection conn, DateTime? packCreatedDate = null)
         {
             var packId = conn.ExecuteScalar<int?>("select pack_id from mongoose.pack where name = @name",
                 new { name = packName });
 
+            if (packCreatedDate.HasValue && packCreatedDate.Value == DateTime.MinValue)
+            {
+                packCreatedDate = null;
+            }
+
             return packId ?? conn.ExecuteScalar<int>(
-                       "Insert into mongoose.pack (name, unique_id) values (@name, @unique_id) RETURNING pack_id",
-                       new { name = packName, unique_id = packUniqueId });
+                       "Insert into mongoose.pack (name, unique_id, pack_created_date) values (@name, @unique_id, @pack_created_date) RETURNING pack_id",
+                       new { name = packName, unique_id = packUniqueId, pack_created_date = packCreatedDate });
         }
 
         private int InsertIndividual(IndividualCreated message, int? litterId, IDbConnection conn)
@@ -61,7 +67,7 @@ namespace DataReciever.Main.Data
             int? packHistoryId = null;
             var packHistory = conn.Query(
                 "select pack_history_id, date_joined from mongoose.pack_history where pack_id = @packId and individual_id = @individualId",
-                new { packId = packId, individualId = individualId }).FirstOrDefault();
+                new { packId, individualId }).FirstOrDefault();
             // if one exists
             if (packHistory?.pack_history_id != null)
             {
@@ -126,8 +132,9 @@ namespace DataReciever.Main.Data
         {
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
-                return conn.ExecuteScalar<int>("Insert into event_log (type, object) values (@type, @message)",
-                    new { type = fullName, message = message });
+                return conn.ExecuteScalar<int>(
+                    "Insert into mongoose.event_log (type, object) values (@type, @message::json) RETURNING event_log_id",
+                    new { type = fullName, message });
             }
         }
 
@@ -135,7 +142,7 @@ namespace DataReciever.Main.Data
         {
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
-                conn.Execute("update event_log set success = true where event_log_id = @entityId", entityId);
+                conn.Execute("update mongoose.event_log set success = true where event_log_id = @entityId", entityId);
             }
         }
 
@@ -143,9 +150,27 @@ namespace DataReciever.Main.Data
         {
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
-                conn.Execute("update event_log set success = false, error = @error where event_log_id = @entityId",
-                    new { entityId = entityId, error = ex.ToString() });
+                conn.Execute("update mongoose.event_log set success = false, error = @error where event_log_id = @entityId",
+                    new { entityId, error = ex.ToString() });
             }
+        }
+
+        public void InsertNewPack(PackCreated message)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    InsertPack(message.Name, message.UniqueId, conn, message.CreatedDate);
+
+                    tr.Commit();
+                }
+            }
+            // check to see if we have this pack
+            // if so GREAT
+
+            // if not then time to make a new one.
         }
     }
 }

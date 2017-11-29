@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Dapper;
-using Npgsql;
-using System.Linq;
-using DataReciever.Main.Data;
+﻿using DataReciever.Main.Data;
 using DataReciever.Main.Interfaces;
+using DataReciever.Main.Model;
 
 namespace DataReciever.Main.Handlers
 {
@@ -17,13 +12,6 @@ namespace DataReciever.Main.Handlers
         {
             var data = new PgRepository();
             data.InsertNewIndividual(message);
-
-            // insert pack
-            // insert individual
-            // link both
-            // insert litter
-            // link litter and pack
-            // born event
         }
     }
 }

@@ -4,12 +4,12 @@ using DataReciever.Main.Model;
 
 namespace DataReciever.Main.Handlers
 {
-    internal class IndividualCreatedHandler : IHandle<IndividualCreated>
+    internal class WeightHandler : IHandle<WeightMeasure>
     {
-        public void HandleMessage(IndividualCreated message)
+        public void HandleMessage(WeightMeasure message)
         {
             var data = new PgRepository();
-            data.InsertNewIndividual(message);
+            data.InsertNewWeight(message);
         }
     }
 }

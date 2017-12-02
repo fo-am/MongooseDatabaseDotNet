@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using DataReciever.Main.Model;
 
 namespace DataReciever.Main.Handlers
@@ -13,6 +12,7 @@ namespace DataReciever.Main.Handlers
         {
             handlers.Add(typeof(IndividualCreated), new IndividualCreatedHandler());
             handlers.Add(typeof(PackCreated), new PackCreatedHandler());
+            handlers.Add(typeof(WeightMeasure), new WeightHandler());
         }
 
         public void Handle<T>(T output)

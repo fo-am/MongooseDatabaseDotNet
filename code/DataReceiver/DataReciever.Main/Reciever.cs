@@ -48,17 +48,17 @@ namespace DataReciever.Main
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
 
-                var logId = PgRepository.StoreEntity(typeof(T).FullName, message);
+                var logId = PgRepository.StoreMessage(typeof(T).FullName, message);
 
                 var handler = new GetHandler();
                 try
                 {
                     handler.Handle<T>(output);
-                    PgRepository.EntityHandled(logId);
+                    PgRepository.MessageHandledOk(logId);
                 }
                 catch (Exception ex)
                 {
-                    PgRepository.EntityException(logId, ex);
+                    PgRepository.FailedToHandleMessage(logId, ex);
                 }
 
                 // catch

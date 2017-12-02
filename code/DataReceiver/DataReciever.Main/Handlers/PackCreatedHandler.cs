@@ -1,6 +1,4 @@
-﻿using System;
-
-using DataReciever.Main.Data;
+﻿using DataReciever.Main.Data;
 using DataReciever.Main.Interfaces;
 using DataReciever.Main.Model;
 

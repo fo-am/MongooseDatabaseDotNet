@@ -41,11 +41,10 @@ namespace DataPipe.Main
 
                     var tran = cnn.BeginTransaction();
 
-                    cnn.Execute("update sync_entity set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    cnn.Execute("update sync_value_int set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    cnn.Execute("update sync_value_real set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    cnn.Execute("update sync_value_varchar set sent = 1 where entity_id = @entity_id",
-                        message.entity_id);
+                    cnn.Execute("update sync_entity set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_int set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_real set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_varchar set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
 
                     tran.Commit();
                 }
@@ -59,11 +58,10 @@ namespace DataPipe.Main
                     cnn.Open();
                     var tran = cnn.BeginTransaction();
 
-                    //cnn.Execute("update stream_entity set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    //cnn.Execute("update stream_value_int set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    //cnn.Execute("update stream_value_real set sent = 1 where entity_id = @entity_id", message.entity_id);
-                    //cnn.Execute("update stream_value_varchar set sent = 1 where entity_id = @entity_id",
-                    //     message.entity_id);
+                    cnn.Execute("update stream_entity set sent = 1 where entity_id = @entity_id", new{ entity_id = message.entity_id});
+                    cnn.Execute("update stream_value_int set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_value_real set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_value_varchar set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
 
                     tran.Commit();
                 }
@@ -107,7 +105,7 @@ namespace DataPipe.Main
                         select se.entity_id, se.unique_id as unique_id,se.entity_type, svv.attribute_id as attribute_id ,svv.value
                         from sync_entity se
                         join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.entity_type = ""mongoose""
+                        where se.entity_type = ""mongoose"" and se.sent = 0
                         group by    se.unique_id , svv.attribute_id ,svv.value;";
             var strings = RunSql<DatabaseRow<string>>(stringsSql).ToList();
 
@@ -115,7 +113,7 @@ namespace DataPipe.Main
                         select se.entity_id, se.unique_id as unique_id, se.entity_type, svr.attribute_id ,svr.value 
                         from sync_entity se
                         join sync_value_real svr on se.entity_id = svr.entity_id
-                        where se.entity_type = ""mongoose""  
+                        where se.entity_type = ""mongoose""  and se.sent = 0
                         group by    se.unique_id , svr.attribute_id ,svr.value;";
             var longs = RunSql<DatabaseRow<double>>(longSql).ToList();
 
@@ -187,7 +185,7 @@ namespace DataPipe.Main
                         select se.entity_id, se.unique_id as unique_id,se.entity_type, svv.attribute_id as attribute_id ,svv.value
                         from sync_entity se
                         join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.entity_type = ""pack""
+                        where se.entity_type = ""pack"" and se.sent = 0
                         group by se.unique_id , svv.attribute_id ,svv.value;";
             var strings = RunSql<DatabaseRow<string>>(stringsSql).ToList();
 
@@ -224,7 +222,7 @@ namespace DataPipe.Main
                          select se.entity_type, se.entity_id, se.unique_id, svv.attribute_id, svv.value 
                          from stream_entity se
                          join stream_value_varchar svv on se.entity_id = svv.entity_id
-                         where se.entity_type = ""group-comp-weight""
+                         where se.entity_type = ""group-comp-weight"" and se.sent = 0
                          ";
 
             var strings = RunSql<DatabaseRow<string>>(stringSql).ToList();
@@ -232,13 +230,13 @@ namespace DataPipe.Main
             var intSql = @" select se.entity_type, se.entity_id, se.unique_id, svi.attribute_id, svi.value 
                              from stream_entity se
                              join stream_value_int svi on se.entity_id = svi.entity_id
-                            where se.entity_type = ""group-comp-weight""";
+                            where se.entity_type = ""group-comp-weight"" and se.sent = 0";
             var ints = RunSql<DatabaseRow<int>>(intSql).ToList();
 
             var realSql = @" select se.entity_type, se.entity_id, se.unique_id, svi.attribute_id, svi.value 
                              from stream_entity se
                              join stream_value_real svi on se.entity_id = svi.entity_id
-                            where se.entity_type = ""group-comp-weight""";
+                            where se.entity_type = ""group-comp-weight"" and se.sent = 0";
             var reals = RunSql<DatabaseRow<double>>(realSql).ToList();
 
             // get relevent ids for weights

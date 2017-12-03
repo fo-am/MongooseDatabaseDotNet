@@ -71,17 +71,17 @@ namespace DataPipe.Main
             // when we send a new object we need to mark in the database which parts have been sent (setting sent = 1 on each row)
             // so we need to gather that information when we construct the object... not sure hwo to do this.
 
-            //foreach (var entity in Data.GetNewPacks().Take(numberToSend))
-            //{
-            //    send.PublishEntity(entity);
-            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            //}
+            foreach (var entity in Data.GetNewPacks().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
 
-            //foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
-            //{
-            //    send.PublishEntity(entity);
-            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            //}
+            foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
 
             foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
             {

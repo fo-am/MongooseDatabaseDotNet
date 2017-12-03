@@ -59,6 +59,7 @@ namespace DataReciever.Main
                 catch (Exception ex)
                 {
                     PgRepository.FailedToHandleMessage(logId, ex);
+                    throw;
                 }
 
                 // catch

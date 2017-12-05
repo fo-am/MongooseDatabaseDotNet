@@ -1064,7 +1064,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1565.71" y="155.714"/>
+	<position x="2040" y="700"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1097,6 +1097,59 @@ ALTER TABLE mongoose."Pack events"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.provisioning_data"
+	 src-required="false" dst-required="false"/>
+
+<table name="poo_sample" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1574.29" y="114.286"/>
+	<column name="poo_sample_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="sample_number" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="pack_status">
+		<type name="text" length="0"/>
+	</column>
+	<column name="emergence_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="collection_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="freezer_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="parasite_sample">
+		<type name="text" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="poo_sample_pk" type="pk-constr" table="mongoose.poo_sample">
+		<columns names="poo_sample_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_poo_sample" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.poo_sample"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

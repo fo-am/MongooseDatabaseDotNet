@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="958,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="676,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -404,7 +404,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="520" y="905"/>
+	<position x="540" y="840"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1102,7 +1102,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1574.29" y="114.286"/>
+	<position x="1920" y="240"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1150,6 +1150,139 @@ ALTER TABLE mongoose."Pack events"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.poo_sample"
+	 src-required="false" dst-required="false"/>
+
+<table name="meterology">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="480" y="960"/>
+	<column name="meterology_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="rain">
+		<type name="real" length="0"/>
+	</column>
+	<column name="temp_max">
+		<type name="real" length="0"/>
+	</column>
+	<column name="temp_min">
+		<type name="real" length="0"/>
+	</column>
+	<column name="temp">
+		<type name="real" length="0"/>
+	</column>
+	<column name="observer">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="meterology_pk" type="pk-constr" table="mongoose.meterology">
+		<columns names="meterology_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="maternal_conditioning_litter" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="980" y="1020"/>
+	<column name="maternal_conditioning_litter_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="experiment_number" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="pregnancy_check_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="date_started">
+		<type name="date" length="0"/>
+	</column>
+	<column name="experiment_type">
+		<type name="text" length="0"/>
+	</column>
+	<column name="foetus_age">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number_T_females">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number_C_females">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="notes">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="maternal_conditioning_litter_pk" type="pk-constr" table="mongoose.maternal_conditioning_litter">
+		<columns names="maternal_conditioning_litter_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="litter_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="litter_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="litter_has_many_maternal_conditioning_litter" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.litter"
+	 dst-table="mongoose.maternal_conditioning_litter"
+	 src-required="false" dst-required="false"/>
+
+<table name="maternel_conditioning_females" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1380" y="40"/>
+	<column name="maternel_conditioning_females_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="experiment_type">
+		<type name="text" length="0"/>
+	</column>
+	<column name="catagory">
+		<type name="text" length="0"/>
+	</column>
+	<column name="notes">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="maternel_conditioning_females_pk" type="pk-constr" table="mongoose.maternel_conditioning_females">
+		<columns names="maternel_conditioning_females_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+		<object name="paired_female_id" index="4"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="maternel_conditioning_females_uq" index="3"/>
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_maternel_conditioning_females" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.maternel_conditioning_females"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="maternel_conditioning_females_has_one_individual" type="rel11"
+	 src-col-pattern="paired_female_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.maternel_conditioning_females"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

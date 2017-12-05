@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="805,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="958,0" last-zoom="0.7"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -143,7 +143,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="980" y="480"/>
+	<position x="960" y="465"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -170,7 +170,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1580" y="700"/>
+	<position x="1560" y="685"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -208,7 +208,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2140" y="720"/>
+	<position x="1980" y="540"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -259,7 +259,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1620" y="340"/>
+	<position x="1600" y="325"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -306,7 +306,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="960" y="680"/>
+	<position x="940" y="665"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -351,7 +351,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="640" y="620"/>
+	<position x="620" y="605"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -404,7 +404,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="540" y="920"/>
+	<position x="520" y="905"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -425,7 +425,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2300" y="480"/>
+	<position x="2280" y="465"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -465,7 +465,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2660" y="680"/>
+	<position x="2640" y="665"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -492,7 +492,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2060" y="1020"/>
+	<position x="2040" y="1005"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -522,7 +522,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2560" y="100"/>
+	<position x="2540" y="85"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -555,7 +555,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2060" y="100"/>
+	<position x="2040" y="85"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -594,7 +594,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2860" y="280"/>
+	<position x="2840" y="265"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -676,7 +676,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="80"/>
+	<position x="980" y="65"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -738,7 +738,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1480" y="1100"/>
+	<position x="1460" y="1085"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -756,7 +756,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="860"/>
+	<position x="1380" y="845"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -808,7 +808,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="120" y="80"/>
+	<position x="100" y="65"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -981,7 +981,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="event_log">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="160" y="980"/>
+	<position x="140" y="965"/>
 	<column name="event_log_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1006,14 +1006,14 @@ ALTER TABLE mongoose."Pack events"
 </table>
 
 <table name="pup_association" hide-ext-attribs="true">
-	<schema name="public"/>
+	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1520" y="100"/>
+	<position x="1520" y="480"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<column name="escort_id">
-		<type name="integer" length="0"/>
+	<column name="date">
+		<type name="date" length="0"/>
 	</column>
 	<column name="strength">
 		<type name="integer" length="0"/>
@@ -1021,19 +1021,25 @@ ALTER TABLE mongoose."Pack events"
 	<column name="confidence">
 		<type name="integer" length="0"/>
 	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
 	<column name="comment">
 		<type name="text" length="0"/>
 	</column>
-	<constraint name="pup_association_pk" type="pk-constr" table="public.pup_association">
+	<constraint name="pup_association_pk" type="pk-constr" table="mongoose.pup_association">
 		<columns names="pup_association_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
+		<object name="escort_id" index="2"/>
 		<object name="pup_pack_history_id" index="1"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
 		<object name="pack_history_fk" index="1"/>
+		<object name="pup_association_uq" index="3"/>
 	</customidxs>
 </table>
 
@@ -1043,7 +1049,54 @@ ALTER TABLE mongoose."Pack events"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
-	 dst-table="public.pup_association"
+	 dst-table="mongoose.pup_association"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="pup_association_has_one_escort_individual" type="rel11"
+	 src-col-pattern="escort_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pup_association"
+	 src-required="false" dst-required="false"/>
+
+<table name="provisioning_data" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1565.71" y="155.714"/>
+	<column name="provisioning_data_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="visit_time">
+		<type name="text" length="0"/>
+	</column>
+	<column name="egg_weight" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="provisioning_data_pk" type="pk-constr" table="mongoose.provisioning_data">
+		<columns names="provisioning_data_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_provisioning_data" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.provisioning_data"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

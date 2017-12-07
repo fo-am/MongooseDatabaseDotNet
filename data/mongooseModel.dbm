@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="576,479" last-zoom="0.6"
+<dbmodel pgmodeler-ver="0.9.0" last-position="298,163" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -259,7 +259,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1880" y="1200"/>
+	<position x="1560" y="260"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1039,7 +1039,6 @@ ALTER TABLE mongoose."Pack events"
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
 		<object name="pack_history_fk" index="1"/>
-		<object name="pup_association_uq" index="3"/>
 	</customidxs>
 </table>
 
@@ -1049,15 +1048,6 @@ ALTER TABLE mongoose."Pack events"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
-	 dst-table="mongoose.pup_association"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="pup_association_has_one_escort_individual" type="rel11"
-	 src-col-pattern="escort_id"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
 	 dst-table="mongoose.pup_association"
 	 src-required="false" dst-required="false"/>
 
@@ -1415,7 +1405,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="dna_samples">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1220" y="480"/>
+	<position x="980" y="500"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1669,6 +1659,15 @@ ALTER TABLE mongoose."Pack events"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.anti_parasite"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="individual_escorts_many_pups" type="rel1n"
+	 src-col-pattern="escort_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pup_association"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

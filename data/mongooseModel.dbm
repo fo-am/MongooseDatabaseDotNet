@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="676,0" last-zoom="0.7"
+<dbmodel pgmodeler-ver="0.9.0" last-position="576,479" last-zoom="0.6"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -143,7 +143,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="960" y="465"/>
+	<position x="2240" y="1100"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -170,7 +170,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1560" y="685"/>
+	<position x="1700" y="940"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -208,7 +208,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1980" y="540"/>
+	<position x="1040" y="360"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -259,7 +259,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1600" y="325"/>
+	<position x="1880" y="1200"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -306,7 +306,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="940" y="665"/>
+	<position x="940" y="660"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -351,7 +351,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="620" y="605"/>
+	<position x="620" y="600"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -425,7 +425,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2280" y="465"/>
+	<position x="2280" y="460"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -465,7 +465,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2640" y="665"/>
+	<position x="2640" y="660"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -492,7 +492,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2040" y="1005"/>
+	<position x="2040" y="1000"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -522,7 +522,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2540" y="85"/>
+	<position x="2540" y="80"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -555,7 +555,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2040" y="85"/>
+	<position x="2040" y="80"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -594,7 +594,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2840" y="265"/>
+	<position x="2840" y="260"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -676,7 +676,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="980" y="65"/>
+	<position x="980" y="0"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -738,7 +738,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1460" y="1085"/>
+	<position x="1020" y="900"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -756,7 +756,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="845"/>
+	<position x="1380" y="840"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -808,7 +808,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="100" y="65"/>
+	<position x="100" y="60"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -981,7 +981,7 @@ ALTER TABLE mongoose."Pack events"
 <table name="event_log">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="140" y="965"/>
+	<position x="140" y="960"/>
 	<column name="event_log_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1283,6 +1283,392 @@ ALTER TABLE mongoose."Pack events"
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.maternel_conditioning_females"
+	 src-required="false" dst-required="false"/>
+
+<table name="blood_data" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="600" y="280"/>
+	<column name="blood_data_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="trap_time" not-null="true">
+		<type name="time" length="0"/>
+	</column>
+	<column name="bleed_time">
+		<type name="numeric" length="0"/>
+	</column>
+	<column name="weight" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="release_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="sample">
+		<type name="text" length="0"/>
+	</column>
+	<column name="spinning_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="freeze_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="focal">
+		<type name="text" length="0"/>
+	</column>
+	<column name="plasma_volume_ul">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="blood_data_pk" type="pk-constr" table="mongoose.blood_data">
+		<columns names="blood_data_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="individual_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="individual_has_many_blood_data" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.blood_data"
+	 src-required="false" dst-required="false"/>
+
+<table name="hpa_sample" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="480" y="40"/>
+	<column name="hpa_sample_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="time_in_trap">
+		<type name="interval" length="0"/>
+	</column>
+	<column name="capture_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="first_blood_sample_taken_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="first_sample_id">
+		<type name="text" length="0"/>
+	</column>
+	<column name="first_blood_sample_freezer_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="second_blood_sample_taken_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="second_blood_sample_id">
+		<type name="text" length="0"/>
+	</column>
+	<column name="second_blood_sample_freezer_time">
+		<type name="time" length="0"/>
+	</column>
+	<column name="head_width">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="weight">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="ticks">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="hpa_sample_pk" type="pk-constr" table="mongoose.hpa_sample">
+		<columns names="hpa_sample_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="individual_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="individual_has_many_hpa_sample" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.hpa_sample"
+	 src-required="false" dst-required="false"/>
+
+<table name="dna_samples">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1220" y="480"/>
+	<column name="dna_samples_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="sample_type">
+		<type name="text" length="0"/>
+	</column>
+	<column name="tissue">
+		<type name="text" length="0"/>
+	</column>
+	<column name="storage">
+		<type name="text" length="0"/>
+	</column>
+	<column name="tube_id">
+		<type name="text" length="0"/>
+	</column>
+	<column name="age">
+		<type name="text" length="0"/>
+	</column>
+	<column name="dispersal">
+		<type name="text" length="0"/>
+	</column>
+	<column name="box_slot">
+		<type name="text" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="dna_samples_pk" type="pk-constr" table="mongoose.dna_samples">
+		<columns names="dna_samples_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_dna_samples" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.dna_samples"
+	 src-required="false" dst-required="false"/>
+
+<table name="group_composition" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="2580" y="880"/>
+	<column name="group_composition_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="observer">
+		<type name="text" length="0"/>
+	</column>
+	<column name="session">
+		<type name="text" length="0"/>
+	</column>
+	<column name="group_status">
+		<type name="text" length="0"/>
+	</column>
+	<column name="weather_start">
+		<type name="text" length="0"/>
+	</column>
+	<column name="weather_end">
+		<type name="text" length="0"/>
+	</column>
+	<column name="males_over_one_year">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="females_over_one_year">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="males_over_three_months">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="females_over_three_months">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="male_pups">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="female_pups">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="unknown_pups">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="pups_in_den">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="group_composition_pk" type="pk-constr" table="mongoose.group_composition">
+		<columns names="group_composition_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_has_many_group_composition" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack"
+	 dst-table="mongoose.group_composition"
+	 src-required="false" dst-required="false"/>
+
+<table name="babysitting" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1340" y="1220"/>
+	<column name="babysitting_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="type">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time_start">
+		<type name="time" length="0"/>
+	</column>
+	<column name="den_distance">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time_end">
+		<type name="time" length="0"/>
+	</column>
+	<column name="accuracy">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="babysitting_pk" type="pk-constr" table="mongoose.babysitting">
+		<columns names="babysitting_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="babysitter_id" index="1"/>
+		<object name="litter_id" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="litter_fk" index="2"/>
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_babysitting" type="rel1n"
+	 src-col-pattern="babysitter_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.babysitting"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="litter_has_many_babysitting_records" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.litter"
+	 dst-table="mongoose.babysitting"
+	 src-required="false" dst-required="false"/>
+
+<table name="anti_parasite" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1660" y="1360"/>
+	<column name="anti_parasite_id" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="started_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="fecal_sample_A_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="first_capture_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="experiment_group">
+		<type name="text" length="0"/>
+	</column>
+	<column name="fecal_sample_B_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="fecal_sample_C_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="second_capture">
+		<type name="date" length="0"/>
+	</column>
+	<column name="fecal_sample_D_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="fecal_sample_E_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="fecal_sample_F_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="comments">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="anti_parasite_pk" type="pk-constr" table="mongoose.anti_parasite">
+		<columns names="anti_parasite_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_anti_parasite" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.anti_parasite"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

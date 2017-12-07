@@ -240,71 +240,6 @@ namespace pgDataImporter.Core
                    !string.IsNullOrEmpty(lifeHistory.Code);
         }
 
-        private void AddIndividualEvents(IEnumerable<NewLifeHistory> individualEvents, PostgresRepository pg)
-        {
-            // add individual event codes
-            pg.AddIndividualEventCodes(individualEvents.Select(e => e.Code).Distinct());
-
-            //get all the codes
-            var pgIndividualCodes = pg.GetIndividualCodes();
-            // get individuals
-            var pgIndividuals = pg.GetAllIndividuals();
-
-            // add events with individual ids added
-            foreach (var individualEvent in individualEvents)
-            {
-                var pack_history_id = pg.GetPackHistoryId(individualEvent.Pack, individualEvent.Indiv);
-
-                pg.LinkIndividualEvents(pack_history_id,
-                    pgIndividualCodes.Single(ic => ic.Code == individualEvent.Code).IndividualEventCodeId,
-                    individualEvent.Latitude, individualEvent.Longitude, individualEvent.Status,
-                    individualEvent.Date, individualEvent.Exact, individualEvent.Cause, individualEvent.Comment);
-            }
-        }
-
-        private void AddPackEvents(IEnumerable<NewLifeHistory> packEvents, PostgresRepository pg)
-        {
-            pg.AddPackEventCodes(packEvents.Select(e => e.Code).Distinct());
-            // get pack codes and ids
-            var pgPackCodes = pg.GetPackEventCodes();
-            // get packs and ids
-            var pgPacks = pg.GetAllPacks();
-            // link packs to codes.
-            foreach (var packEvent in packEvents)
-            {
-                pg.LinkPackEvents(pgPacks.Single(p => p.Name == packEvent.Pack).PackId,
-                    pgPackCodes.Single(p => p.Code == packEvent.Code).PackEventCodeId, packEvent.Status, packEvent.Date,
-                    packEvent.Exact, packEvent.Cause,
-                    packEvent.Comment, packEvent.Latitude, packEvent.Longitude);
-            }
-        }
-
-        private void AddLitterEvents(IEnumerable<NewLifeHistory> litterEvents)
-        {
-            // do this some other time, there are 3 in the database and look like bad data.
-        }
-
-        private void AddLitterInfo(IEnumerable<LifeHistoryDto> litters, PostgresRepository pg)
-        {
-            var pgPacks = pg.GetAllPacks();
-            var pgIndividuals = pg.GetAllIndividuals();
-
-            foreach (var litter in litters)
-            {
-                if (string.IsNullOrEmpty(litter.Pack) || string.IsNullOrEmpty(litter.Individual) ||
-                    string.IsNullOrEmpty(litter.Litter))
-                {
-                    Logger.Warn(
-                        $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
-                    continue;
-                }
-                litter.pgIndividualId = pgIndividuals.Single(i => i.Name == litter.Individual).IndividualId;
-                litter.pgPackId = pgPacks.Single(p => p.Name == litter.Pack).PackId;
-
-                pg.AddLitter(litter);
-            }
-        }
-
         private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals,
             PostgresRepository pg)
         {
@@ -560,6 +495,16 @@ namespace pgDataImporter.Core
             pg.InsertSinglePack("Unknown");
             // add unknown pack
             // add unknown (other things)
+        }
+
+        public void ProcessPups(List<PupAssociation> pups)
+        {
+            var pg = new PostgresRepository();
+            foreach (var pupAssociation in pups)
+            {
+              // get pack record
+              // put everything in the pups table.
+            }
         }
     }
 }

@@ -502,9 +502,58 @@ namespace pgDataImporter.Core
             var pg = new PostgresRepository();
             foreach (var pupAssociation in pups)
             {
-              // get pack record
-              // put everything in the pups table.
+                var packId = pg.TryGetPackId(pupAssociation.GROUP);
+
+                if (packId == null)
+                {
+                    pg.InsertSinglePack(pupAssociation.GROUP);
+                    packId = pg.GetPackId(pupAssociation.GROUP);
+                }
+                var pupLitter = pg.GetLitterId(pupAssociation.LITTER);
+                if (pupLitter == null && !string.IsNullOrEmpty(pupAssociation.LITTER))
+                {
+                    pg.InsertSingleLitter(pupAssociation.LITTER, packId.Value);
+                    pupLitter = pg.GetLitterId(pupAssociation.LITTER);
+                }
+             
+                pg.InsertIndividual(new Individual
+                {
+                    Name = pupAssociation.PUP,
+                    Sex = pupAssociation.PUP_SEX,
+                    LitterId = pupLitter
+                });
+
+                var pupId = pg.GetIndividualId(pupAssociation.PUP);
+                // get pack record
+                pg.InsertPackHistory(packId.Value, pupId, pupAssociation.DATE);
+                var packHistoryId = pg.GetPackHistoryId(pupAssociation.GROUP, pupAssociation.PUP);
+
+                // get escort id
+
+                var escortId = GetEscortId(pupAssociation, pg);
+
+
+                // put everything in the pups table.
+                pg.InsertPupAssociation(packHistoryId, escortId, pupAssociation);
             }
+        }
+
+        private int? GetEscortId(PupAssociation pupAssociation, PostgresRepository pg)
+        {
+            if (pupAssociation.ESCORT == "NA" || pupAssociation.ESCORT == "REMOVED" ||
+                string.IsNullOrEmpty(pupAssociation.ESCORT))
+            {
+                return null;
+            }
+          
+                pg.InsertIndividual(new Individual
+                {
+                    Name = pupAssociation.ESCORT,
+                    Sex = pupAssociation.ESC_SEX
+                });
+            var escortId = pg.GetIndividualId(pupAssociation.ESCORT);
+
+            return escortId;
         }
     }
 }

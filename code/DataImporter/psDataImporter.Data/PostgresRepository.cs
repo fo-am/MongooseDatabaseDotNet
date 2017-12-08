@@ -465,6 +465,17 @@ namespace psDataImporter.Data
             }
         }
 
+        public int? TryGetPackId(string packName)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn.ExecuteScalar<int?>(
+                    "Select pack_id from mongoose.pack where name = @packName", new {packName});
+            }
+        }
+
         public int? GetIndividualId(string individualName)
         {
             if (string.IsNullOrEmpty(individualName))
@@ -568,14 +579,14 @@ namespace psDataImporter.Data
             Logger.Info($"created litter: {litterName}");
         }
 
-        public int GetLitterId(string litterName)
+        public int? GetLitterId(string litterName)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
 
             {
-                return conn.ExecuteScalar<int>("select litter_id from mongoose.litter where name = @name",
+                return conn.ExecuteScalar<int?>("select litter_id from mongoose.litter where name = @name",
                     new {name = litterName});
             }
         }
@@ -731,7 +742,7 @@ namespace psDataImporter.Data
                         bleed_time = capture.BLEED_TIME,
                         release_time = capture.RELEASE_TIME,
                         examiner = capture.Examiner,
-                        age= capture.AGE,
+                        age = capture.AGE,
                         drugs = capture.DRUGS,
                         reproductive_status = capture.REPRO_STATUS,
                         teats_ext = capture.TEATS_EXT,
@@ -792,6 +803,38 @@ namespace psDataImporter.Data
             }
 
             return null;
+        }
+
+        public void InsertPupAssociation(int packHistoryId, int? escortId, PupAssociation pupAssociation)
+        {
+            Logger.Info($"Adding pup Association: {pupAssociation.PUP}");
+
+            var locationString = "NULL";
+            if (!string.IsNullOrEmpty(pupAssociation.Latitude) && !string.IsNullOrEmpty(pupAssociation.Longitude))
+            {
+                locationString =
+                    $"ST_GeographyFromText('SRID=4326;POINT({pupAssociation.Latitude} {pupAssociation.Longitude})')";
+            }
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.pup_association(
+                           pup_pack_history_id, escort_id, date, strength, confidence, location, comment )
+                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment)"
+                    ,
+                    new
+                    {
+                        pup_pack_history_id = packHistoryId,
+                        escort_id = escortId,
+                        date = pupAssociation.DATE,
+                        strength = pupAssociation.STRENGTH,
+                        confidence = pupAssociation.CONFIDENCE,
+                        comment = pupAssociation.COMMENT + " " + pupAssociation.Editing_comments
+                    }
+                );
+            }
         }
     }
 }

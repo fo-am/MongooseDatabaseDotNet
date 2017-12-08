@@ -179,7 +179,6 @@ namespace psDataImporter.Data
 
         public List<CapturesNew2013> GetCaptures()
         {
-
             using (var conn = new OleDbConnection(ConfigurationManager
                 .ConnectionStrings["accessConnectionString"]
                 .ConnectionString))
@@ -244,6 +243,35 @@ namespace psDataImporter.Data
                                            [TESTES DEPTH] as TESTES_DEPTH
                                         FROM [CAPTURES NEW 2013];
                                             ").ToList();
+            }
+        }
+
+        public List<PupAssociation> GetPups()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting pup associations.");
+
+                return conn.Query<PupAssociation>(@" 
+                                      SELECT                         
+                                        [DATE]                              
+                                        ,[SESSION]                           
+                                        ,GROUP                             
+                                        ,LITTER                            
+                                        ,PUP                               
+                                        ,[PUP SEX] as PUP_SEX              
+                                        ,ESCORT                            
+                                        ,[ESC SEX] as ESC_SEX              
+                                        ,STRENGTH                          
+                                        ,CONFIDENCE                        
+                                        ,COMMENT                           
+                                        ,[Editing comments] as Editing_comments                
+                                        ,Latitude                                 
+                                        ,Longitude
+                                        from 
+                                        [PUP ASSOCIATION];").ToList();
             }
         }
     }

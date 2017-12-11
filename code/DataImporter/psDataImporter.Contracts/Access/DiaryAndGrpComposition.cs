@@ -1,9 +1,11 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿using System;
+
+namespace psDataImporter.Contracts.Access
 {
     public class DiaryAndGrpComposition
     {
         public string ID { get; set; }
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Pack { get; set; }
         public string Observer { get; set; }
         public string Session { get; set; }

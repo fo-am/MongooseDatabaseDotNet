@@ -303,5 +303,37 @@ namespace psDataImporter.Data
             [BABYSITTING RECORDS];").ToList();
             }
         }
+
+
+        public List<DiaryAndGrpComposition> GetGroupCompositions()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Babysitting Records.");
+
+                return conn.Query<DiaryAndGrpComposition>(@"
+            Select           
+            [Date],
+            [Pack],
+            [Observer],
+            [Session],
+            [Group status] as Group_status,
+            [ST Weather] as ST_Weather,
+            [END Weather] as END_Weather,
+            [Males > 1 yr] as Males_one_yr,
+            [Females > 1 yr] as Females_one_yr,
+            [Males > 3 months] as Males_three_months,
+            [Females > 3 months] as Females_three_months,
+            [Male em pups] as Male_em_pups,
+            [Female em pups] as Female_em_pups,
+            [Unk em pups] as Unk_em_pups,
+            [Pups in Den?] as Pups_in_Den,
+            [Comment]
+             
+           FROM [DIARY AND GRP COMPOSITION];").ToList();
+            }
+        }
     }
 }

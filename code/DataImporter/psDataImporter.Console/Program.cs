@@ -21,6 +21,7 @@ namespace psDataImporter.Console
             var postgresData = new PostgresCore();
 
             postgresData.AddStaticData();
+
             var ultrasoundData = accessdata.GetUltrasounds();
             postgresData.ProccessUltrasoundData(ultrasoundData);
 
@@ -44,6 +45,10 @@ namespace psDataImporter.Console
 
             var babysittingRecords = accessdata.GetBabysittingRecords();
             postgresData.ProcessBabysittingRecords(babysittingRecords);
+
+            var groupCompositions = accessdata.GetGroupCompositions();
+            postgresData.ProcessGroupCompositions(groupCompositions);
+
 
             stopwatch.Stop();
 

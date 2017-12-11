@@ -671,5 +671,48 @@ namespace pgDataImporter.Core
             }
             return timestart;
         }
+
+        public void ProcessGroupCompositions(List<DiaryAndGrpComposition> groupCompositions)
+        {
+            var pg = new PostgresRepository();
+            foreach (var groupComposition in groupCompositions)
+            {
+                if (string.IsNullOrEmpty(groupComposition.Pack))
+                {
+                    continue;
+                }
+
+                var packId = pg.TryGetPackId(groupComposition.Pack);
+
+                if (packId == null)
+                {
+                    pg.InsertSinglePack(groupComposition.Pack);
+                    packId = pg.GetPackId(groupComposition.Pack);
+                }
+                int? males_over_one_year = GetNumber(groupComposition.Males_one_yr);
+                int? females_over_one_year = GetNumber(groupComposition.Females_one_yr);
+                int? males_over_three_months = GetNumber(groupComposition.Males_three_months);
+                int? females_over_three_months = GetNumber(groupComposition.Females_three_months);
+                // int? male_pups = GetNumber(groupComposition.Male_em_pups);
+                // int? female_pups = GetNumber(groupComposition.Female_em_pups);
+
+                pg.InsertGroupComposition(packId, males_over_one_year, females_over_one_year, males_over_three_months,
+                    females_over_three_months, groupComposition);
+            }
+        }
+
+        private int? GetNumber(string numberString)
+        {
+            if (string.IsNullOrEmpty(numberString) || numberString == "UNK" || numberString == "-1")
+            {
+                return null;
+            }
+
+            if (int.TryParse(numberString, out int number))
+            {
+                return number;
+            }
+            return null;
+        }
     }
 }

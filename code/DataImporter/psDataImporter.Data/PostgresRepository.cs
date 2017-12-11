@@ -862,5 +862,43 @@ namespace psDataImporter.Data
             }
             return locationString;
         }
+
+        public void InsertGroupComposition(int? packId, int? malesOverOneYear, int? femalesOverOneYear, int? malesOverThreeMonths, int? femalesOverThreeMonths, DiaryAndGrpComposition groupComposition)
+        {
+            Logger.Info($"Adding group composition: {groupComposition.Pack}");
+
+           // var locationString = LocationString(groupComposition.Latitude, groupComposition.Longitude);
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.group_composition(
+                         pack_id, date, observer, session, group_status, weather_start, weather_end, males_over_one_year, females_over_one_year, males_over_three_months, females_over_three_months, male_pups, female_pups, unknown_pups, pups_in_den, comment)
+                            VALUES (@pack_id, @date, @observer, @session, @group_status, @weather_start, @weather_end, @males_over_one_year, @females_over_one_year, @males_over_three_months, @females_over_three_months, @male_pups, @female_pups, @unknown_pups, @pups_in_den, @comment)"
+                    ,
+                    new
+                    {
+                        pack_id = packId,
+                        date = groupComposition.Date,
+                        observer = groupComposition.Observer,
+                        session = groupComposition.Session,
+                        group_status = groupComposition.Group_status,
+                        weather_start = groupComposition.ST_Weather,
+                        weather_end = groupComposition.END_Weather,
+                        males_over_one_year = malesOverOneYear,
+                        females_over_one_year = femalesOverOneYear,
+                        males_over_three_months = malesOverThreeMonths,
+                        females_over_three_months = femalesOverThreeMonths,
+                        male_pups = groupComposition.Male_em_pups,
+                        female_pups = groupComposition.Female_em_pups,
+                        unknown_pups = groupComposition.Unk_em_pups,
+                        pups_in_den = groupComposition.Pups_in_Den,
+                        comment = groupComposition.Comment
+
+                    }
+                );
+            }
+        }
     }
 }

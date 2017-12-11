@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,94" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="178,360" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -150,6 +150,14 @@ SELECT date, p.name as group, l.name as "litter code", i.name as bs, i.sex, type
     join mongoose.litter l on l.litter_id = b.litter_id;
 
 ALTER TABLE mongoose."Babysitting Records"
+    OWNER TO postgres;
+
+CREATE OR REPLACE VIEW mongoose."Group Composition" AS
+SELECT date, p.name as pack, observer, session, group_status, weather_start, weather_end, males_over_one_year, females_over_one_year, males_over_three_months, females_over_three_months, male_pups, female_pups, unknown_pups, pups_in_den, comment,   st_x(gc.location::geometry) AS latitude,     st_y(gc.location::geometry) AS longitude
+	FROM mongoose.group_composition gc
+    join mongoose.pack p on p.pack_id = gc.pack_id;
+
+ALTER TABLE mongoose."Group Composition"
     OWNER TO postgres;]]></appended-sql>
 </database>
 
@@ -164,7 +172,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1318.46" y="647.692"/>
+	<position x="1047.69" y="556.923"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -191,7 +199,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1781.54" y="830.769"/>
+	<position x="1409.23" y="627.692"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -229,7 +237,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1040" y="360"/>
+	<position x="1750.77" y="633.846"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -283,7 +291,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1575.38" y="204.615"/>
+	<position x="2426.15" y="507.692"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -330,7 +338,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="363.077" y="1263.08"/>
+	<position x="538.462" y="816.926"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -375,7 +383,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="620" y="600"/>
+	<position x="1081.54" y="700"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -428,7 +436,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="540" y="840"/>
+	<position x="998.462" y="910.769"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -449,7 +457,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2280" y="460"/>
+	<position x="1763.08" y="796.923"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -489,7 +497,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2640" y="660"/>
+	<position x="1743.08" y="986.154"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -516,7 +524,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1892.31" y="643.077"/>
+	<position x="1440" y="507.692"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -546,7 +554,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2540" y="80"/>
+	<position x="2781.54" y="769.231"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -579,7 +587,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="ultrasound" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2040" y="80"/>
+	<position x="2758.46" y="29.2308"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -700,7 +708,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="980" y="0"/>
+	<position x="2450.77" y="15.3846"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -762,7 +770,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1020" y="900"/>
+	<position x="1389.23" y="961.538"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -780,7 +788,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="840"/>
+	<position x="1395.38" y="753.846"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -832,7 +840,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="100" y="60"/>
+	<position x="2781.54" y="1003.08"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1032,7 +1040,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1692.31" y="469.231"/>
+	<position x="1740" y="463.077"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1078,7 +1086,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2196.92" y="689.231"/>
+	<position x="2792.3" y="458.462"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1116,7 +1124,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1920" y="240"/>
+	<position x="2118.46" y="52.3077"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1199,7 +1207,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="930.769" y="1126.15"/>
+	<position x="1020" y="1072.3"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1252,7 +1260,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="40"/>
+	<position x="1610.77" y="18.4615"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1302,7 +1310,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="blood_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="600" y="280"/>
+	<position x="2167.69" y="1003.08"/>
 	<column name="blood_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1364,7 +1372,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="480" y="40"/>
+	<position x="1578.46" y="169.231"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1429,7 +1437,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="dna_samples" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="580"/>
+	<position x="2490.77" y="838.462"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1485,7 +1493,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2580" y="880"/>
+	<position x="1064.62" y="109.231"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1520,16 +1528,16 @@ ALTER TABLE mongoose."Babysitting Records"
 		<type name="integer" length="0"/>
 	</column>
 	<column name="male_pups">
-		<type name="integer" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="female_pups">
-		<type name="integer" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="unknown_pups">
-		<type name="integer" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="pups_in_den">
-		<type name="bool" length="0"/>
+		<type name="text" length="0"/>
 	</column>
 	<column name="comment">
 		<type name="text" length="0"/>
@@ -1626,7 +1634,7 @@ ALTER TABLE mongoose."Babysitting Records"
 <table name="anti_parasite" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1660" y="1360"/>
+	<position x="2446.15" y="1286.15"/>
 	<column name="anti_parasite_id" not-null="true">
 		<type name="smallint" length="0"/>
 	</column>

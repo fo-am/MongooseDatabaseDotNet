@@ -1,10 +1,10 @@
-﻿
+﻿using System;
 
 namespace psDataImporter.Contracts.Access
 {
-    class BABYSITTING_RECORDS
+    public class BABYSITTING_RECORDS
     {
-        public string DATE { get; set; }
+        public DateTime DATE { get; set; }
         public string GROUP { get; set; }
         public string LITTER_CODE { get; set; }
         public string BS { get; set; }
@@ -13,7 +13,7 @@ namespace psDataImporter.Contracts.Access
         public string TIME_START { get; set; }
         public string DEN_DIST { get; set; }
         public string TIME_END { get; set; }
-        public string ACCURACY { get; set; }
+        public int? ACCURACY { get; set; }
         public string Edited { get; set; }
         public string COMMENT { get; set; }
         public string Latitude { get; set; }

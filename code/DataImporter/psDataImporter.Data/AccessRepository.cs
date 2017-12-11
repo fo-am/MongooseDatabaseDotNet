@@ -274,5 +274,34 @@ namespace psDataImporter.Data
                                         [PUP ASSOCIATION];").ToList();
             }
         }
+
+        public List<BABYSITTING_RECORDS> GetBabysittingRecords()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Babysitting Records.");
+
+                return conn.Query<BABYSITTING_RECORDS>(@"
+            Select 
+            [DATE]
+            ,GROUP
+            ,[LITTER CODE] as LITTER_CODE
+            ,BS
+            ,SEX
+            ,TYPE
+            ,[TIME START] as TIME_START
+            ,[DEN DIST] as DEN_DIST
+            ,[TIME END] as TIME_END
+            ,ACCURACY
+            ,Edited
+            ,COMMENT
+            ,Latitude
+            ,Longitude
+             from 
+            [BABYSITTING RECORDS];").ToList();
+            }
+        }
     }
 }

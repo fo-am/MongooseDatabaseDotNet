@@ -54,13 +54,8 @@ namespace psDataImporter.Data
                     .ConnectionString))
 
                 {
-                    // create geography if lat and long are present.
-                    var locationString = "NULL";
-                    if (!string.IsNullOrEmpty(weight.Latitude) && !string.IsNullOrEmpty(weight.Longitude))
-                    {
-                        locationString =
-                            $"ST_GeographyFromText('SRID=4326;POINT({weight.Latitude} {weight.Longitude})')";
-                    }
+                    var locationString = LocationString(weight.Latitude, weight.Longitude);
+
                     var sql =
                         "Insert into mongoose.weight (pack_history_id, weight, time, accuracy, session, collar_weight, comment, location)" +
                         $" values (@pack_history_id, @Weight, @Time, @Accuracy, @Session, @CollarWeight, @Comment, {locationString})";
@@ -190,7 +185,7 @@ namespace psDataImporter.Data
             {
                 if (string.IsNullOrEmpty(newIndividual.Name))
                 {
-                    Logger.Warn("Individual with null name.");
+                    Logger.Warn("Tried to add individual with null name.");
                     return;
                 }
                 // see if we have the individual
@@ -214,13 +209,26 @@ namespace psDataImporter.Data
                         conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
                             new {sex = newIndividual.Sex, id = inDatabaseIndividual.IndividualId});
                     }
-                    // if litter id is set then do the litter thing... worry about that when I have some data!
+                    if (inDatabaseIndividual.LitterId == null && newIndividual.LitterId != null)
+                    {
+                        Logger.Info(
+                            $"Added litter: '{newIndividual.LitterId}' to individiual with Id : '{inDatabaseIndividual.IndividualId}'");
+
+                        conn.Execute("Update mongoose.Individual set litter_id = @litterId where individual_id = @id",
+                            new { litterId = newIndividual.LitterId, id = inDatabaseIndividual.IndividualId });
+                    }
                 }
                 else
                 {
+                    var isMongoose = true;
+                    var notMongooses = new[] { "NONE", "ALL", "UNK", "ALLBS", "MOST", "INF", "NEXT LITTER", "Unknown", "SUB" };
+                    if (notMongooses.Contains(newIndividual.Name))
+                    {
+                        isMongoose = false;
+                    }
                     conn.ExecuteScalar<int>(
-                        "Insert into mongoose.individual (name, sex) values (@name, @sex) ON CONFLICT DO NOTHING",
-                        new {newIndividual.Name, newIndividual.Sex});
+                        "Insert into mongoose.individual (name, sex, litter_id, is_mongoose) values (@name, @sex, @litterId, @is_mongoose) ON CONFLICT DO NOTHING",
+                        new {newIndividual.Name, newIndividual.Sex, litterId = newIndividual.LitterId, is_mongoose = isMongoose });
                     Logger.Info($"created indivual : {newIndividual.Name}");
                 }
             }
@@ -409,13 +417,8 @@ namespace psDataImporter.Data
             string status, DateTime date, string exact, string cause, string comment)
         {
             // create geography if lat and long are present.
-            var locationString = "NULL";
-            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude))
-            {
-                locationString =
-                    $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
-            }
-
+            var locationString = LocationString(latitude, longitude);
+          
             var sql =
                 "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, cause, comment, location )" +
                 $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @cause, @Comment, {locationString})";
@@ -433,13 +436,7 @@ namespace psDataImporter.Data
         public void LinkPackEvents(int packId, int packEventCodeId, string status, DateTime date,
             string exact, string cause, string comment, string latitude, string longitude)
         {
-            // create geography if lat and long are present.
-            var locationString = "NULL";
-            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude))
-            {
-                locationString =
-                    $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
-            }
+            var locationString = LocationString(latitude, longitude);
 
             var sql =
                 "Insert into mongoose.pack_event (pack_id, pack_event_code_id, status, date, exact, cause, comment, location )" +
@@ -521,13 +518,7 @@ namespace psDataImporter.Data
             var pesterer3Id = GetIndividualId(oestrus.PESTERER_ID_3);
             var pesterer4Id = GetIndividualId(oestrus.PESTERER_ID_4);
 
-            // create geography if lat and long are present.
-            var locationString = "NULL";
-            if (!string.IsNullOrEmpty(oestrus.Latitude) && !string.IsNullOrEmpty(oestrus.Longitude))
-            {
-                locationString =
-                    $"ST_GeographyFromText('SRID=4326;POINT({oestrus.Latitude} {oestrus.Longitude})')";
-            }
+            var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
             var sql = $"INSERT INTO mongoose.oestrus("
                       + $"pack_history_id, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)"
@@ -673,13 +664,7 @@ namespace psDataImporter.Data
             }
             foreach (var secondpack in secondPackIds)
             {
-                // create geography if lat and long are present.
-                var locationString = "NULL";
-                if (!string.IsNullOrEmpty(lifeHistory.Latitude) && !string.IsNullOrEmpty(lifeHistory.Longitude))
-                {
-                    locationString =
-                        $"ST_GeographyFromText('SRID=4326;POINT({lifeHistory.Latitude} {lifeHistory.Longitude})')";
-                }
+                var locationString = LocationString(lifeHistory.Latitude, lifeHistory.Longitude);
 
                 using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                     .ConnectionStrings["postgresConnectionString"]
@@ -835,6 +820,47 @@ namespace psDataImporter.Data
                     }
                 );
             }
+        }
+
+        public void InsertBabysittingRecord(int packHistoryId, int? litterId, DateTime? startTime, DateTime? endTime,
+            int? denDistance, BABYSITTING_RECORDS babysitting)
+        {
+            Logger.Info($"Adding babysitting record: {babysitting.BS}");
+
+            var locationString = LocationString(babysitting.Latitude, babysitting.Longitude);
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.babysitting(
+                         babysitter_pack_history_id, date, litter_id, type, time_start, den_distance, time_end, accuracy, comment, location)
+                            VALUES (@babysitter_pack_history_id, @date, @litter_id, @type, @time_start, @den_distance, @time_end, @accuracy, @comment,  {locationString})"
+                    ,
+                    new
+                    {
+                        babysitter_pack_history_id = packHistoryId,
+                        date = babysitting.DATE,
+                        litter_id = litterId,
+                        type = babysitting.TYPE,
+                        time_start = startTime,
+                        den_distance = denDistance,
+                        time_end = endTime,
+                        accuracy = babysitting.ACCURACY,
+                        comment = babysitting.COMMENT
+                    }
+                );
+            }
+        }
+
+        private string LocationString(string latitude, string longitude)
+        {
+            var locationString = "NULL";
+            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude) && latitude != "0" && longitude != "0")
+            {
+                locationString = $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
+            }
+            return locationString;
         }
     }
 }

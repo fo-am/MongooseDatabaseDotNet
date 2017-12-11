@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 using NLog;
 using pgDataImporter.Core;
@@ -14,6 +15,8 @@ namespace psDataImporter.Console
 
         private static void Main(string[] args)
         {
+            var stopwatch = Stopwatch.StartNew();
+            
             var accessdata = new AccessRepository();
             var postgresData = new PostgresCore();
 
@@ -25,7 +28,7 @@ namespace psDataImporter.Console
             postgresData.ProccessRadioCollarData(radioCollarData);
 
             var lifeHistories = accessdata.GetLifeHistorys();
-              postgresData.ProcessLifeHistories(lifeHistories);
+            postgresData.ProcessLifeHistories(lifeHistories);
 
             var weights = accessdata.GetWeights();
             postgresData.ProcessWeights(weights);
@@ -33,10 +36,18 @@ namespace psDataImporter.Console
             var oestruses = accessdata.GetOestruses();
             postgresData.ProcessOestrusData(oestruses);
 
-            List<CapturesNew2013> captures = accessdata.GetCaptures();
+            var captures = accessdata.GetCaptures();
             postgresData.ProcessCaptures(captures);
 
-            Logger.Info("done");
+            var pups = accessdata.GetPups();
+            postgresData.ProcessPups(pups);
+
+            var babysittingRecords = accessdata.GetBabysittingRecords();
+            postgresData.ProcessBabysittingRecords(babysittingRecords);
+
+            stopwatch.Stop();
+
+            Logger.Info($"done. Time taken {stopwatch.Elapsed}.");
             System.Console.ReadLine();
         }
     }

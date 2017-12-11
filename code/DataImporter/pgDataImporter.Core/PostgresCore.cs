@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using NLog;
-
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
@@ -104,11 +102,11 @@ namespace pgDataImporter.Core
                     var packId = pg.GetPackId(lifeHistory.Pack);
                     // add litter info
                     pg.InsertSingleLitter(lifeHistory.Litter, packId);
-                    int litterId = pg.GetLitterId(lifeHistory.Litter);
+                    var litterId = pg.GetLitterId(lifeHistory.Litter).Value;
 
                     // add litter event
                     pg.AddLitterEventCode(lifeHistory.Code);
-                    int litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
+                    var litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
                     // link litter event to litter.
                     pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
                 }
@@ -515,7 +513,7 @@ namespace pgDataImporter.Core
                     pg.InsertSingleLitter(pupAssociation.LITTER, packId.Value);
                     pupLitter = pg.GetLitterId(pupAssociation.LITTER);
                 }
-             
+
                 pg.InsertIndividual(new Individual
                 {
                     Name = pupAssociation.PUP,
@@ -545,15 +543,133 @@ namespace pgDataImporter.Core
             {
                 return null;
             }
-          
-                pg.InsertIndividual(new Individual
-                {
-                    Name = pupAssociation.ESCORT,
-                    Sex = pupAssociation.ESC_SEX
-                });
+
+            pg.InsertIndividual(new Individual
+            {
+                Name = pupAssociation.ESCORT,
+                Sex = pupAssociation.ESC_SEX
+            });
             var escortId = pg.GetIndividualId(pupAssociation.ESCORT);
 
             return escortId;
+        }
+
+        public void ProcessBabysittingRecords(List<BABYSITTING_RECORDS> babysittingRecords)
+        {
+            // add pack that is being watched
+            // add litter being watched
+            // add individual being watched. (with pack and sex... NOT litter)
+            // if no individual then add null, then add unk, most, all to somewhere else??
+            // process times (if -1 null, if number then hours. if split on . then hours mins) 830, 836 and 1505 are special numbers.
+
+            var pg = new PostgresRepository();
+            foreach (var babysitting in babysittingRecords)
+            {
+                var packId = pg.TryGetPackId(babysitting.GROUP);
+
+                if (packId == null)
+                {
+                    pg.InsertSinglePack(babysitting.GROUP);
+                    packId = pg.GetPackId(babysitting.GROUP);
+                }
+                var watchedLitter = pg.GetLitterId(babysitting.LITTER_CODE);
+                if (watchedLitter == null && !string.IsNullOrEmpty(babysitting.LITTER_CODE))
+                {
+                    pg.InsertSingleLitter(babysitting.LITTER_CODE, packId.Value);
+                    watchedLitter = pg.GetLitterId(babysitting.LITTER_CODE);
+                }
+                
+                pg.InsertIndividual(new Individual
+                {
+                    Name = babysitting.BS,
+                    Sex = babysitting.SEX
+                });
+
+                var babysitterId = pg.GetIndividualId(babysitting.BS);
+
+                pg.InsertPackHistory(packId.Value, babysitterId, babysitting.DATE);
+                var packHistoryId = pg.GetPackHistoryId(babysitting.GROUP, babysitting.BS);
+
+              
+                var startTime = GetTimeFromString(babysitting.TIME_START);
+                var endTime = GetTimeFromString(babysitting.TIME_END);
+
+                var denDistance = GetDenDistance(babysitting.DEN_DIST);
+
+                pg.InsertBabysittingRecord(packHistoryId, watchedLitter, startTime, endTime, denDistance, babysitting);
+
+            }
+
+
+        }
+
+        private int? GetDenDistance(string babysittingDenDist)
+        {
+            if (string.IsNullOrEmpty(babysittingDenDist) || babysittingDenDist == "-1" || babysittingDenDist == "1-" ||
+                babysittingDenDist == "'" || babysittingDenDist == "UNK")
+            {
+                return null;
+            }
+            if (babysittingDenDist == ">10")
+            {
+                return 10;
+            }
+            if (babysittingDenDist == "400M")
+            {
+                return 400;
+            }
+            return int.Parse(babysittingDenDist);
+        }
+
+        private static DateTime? GetTimeFromString(string timeString)
+        {  
+            //Times are strings that need to be turned into datetime times.
+            // Example times are 
+            // 12  => 12:00
+            // 13.4 => 13:40
+            // 3.32 => 3:32
+            // there are some special numbers that are picked out individualy.
+            // -1 and empty strings are nulls in the database.
+
+            DateTime? timestart = DateTime.MinValue;
+
+            if (timeString == "-1" || string.IsNullOrEmpty(timeString))
+            {
+                timestart = null;
+            }
+            else
+            {
+          
+                var tims = Array.ConvertAll(timeString.Split('.'), s => int.Parse(s));
+                if (tims.Length == 2)
+                {
+                    timestart = timestart.Value.AddHours(tims[0]);
+                    var minutes = tims[1];
+                    if (minutes<10)
+                    {
+                        minutes = minutes * 10;
+                    }
+                    timestart = timestart.Value.AddMinutes(minutes);
+                }
+                if (tims.Length == 1)
+                {
+                    timestart = timestart.Value.AddHours(tims[0]);
+                }
+            }
+            //830, 836 and 1505 
+            if (timeString == "830")
+            {
+                timestart = new DateTime().AddHours(8).AddMinutes(30);
+            }
+            if (timeString == "836")
+            {
+                timestart = new DateTime().AddHours(8).AddMinutes(36);
+            }
+            if (timeString == "1705")
+            {
+                timestart = new DateTime().AddHours(17).AddMinutes(5);
+            }
+            return timestart;
         }
     }
 }

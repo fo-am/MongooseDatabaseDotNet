@@ -775,7 +775,7 @@ namespace psDataImporter.Data
         private bool? Boolify(string valueToCheck)
         {
             var yesValues = new[] {"Y", "YES", "YE S", "YEYS", "1"};
-            var noValues = new[] {"N", "NO", "0", "-1"};
+            var noValues = new[] {"N", "NO", "0", "-1", "X"};
 
 
             if (yesValues.Contains(valueToCheck))
@@ -865,9 +865,7 @@ namespace psDataImporter.Data
 
         public void InsertGroupComposition(int? packId, int? malesOverOneYear, int? femalesOverOneYear, int? malesOverThreeMonths, int? femalesOverThreeMonths, DiaryAndGrpComposition groupComposition)
         {
-            Logger.Info($"Adding group composition: {groupComposition.Pack}");
-
-           // var locationString = LocationString(groupComposition.Latitude, groupComposition.Longitude);
+                // var locationString = LocationString(groupComposition.Latitude, groupComposition.Longitude);
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -896,6 +894,32 @@ namespace psDataImporter.Data
                         pups_in_den = groupComposition.Pups_in_Den,
                         comment = groupComposition.Comment
 
+                    }
+                );
+            }
+        }
+
+        public void InsertPooRecord(int packHistoryId, DateTime? emergenceTime, DateTime? timeOfCollection,
+            POO_DATABASE pooSample)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.poo_sample(
+                          pack_history_id, sample_number, date, pack_status, emergence_time, collection_time, freezer_time, parasite_sample, comment)
+                            VALUES (@pack_history_id, @sample_number, @date, @pack_status, @emergence_time, @collection_time, @freezer_time, @parasite_sample, @comment)",
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        sample_number = pooSample.Sample_Number,
+                        date = pooSample.Date,
+                        pack_status = pooSample.Pack_Status,
+                        emergence_time = emergenceTime,
+                        collection_time = timeOfCollection,
+                        freezer_time = pooSample.Time_in_Freezer,
+                        parasite_sample = Boolify(pooSample.Parasite_sample_taken),
+                        comment = pooSample.Comment
                     }
                 );
             }

@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="178,360" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="536,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -158,7 +158,18 @@ SELECT date, p.name as pack, observer, session, group_status, weather_start, wea
     join mongoose.pack p on p.pack_id = gc.pack_id;
 
 ALTER TABLE mongoose."Group Composition"
-    OWNER TO postgres;]]></appended-sql>
+    OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."Poo Database" AS
+SELECT sample_number, date, p.name as pack, pack_status, emergence_time, freezer_time , i.name as individual, collection_time, parasite_sample, comment
+FROM mongoose.poo_sample ps
+join mongoose.pack_history ph on ph.pack_history_id = ps.pack_history_id
+join mongoose.individual i on i.individual_id = ph.individual_id 
+join mongoose.pack p on p.pack_id = ph.pack_id;
+
+ALTER TABLE mongoose."Poo Database"
+    OWNER TO postgres;
+]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -172,7 +183,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1047.69" y="556.923"/>
+	<position x="1040" y="560"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -199,7 +210,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1409.23" y="627.692"/>
+	<position x="1400" y="620"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -237,7 +248,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1750.77" y="633.846"/>
+	<position x="1760" y="640"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -291,7 +302,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2426.15" y="507.692"/>
+	<position x="2420" y="540"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -338,7 +349,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="538.462" y="816.926"/>
+	<position x="540" y="820"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -383,7 +394,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1081.54" y="700"/>
+	<position x="1080" y="700"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -436,7 +447,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="998.462" y="910.769"/>
+	<position x="1000" y="920"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -457,7 +468,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1763.08" y="796.923"/>
+	<position x="1760" y="800"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -497,7 +508,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1743.08" y="986.154"/>
+	<position x="1740" y="980"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -524,7 +535,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1440" y="507.692"/>
+	<position x="1440" y="500"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -554,7 +565,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2781.54" y="769.231"/>
+	<position x="2780" y="760"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -584,10 +595,10 @@ ALTER TABLE mongoose."Group Composition"
 	</constraint>
 </table>
 
-<table name="ultrasound" hide-ext-attribs="true">
+<table name="ultrasound">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2758.46" y="29.2308"/>
+	<position x="2760" y="20"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -708,7 +719,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2450.77" y="15.3846"/>
+	<position x="2460" y="20"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -770,7 +781,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1389.23" y="961.538"/>
+	<position x="1380" y="960"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -788,7 +799,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1395.38" y="753.846"/>
+	<position x="1400" y="760"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -840,7 +851,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2781.54" y="1003.08"/>
+	<position x="2780" y="1000"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1040,7 +1051,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1740" y="463.077"/>
+	<position x="1720" y="440"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1086,7 +1097,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2792.3" y="458.462"/>
+	<position x="2800" y="460"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1124,7 +1135,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2118.46" y="52.3077"/>
+	<position x="2120" y="60"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1207,7 +1218,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1020" y="1072.3"/>
+	<position x="1020" y="1080"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1260,7 +1271,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1610.77" y="18.4615"/>
+	<position x="1620" y="20"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1310,7 +1321,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="blood_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2167.69" y="1003.08"/>
+	<position x="2160" y="1000"/>
 	<column name="blood_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1372,7 +1383,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1578.46" y="169.231"/>
+	<position x="1560" y="160"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1437,7 +1448,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="dna_samples" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2490.77" y="838.462"/>
+	<position x="2500" y="840"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1493,7 +1504,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1064.62" y="109.231"/>
+	<position x="1060" y="100"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1570,7 +1581,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="babysitting" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1727.69" y="1106.15"/>
+	<position x="1720" y="1100"/>
 	<column name="babysitting_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1634,7 +1645,7 @@ ALTER TABLE mongoose."Group Composition"
 <table name="anti_parasite" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2446.15" y="1286.15"/>
+	<position x="2440" y="1280"/>
 	<column name="anti_parasite_id" not-null="true">
 		<type name="smallint" length="0"/>
 	</column>

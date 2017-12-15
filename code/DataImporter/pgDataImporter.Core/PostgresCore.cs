@@ -672,7 +672,7 @@ namespace pgDataImporter.Core
             return timestart;
         }
 
-        public void ProcessGroupCompositions(List<DiaryAndGrpComposition> groupCompositions)
+        public void ProcessGroupCompositions(IEnumerable<DiaryAndGrpComposition> groupCompositions)
         {
             var pg = new PostgresRepository();
             foreach (var groupComposition in groupCompositions)
@@ -711,6 +711,83 @@ namespace pgDataImporter.Core
             if (int.TryParse(numberString, out int number))
             {
                 return number;
+            }
+            return null;
+        }
+
+        public void ProcessPoo(IEnumerable<POO_DATABASE> pooSamples)
+        {
+            var pg = new PostgresRepository();
+            foreach (var pooSample in pooSamples)
+            {
+                if (string.IsNullOrEmpty(pooSample.Pack) && string.IsNullOrEmpty(pooSample.Individual))
+                {
+                    Logger.Info("Capture with no pack or individual.");
+                    continue;
+                }
+                // do individual
+                if (string.IsNullOrEmpty(pooSample.Individual))
+                {
+                    pooSample.Individual = "Unknown";
+                }
+
+                pg.InsertIndividual(new Individual {Name = pooSample.Individual});
+                var individualId = pg.GetIndividualId(pooSample.Individual);
+
+                // do pack
+                if (string.IsNullOrEmpty(pooSample.Pack))
+                {
+                    pooSample.Pack = "Unknown";
+                }
+
+                pg.InsertSinglePack(pooSample.Pack);
+
+
+                var packid = pg.GetPackId(pooSample.Pack);
+
+                // Link Pack and Individual
+                InsertpackHistory(packid, individualId, pooSample.Date, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(pooSample.Pack, pooSample.Individual);
+
+                var emergenceTime = GetDateTime(pooSample.Emergence_Time);
+                var timeOfCollection = GetDateTime(pooSample.Time_of_Collection);
+
+                pg.InsertPooRecord(packHistoryId, emergenceTime, timeOfCollection, pooSample);
+
+                //Sample_Number 
+                //Date 
+                //Pack_Status
+                //Emergence_Time 
+                //Time_in_Freezer 
+                //Individual 
+                //Time_of_Collection 
+                //Parasite_sample_taken 
+                //Comments 
+
+
+
+
+
+            }
+        }
+
+        private DateTime? GetDateTime(string time)
+        {
+            if (string.IsNullOrEmpty(time) || time == "UNK" || time == "PM" || time == "-1")
+            {
+                return null;
+            }
+            time = time.Replace(';', ':');
+
+            if (DateTime.TryParse(time, out var date))
+            {
+                return date;
+            }
+
+            if (time == "1500")
+            {
+                return new DateTime().AddHours(15).AddMinutes(00);
             }
             return null;
         }

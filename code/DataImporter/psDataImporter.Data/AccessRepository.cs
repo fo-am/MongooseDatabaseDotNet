@@ -305,7 +305,7 @@ namespace psDataImporter.Data
         }
 
 
-        public List<DiaryAndGrpComposition> GetGroupCompositions()
+        public IEnumerable<DiaryAndGrpComposition> GetGroupCompositions()
         {
             using (var conn = new OleDbConnection(ConfigurationManager
                 .ConnectionStrings["accessConnectionString"]
@@ -333,6 +333,31 @@ namespace psDataImporter.Data
             [Comment]
              
            FROM [DIARY AND GRP COMPOSITION];").ToList();
+            }
+        }
+
+        public List<POO_DATABASE> GetPoo()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting poo samples.");
+
+                return conn.Query<POO_DATABASE>(@"
+                                select
+                                 [Sample Number] as Sample_Number
+                                ,[Date]
+                                ,Pack
+                                ,[Pack Status] as Pack_Status
+                                ,[Emergence Time] as Emergence_Time
+                                ,[Time in Freezer] as Time_in_Freezer
+                                ,Individual
+                                ,[Time of Collection] as Time_of_Collection
+                                ,[Parasite sample taken] as Parasite_sample_taken
+                                ,Comments
+             
+                   FROM [POO DATABASE];").ToList();
             }
         }
     }

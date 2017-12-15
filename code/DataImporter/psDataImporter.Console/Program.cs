@@ -49,6 +49,8 @@ namespace psDataImporter.Console
             var groupCompositions = accessdata.GetGroupCompositions();
             postgresData.ProcessGroupCompositions(groupCompositions);
 
+            var pooSamples = accessdata.GetPoo();
+            postgresData.ProcessPoo(pooSamples);
 
             stopwatch.Stop();
 

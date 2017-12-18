@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="536,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="185,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -1165,6 +1165,9 @@ ALTER TABLE mongoose."Poo Database"
 	</column>
 	<constraint name="poo_sample_pk" type="pk-constr" table="mongoose.poo_sample">
 		<columns names="poo_sample_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="sample_number_unique" type="uq-constr" table="mongoose.poo_sample">
+		<columns names="sample_number" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">

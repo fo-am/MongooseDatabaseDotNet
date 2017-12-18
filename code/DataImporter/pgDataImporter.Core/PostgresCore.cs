@@ -55,21 +55,39 @@ namespace pgDataImporter.Core
         public void ProccessRadioCollarData(IEnumerable<RadioCollar> radioCollarData)
         {
             Logger.Info("Starting to add radio collar data.");
-            radioCollarData = radioCollarData as IList<RadioCollar> ?? radioCollarData.ToList();
             var pg = new PostgresRepository();
-            pg.AddPacks(radioCollarData.Select(s => s.PACK).Distinct());
-            pg.AddIndividuals(radioCollarData.Select(s => new Individual { Name = s.INDIVIDUAL }).Distinct());
 
-            var pgPacks = pg.GetAllPacks();
-            var pgIndividuals = pg.GetAllIndividuals();
+            foreach (var radioCollar in radioCollarData)
+            {
+                // do individual
+                if (string.IsNullOrEmpty(radioCollar.INDIVIDUAL))
+                {
+                    radioCollar.INDIVIDUAL = "Unknown";
+                }
 
-            AddPackHistories(
-                radioCollarData.Select(collar => new PackHistoryDto(collar.INDIVIDUAL, collar.PACK,
-                    GetMinimumDateFromRadioCollar(collar))), pgPacks,
-                pgIndividuals, pg);
+                pg.InsertIndividual(new Individual { Name = radioCollar.INDIVIDUAL });
+                var individualId = pg.GetIndividualId(radioCollar.INDIVIDUAL);
 
-            AddRadioCollarData(radioCollarData, pgIndividuals, pg);
+                // do pack
+                if (string.IsNullOrEmpty(radioCollar.PACK))
+                {
+                    radioCollar.PACK = "Unknown";
+                }
 
+                pg.InsertSinglePack(radioCollar.PACK);
+
+                var packid = pg.GetPackId(radioCollar.PACK);
+
+                // Link Pack and Individual
+                InsertpackHistory(packid, individualId, radioCollar.DATE_ENTERED, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(radioCollar.PACK, radioCollar.INDIVIDUAL);
+
+                // add the data!
+                pg.AddRadioCollar(packHistoryId, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
+                    radioCollar.FREQUENCY,
+                    radioCollar.WEIGHT, radioCollar.DATE_ENTERED, radioCollar.COMMENT);
+            }
             Logger.Info("Done adding radio collar data.");
         }
 
@@ -236,29 +254,6 @@ namespace pgDataImporter.Core
             return (string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv)) ||
                    (lifeHistory.Indiv == lifeHistory.Litter && !string.IsNullOrEmpty(lifeHistory.Indiv)) &&
                    !string.IsNullOrEmpty(lifeHistory.Code);
-        }
-
-        private void AddRadioCollarData(IEnumerable<RadioCollar> radioCollarData, List<Individual> pgIndividuals,
-            PostgresRepository pg)
-        {
-            pg.RemoveRadioCollarData();
-
-            foreach (var radioCollar in radioCollarData)
-            {
-                if (string.IsNullOrEmpty(radioCollar.INDIVIDUAL))
-                {
-                    Logger.Warn("individual name null");
-                    continue;
-                }
-                var pack_history_id =
-                    pg.GetPackHistoryId(radioCollar.PACK,
-                        radioCollar
-                            .INDIVIDUAL); //pgIndividuals.Single(i => i.Name == radioCollar.INDIVIDUAL).IndividualId;
-
-                pg.AddRadioCollar(pack_history_id, radioCollar.FITTED, radioCollar.TURNED_ON, radioCollar.REMOVED,
-                    radioCollar.FREQUENCY,
-                    radioCollar.WEIGHT, radioCollar.DATE_ENTERED, radioCollar.COMMENT);
-            }
         }
 
         private static DateTime GetMinimumDateFromRadioCollar(RadioCollar ph)
@@ -754,21 +749,6 @@ namespace pgDataImporter.Core
                 var timeOfCollection = GetDateTime(pooSample.Time_of_Collection);
 
                 pg.InsertPooRecord(packHistoryId, emergenceTime, timeOfCollection, pooSample);
-
-                //Sample_Number 
-                //Date 
-                //Pack_Status
-                //Emergence_Time 
-                //Time_in_Freezer 
-                //Individual 
-                //Time_of_Collection 
-                //Parasite_sample_taken 
-                //Comments 
-
-
-
-
-
             }
         }
 

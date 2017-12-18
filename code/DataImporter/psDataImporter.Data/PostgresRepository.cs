@@ -902,6 +902,12 @@ namespace psDataImporter.Data
         public void InsertPooRecord(int packHistoryId, DateTime? emergenceTime, DateTime? timeOfCollection,
             POO_DATABASE pooSample)
         {
+            if (pooSample.Sample_Number == "F08213" && pooSample.Individual == "TM373")
+            {
+                pooSample.Sample_Number = "F08213A";
+                pooSample.Comment += " Duplicate sample number F08213";
+            }
+
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))

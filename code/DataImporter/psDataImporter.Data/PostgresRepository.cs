@@ -27,6 +27,7 @@ namespace psDataImporter.Data
                     .Query<Pack>("Select pack_id as PackId, name, pack_created_date as CreatedDate from mongoose.pack")
                     .ToList();
             }
+
             return pgPacks;
         }
 
@@ -42,6 +43,7 @@ namespace psDataImporter.Data
                         "Select individual_id as IndividualId, litter_id as LitterId, name, sex from mongoose.individual")
                     .ToList();
             }
+
             return pgIndividuals;
         }
 
@@ -81,6 +83,7 @@ namespace psDataImporter.Data
 
                         cmd.ExecuteNonQuery();
                     }
+
                     Logger.Info($"Insert weight for: {weight.Indiv} weight {weight.Weight}");
                 }
             }
@@ -188,6 +191,7 @@ namespace psDataImporter.Data
                     Logger.Warn("Tried to add individual with null name.");
                     return;
                 }
+
                 // see if we have the individual
                 // if so do we have all the data we have at this point?
                 // if not then update it with what we have...
@@ -209,26 +213,35 @@ namespace psDataImporter.Data
                         conn.Execute("Update mongoose.Individual set sex = @sex where individual_id = @id",
                             new {sex = newIndividual.Sex, id = inDatabaseIndividual.IndividualId});
                     }
+
                     if (inDatabaseIndividual.LitterId == null && newIndividual.LitterId != null)
                     {
                         Logger.Info(
                             $"Added litter: '{newIndividual.LitterId}' to individiual with Id : '{inDatabaseIndividual.IndividualId}'");
 
                         conn.Execute("Update mongoose.Individual set litter_id = @litterId where individual_id = @id",
-                            new { litterId = newIndividual.LitterId, id = inDatabaseIndividual.IndividualId });
+                            new {litterId = newIndividual.LitterId, id = inDatabaseIndividual.IndividualId});
                     }
                 }
                 else
                 {
                     var isMongoose = true;
-                    var notMongooses = new[] { "NONE", "ALL", "UNK", "ALLBS", "MOST", "INF", "NEXT LITTER", "Unknown", "SUB" };
+                    var notMongooses = new[]
+                        {"NONE", "ALL", "UNK", "ALLBS", "MOST", "INF", "NEXT LITTER", "Unknown", "SUB"};
                     if (notMongooses.Contains(newIndividual.Name))
                     {
                         isMongoose = false;
                     }
+
                     conn.ExecuteScalar<int>(
                         "Insert into mongoose.individual (name, sex, litter_id, is_mongoose) values (@name, @sex, @litterId, @is_mongoose) ON CONFLICT DO NOTHING",
-                        new {newIndividual.Name, newIndividual.Sex, litterId = newIndividual.LitterId, is_mongoose = isMongoose });
+                        new
+                        {
+                            newIndividual.Name,
+                            newIndividual.Sex,
+                            litterId = newIndividual.LitterId,
+                            is_mongoose = isMongoose
+                        });
                     Logger.Info($"created indivual : {newIndividual.Name}");
                 }
             }
@@ -249,6 +262,7 @@ namespace psDataImporter.Data
                 Logger.Warn("Tried to create a null pack.");
                 return;
             }
+
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
@@ -256,6 +270,7 @@ namespace psDataImporter.Data
                 conn.ExecuteScalar<int>("Insert into mongoose.pack (name) values (@name) ON CONFLICT DO NOTHING ",
                     new {name = packName});
             }
+
             Logger.Info($"created pack: {packName}");
         }
 
@@ -332,6 +347,7 @@ namespace psDataImporter.Data
                     $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
                 return;
             }
+
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
@@ -418,7 +434,7 @@ namespace psDataImporter.Data
         {
             // create geography if lat and long are present.
             var locationString = LocationString(latitude, longitude);
-          
+
             var sql =
                 "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, cause, comment, location )" +
                 $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @cause, @Comment, {locationString})";
@@ -567,6 +583,7 @@ namespace psDataImporter.Data
                     "Insert into mongoose.litter (name, pack_id) values (@name, @packId) ON CONFLICT DO NOTHING ",
                     new {name = litterName, packId = packId});
             }
+
             Logger.Info($"created litter: {litterName}");
         }
 
@@ -652,6 +669,7 @@ namespace psDataImporter.Data
                 {
                     continue;
                 }
+
                 InsertSinglePack(secondpack);
             }
 
@@ -662,6 +680,7 @@ namespace psDataImporter.Data
                 secondPackIds.Clear();
                 secondPackIds.Add(null);
             }
+
             foreach (var secondpack in secondPackIds)
             {
                 var locationString = LocationString(lifeHistory.Latitude, lifeHistory.Longitude);
@@ -782,6 +801,7 @@ namespace psDataImporter.Data
             {
                 return true;
             }
+
             if (noValues.Contains(valueToCheck))
             {
                 return false;
@@ -807,7 +827,9 @@ namespace psDataImporter.Data
             {
                 conn.Execute($@"INSERT INTO mongoose.pup_association(
                            pup_pack_history_id, escort_id, date, strength, confidence, location, comment )
-                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment)"
+                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {
+                            locationString
+                        }, @comment)"
                     ,
                     new
                     {
@@ -835,7 +857,9 @@ namespace psDataImporter.Data
             {
                 conn.Execute($@"INSERT INTO mongoose.babysitting(
                          babysitter_pack_history_id, date, litter_id, type, time_start, den_distance, time_end, accuracy, comment, location)
-                            VALUES (@babysitter_pack_history_id, @date, @litter_id, @type, @time_start, @den_distance, @time_end, @accuracy, @comment,  {locationString})"
+                            VALUES (@babysitter_pack_history_id, @date, @litter_id, @type, @time_start, @den_distance, @time_end, @accuracy, @comment,  {
+                            locationString
+                        })"
                     ,
                     new
                     {
@@ -896,7 +920,6 @@ namespace psDataImporter.Data
                         unknown_pups = groupComposition.Unk_em_pups,
                         pups_in_den = groupComposition.Pups_in_Den,
                         comment = groupComposition.Comment
-
                     }
                 );
             }
@@ -905,6 +928,9 @@ namespace psDataImporter.Data
         public void InsertPooRecord(int packHistoryId, DateTime? emergenceTime, DateTime? timeOfCollection,
             POO_DATABASE pooSample)
         {
+            Logger.Info($"Insert poo: {pooSample.Individual}");
+
+
             if (pooSample.Sample_Number == "F08213" && pooSample.Individual == "TM373")
             {
                 pooSample.Sample_Number = "F08213A";

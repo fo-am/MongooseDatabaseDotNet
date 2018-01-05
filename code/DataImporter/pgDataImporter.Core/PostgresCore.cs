@@ -784,5 +784,10 @@ namespace pgDataImporter.Core
         {
             throw new NotImplementedException();
         }
+
+        public void ProcessConditionFemales(List<Maternal_Condition_Experiment_Females> conditionFemales)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

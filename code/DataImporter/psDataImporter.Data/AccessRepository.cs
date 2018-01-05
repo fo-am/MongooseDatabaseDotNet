@@ -390,7 +390,7 @@ namespace psDataImporter.Data
                 .ConnectionStrings["accessConnectionString"]
                 .ConnectionString))
             {
-                Logger.Info("Getting meterological data.");
+                Logger.Info("Getting maternal condition:litters data.");
 
                 return conn.Query<Maternal_Condition_Experiment_Litters>(@"
                                         select
@@ -409,5 +409,27 @@ namespace psDataImporter.Data
                                          FROM [Maternal Condition Experiment: Litters];").ToList();
             }
         }
+
+        public List<Maternal_Condition_Experiment_Females> GetMaternalConditionFemales()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting maternal condition:females data.");
+
+                return conn.Query<Maternal_Condition_Experiment_Females>(@"
+                                                            select
+                                                            [Pack]
+                                                            ,[Litter]
+                                                            ,[Experiment type] as Experiment_type
+                                                            ,[Female ID] as Female_ID
+                                                            ,[Category]
+                                                            ,[Paired female ID] as Paired_female_ID
+                                                            ,[Notes]
+                                                            FROM [Maternal Condition Experiment: Females];").ToList();
+            }
+
     }
+}
 }

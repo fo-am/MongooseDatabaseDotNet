@@ -52,6 +52,15 @@ namespace psDataImporter.Console
             var pooSamples = accessdata.GetPoo();
             postgresData.ProcessPoo(pooSamples);
 
+            var weatherData = accessdata.GetWeather();
+            postgresData.ProcessWeather(weatherData);
+
+            List<Maternal_Condition_Experiment_Litters> conditionLitter = accessdata.GetMaternalConditionLitters();
+            postgresData.ProcessConditionLitters(conditionLitter);
+
+            var conditionFemales = accessdata.GetMaternalConditionFemales();
+            postgresData.ProcessConditionFemales(conditionFemales);
+
             stopwatch.Stop();
 
             Logger.Info($"done. Time taken {stopwatch.Elapsed}.");

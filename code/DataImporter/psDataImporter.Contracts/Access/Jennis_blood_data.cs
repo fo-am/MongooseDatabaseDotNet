@@ -1,19 +1,21 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿using System;
+
+namespace psDataImporter.Contracts.Access
 {
-    class Jennis_blood_data
+   public class Jennis_blood_data
 
     {
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Mongoose { get; set; }
-        public string Trap_time { get; set; }
+        public DateTime Trap_time { get; set; }
         public string Bleed_time { get; set; }
-        public string Weight { get; set; }
-        public string Release_time { get; set; }
+        public int Weight { get; set; }
+        public DateTime? Release_time { get; set; }
         public string Sample { get; set; }
-        public string Spinning_time { get; set; }
-        public string Freeze_time { get; set; }
+        public DateTime Spinning_time { get; set; }
+        public DateTime Freeze_time { get; set; }
         public string Focal { get; set; }
-        public string Amount_of_plasma { get; set; }
+        public int Amount_of_plasma { get; set; }
         public string Comment { get; set; }
     }
 }

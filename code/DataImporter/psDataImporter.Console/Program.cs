@@ -61,6 +61,9 @@ namespace psDataImporter.Console
             var conditionFemales = accessdata.GetMaternalConditionFemales();
             postgresData.ProcessConditionFemales(conditionFemales);
 
+            var bloodData = accessdata.GetBloodData(); 
+            postgresData.ProcessBloodData(bloodData);
+
             stopwatch.Stop();
 
             Logger.Info($"done. Time taken {stopwatch.Elapsed}.");

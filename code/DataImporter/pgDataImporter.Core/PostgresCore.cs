@@ -789,5 +789,10 @@ namespace pgDataImporter.Core
         {
             throw new NotImplementedException();
         }
+
+        public void ProcessBloodData(List<Jennis_blood_data> bloodData)
+        {// freeze times are strings. need to turn em into times.
+            throw new NotImplementedException();
+        }
     }
 }

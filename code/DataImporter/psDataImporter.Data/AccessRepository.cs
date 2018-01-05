@@ -431,5 +431,31 @@ namespace psDataImporter.Data
             }
 
     }
-}
+
+        public List<Jennis_blood_data> GetBloodData()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting blood data.");
+
+                return conn.Query<Jennis_blood_data>(@"
+                                         SELECT
+                                            [Date] 
+                                            ,[Mongoose] 
+                                            ,[Trap time] as Trap_time
+                                            ,[Bleed time (from stopwatch)] as Bleed_time
+                                            ,[Weight]
+                                            ,[Release time] as Release_time
+                                            ,[Sample] 
+                                            ,[Spinning time] as Spinning_time
+                                            ,[Freeze time] as Freeze_time
+                                            ,[Focal]
+                                            ,[Amount of plasma (ul)] as Amount_of_plasma
+                                            ,[Comment] as Comment
+                                          FROM [Jenni's blood data];").ToList();
+            }
+        }
+    }
 }

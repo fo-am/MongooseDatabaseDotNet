@@ -1,8 +1,10 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿using System;
+
+namespace psDataImporter.Contracts.Access
 {
-    class DNA_SAMPLES
+    public class DNA_SAMPLES
     {
-        public string DATE { get; set; }
+        public DateTime DATE { get; set; }
         public string SAMPLE_TYPE { get; set; }
         public string TISSUE { get; set; }
         public string STORAGE_ID { get; set; }

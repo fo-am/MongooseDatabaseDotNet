@@ -484,5 +484,33 @@ namespace psDataImporter.Data
                                           FROM  [HPA samples];").ToList();
             }
         }
+
+        public List<DNA_SAMPLES> GetDnaSamples()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting DNA sample data.");
+
+                return conn.Query<DNA_SAMPLES>(@"
+                                            SELECT
+                                                [ID1]
+                                                ,[DATE]
+                                                ,[SAMPLE TYPE] as SAMPLE_TYPE
+                                                ,[TISSUE]
+                                                ,[STORAGE] as STORAGE_ID
+                                                ,[ID]
+                                                ,[TUBE ID] as TUBE_ID
+                                                ,[AGE]
+                                                ,[SEX]
+                                                ,[DISPERSAL]
+                                                ,[PACK] as PACK
+                                                ,[LITTER CODE] as LITTER
+                                                ,[COMMENT] as COMMENT
+                                                ,[box slot] as box_slot
+                                            FROM [DNA SAMPLES];").ToList();
+            }
+        }
     }
 }

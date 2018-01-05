@@ -23,10 +23,10 @@ namespace psDataImporter.Console
             postgresData.AddStaticData();
 
             var ultrasoundData = accessdata.GetUltrasounds();
-            postgresData.ProccessUltrasoundData(ultrasoundData);
+            postgresData.ProcessUltrasoundData(ultrasoundData);
 
             var radioCollarData = accessdata.GetRadioCollars();
-            postgresData.ProccessRadioCollarData(radioCollarData);
+            postgresData.ProcessRadioCollarData(radioCollarData);
 
             var lifeHistories = accessdata.GetLifeHistorys();
             postgresData.ProcessLifeHistories(lifeHistories);
@@ -61,8 +61,14 @@ namespace psDataImporter.Console
             var conditionFemales = accessdata.GetMaternalConditionFemales();
             postgresData.ProcessConditionFemales(conditionFemales);
 
-            var bloodData = accessdata.GetBloodData(); 
+            var bloodData = accessdata.GetBloodData();
             postgresData.ProcessBloodData(bloodData);
+
+            var hpaSamples = accessdata.GetHpaSamples();
+            postgresData.ProcessHpaSamples(hpaSamples);
+
+            List<DNA_SAMPLES> dnaSamples = accessdata.GetDnaSamples();
+            postgresData.ProcessDnaSamples(dnaSamples);
 
             stopwatch.Stop();
 

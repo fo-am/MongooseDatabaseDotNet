@@ -33,7 +33,7 @@ namespace pgDataImporter.Core
             Logger.Info("Done adding weights.");
         }
 
-        public void ProccessUltrasoundData(IEnumerable<Ultrasound> ultrasoundData)
+        public void ProcessUltrasoundData(IEnumerable<Ultrasound> ultrasoundData)
         {
             Logger.Info("Starting to add ultrasound data.");
             ultrasoundData = ultrasoundData as IList<Ultrasound> ?? ultrasoundData.ToList();
@@ -52,7 +52,7 @@ namespace pgDataImporter.Core
             Logger.Info("Done adding ultrasound data.");
         }
 
-        public void ProccessRadioCollarData(IEnumerable<RadioCollar> radioCollarData)
+        public void ProcessRadioCollarData(IEnumerable<RadioCollar> radioCollarData)
         {
             Logger.Info("Starting to add radio collar data.");
             var pg = new PostgresRepository();
@@ -797,6 +797,11 @@ namespace pgDataImporter.Core
 
         public void ProcessHpaSamples(List<HPA_samples> hpaSamples)
         { // Second_blood_sample_stopwatch_time is string
+            throw new NotImplementedException();
+        }
+
+        public void ProcessDnaSamples(List<DNA_SAMPLES> dnaSamples)
+        {
             throw new NotImplementedException();
         }
     }

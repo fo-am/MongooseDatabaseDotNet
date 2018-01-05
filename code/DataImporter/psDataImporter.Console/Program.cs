@@ -67,8 +67,11 @@ namespace psDataImporter.Console
             var hpaSamples = accessdata.GetHpaSamples();
             postgresData.ProcessHpaSamples(hpaSamples);
 
-            List<DNA_SAMPLES> dnaSamples = accessdata.GetDnaSamples();
+            var dnaSamples = accessdata.GetDnaSamples();
             postgresData.ProcessDnaSamples(dnaSamples);
+
+            List<Antiparasite_experiment> antiParasite = accessdata.GetAntiParasite();
+            postgresData.ProcessAntiParasite(antiParasite);
 
             stopwatch.Stop();
 

@@ -512,5 +512,32 @@ namespace psDataImporter.Data
                                             FROM [DNA SAMPLES];").ToList();
             }
         }
+
+        public List<Antiparasite_experiment> GetAntiParasite()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Antiparasite_experiment sample data.");
+
+                return conn.Query<Antiparasite_experiment>(@"
+                                            SELECT
+                                                [PACK]
+                                                ,[INDIV]
+                                                ,[STARTED EXPERIMENT] as STARTED_EXPERIMENT
+                                                ,[A FECAL SAMPLE] as A_FECAL_SAMPLE
+                                                ,[FIRST capture] as FIRST_capture
+                                                ,[EXPERIMENT GROUP] as EXPERIMENT_GROUP
+                                                ,[B FECAL] as B_FECAL
+                                                ,[C FECAL] as C_FECAL
+                                                ,[SECOND CAPTURE] as SECOND_CAPTURE
+                                                ,[D FECAL] as D_FECAL
+                                                ,[E FECAL] as E_FECAL
+                                                ,[F FECAL] as F_FECAL
+                                                ,[notes] as notes
+                                            FROM [Antiparasite experiment];").ToList();
+            }
+        }
     }
 }

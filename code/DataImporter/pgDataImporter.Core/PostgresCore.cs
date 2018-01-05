@@ -804,5 +804,10 @@ namespace pgDataImporter.Core
         {
             throw new NotImplementedException();
         }
+
+        public void ProcessAntiParasite(List<Antiparasite_experiment> antiParasite)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

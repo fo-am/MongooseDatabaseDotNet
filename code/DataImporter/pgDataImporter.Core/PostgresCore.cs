@@ -771,5 +771,18 @@ namespace pgDataImporter.Core
             }
             return null;
         }
+
+        public void ProcessWeather(List<METEROLOGICAL_DATA> weatherData)
+        {var pg = new PostgresRepository();
+            foreach (var meterologicalData in weatherData)
+            {
+                pg.InsertWeather(meterologicalData);
+            }
+        }
+
+        public void ProcessConditionLitters(List<Maternal_Condition_Experiment_Litters> conditionLitter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

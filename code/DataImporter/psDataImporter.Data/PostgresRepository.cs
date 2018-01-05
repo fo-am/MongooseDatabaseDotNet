@@ -856,16 +856,19 @@ namespace psDataImporter.Data
         private string LocationString(string latitude, string longitude)
         {
             var locationString = "NULL";
-            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude) && latitude != "0" && longitude != "0")
+            if (!string.IsNullOrEmpty(latitude) && !string.IsNullOrEmpty(longitude) && latitude != "0" &&
+                longitude != "0")
             {
                 locationString = $"ST_GeographyFromText('SRID=4326;POINT({latitude} {longitude})')";
             }
+
             return locationString;
         }
 
-        public void InsertGroupComposition(int? packId, int? malesOverOneYear, int? femalesOverOneYear, int? malesOverThreeMonths, int? femalesOverThreeMonths, DiaryAndGrpComposition groupComposition)
+        public void InsertGroupComposition(int? packId, int? malesOverOneYear, int? femalesOverOneYear,
+            int? malesOverThreeMonths, int? femalesOverThreeMonths, DiaryAndGrpComposition groupComposition)
         {
-                // var locationString = LocationString(groupComposition.Latitude, groupComposition.Longitude);
+            Logger.Info($"Insert group composition on date: {groupComposition.Date}");
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -926,6 +929,32 @@ namespace psDataImporter.Data
                         freezer_time = pooSample.Time_in_Freezer,
                         parasite_sample = Boolify(pooSample.Parasite_sample_taken),
                         comment = pooSample.Comment
+                    }
+                );
+            }
+        }
+
+        public void InsertWeather(METEROLOGICAL_DATA meterologicalData)
+        {
+            Logger.Info($"Insert weather: {meterologicalData.DATE}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.meterology(
+	 date, rain, temp_max, temp_min, temp, humidity_max, humidity_min, observer)
+	VALUES (  @date, @rain, @temp_max, @temp_min, @temp, @humidity_max, @humidity_min, @observer);",
+                    new
+                    {
+                        date = meterologicalData.DATE,
+                        rain = meterologicalData.RAIN_MWEYA,
+                        temp_max = meterologicalData.MAX_TEMP,
+                        temp_min = meterologicalData.MIN_TEMP,
+                        temp = meterologicalData.TEMP,
+                        humidity_max = meterologicalData.MAX_HUMIDITY,
+                        humidity_min = meterologicalData.MIN_HUMIDITY,
+                        observer = meterologicalData.OBSERVER
                     }
                 );
             }

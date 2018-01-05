@@ -360,5 +360,54 @@ namespace psDataImporter.Data
                    FROM [POO DATABASE];").ToList();
             }
         }
+
+        public List<METEROLOGICAL_DATA> GetWeather()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting meterological data.");
+
+                return conn.Query<METEROLOGICAL_DATA>(@"
+                                        select
+                                        [DATE]
+                                        ,[RAIN_MWEYA] as RAIN_MWEYA
+                                        ,[MAX TEMP] as MAX_TEMP
+                                        ,[MIN TEMP] as MIN_TEMP
+                                        ,[TEMP]
+                                        ,[Min humidity %] as MIN_HUMIDITY
+                                        ,[Max humidity %] as MAX_HUMIDITY
+                                        ,[TIME TAKEN] as TIME_TAKEN
+                                        ,[OBSERVER] as OBSERVER
+                                           FROM [METEROLOGICAL DATA];").ToList();
+            }
+        }
+
+        public List<Maternal_Condition_Experiment_Litters> GetMaternalConditionLitters()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting meterological data.");
+
+                return conn.Query<Maternal_Condition_Experiment_Litters>(@"
+                                        select
+                                             [Experiment Number] as Experiment_Number
+                                            ,[Pack]
+                                            ,[Litter]
+                                            ,[Preg check trap date] as Preg_check_trap_date
+                                            ,[Date started] as Date_started
+                                            ,[Type of experiment] as Type_of_experiment
+                                            ,[Foetus age at start (weeks)] as Foetus_age_at_start_weeks
+                                            ,[No of T females] as No_of_T_females
+                                            ,[No of C females] as No_of_C_females
+                                            ,[Record]
+                                            ,[Litter birth date] as Litter_birth_date
+                                            ,[Notes]
+                                         FROM [Maternal Condition Experiment: Litters];").ToList();
+            }
+        }
     }
 }

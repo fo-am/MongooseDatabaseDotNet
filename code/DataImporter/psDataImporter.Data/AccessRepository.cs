@@ -457,5 +457,32 @@ namespace psDataImporter.Data
                                           FROM [Jenni's blood data];").ToList();
             }
         }
+
+        public List<HPA_samples> GetHpaSamples()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting HPA sample data.");
+
+                return conn.Query<HPA_samples>(@"
+                                         SELECT
+                                            [Date]
+                                            ,[ID] as ID
+                                            ,[Time in trap] as Time_in_trap
+                                            ,[Time of capture] as Time_of_capture
+                                            ,[First blood sample - stopwatch time] as First_blood_sample_stopwatch_time
+                                            ,[First sample number] as First_sample_number
+                                            ,[Second blood sample - stopwatch time] as Second_blood_sample_stopwatch_time
+                                            ,[Second sample number] as Second_sample_number
+                                            ,[Head width] as Head_width
+                                            ,[Weight]
+                                            ,[Ticks]
+                                            ,[Second sample freezer time] as Second_sample_freezer_time
+                                            ,[First sample freezer time] as First_sample_freezer_time
+                                          FROM  [HPA samples];").ToList();
+            }
+        }
     }
 }

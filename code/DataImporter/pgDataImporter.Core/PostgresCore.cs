@@ -794,5 +794,10 @@ namespace pgDataImporter.Core
         {// freeze times are strings. need to turn em into times.
             throw new NotImplementedException();
         }
+
+        public void ProcessHpaSamples(List<HPA_samples> hpaSamples)
+        { // Second_blood_sample_stopwatch_time is string
+            throw new NotImplementedException();
+        }
     }
 }

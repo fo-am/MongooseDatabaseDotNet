@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using NLog;
+
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
@@ -88,6 +90,7 @@ namespace pgDataImporter.Core
                     radioCollar.FREQUENCY,
                     radioCollar.WEIGHT, radioCollar.DATE_ENTERED, radioCollar.COMMENT);
             }
+
             Logger.Info("Done adding radio collar data.");
         }
 
@@ -105,6 +108,7 @@ namespace pgDataImporter.Core
                     Logger.Warn("No valid litter, pack or individual for life history event.");
                     continue;
                 }
+
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
                     // these are ignored as they are probably bad data.
@@ -115,6 +119,7 @@ namespace pgDataImporter.Core
                         Logger.Warn("No pack id for litter name ESG0903");
                         return;
                     }
+
                     // Add pack info
                     pg.InsertSinglePack(lifeHistory.Pack);
                     var packId = pg.GetPackId(lifeHistory.Pack);
@@ -128,6 +133,7 @@ namespace pgDataImporter.Core
                     // link litter event to litter.
                     pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
                 }
+
                 if (LifeHistoryIsPackEvent(lifeHistory))
                 {
                     Logger.Info("Pack Event");
@@ -158,6 +164,7 @@ namespace pgDataImporter.Core
 
                     // record pack event
                 }
+
                 if (LifeHistoryIsIndividualEvent(lifeHistory))
                 {
                     Logger.Info("Individual Event");
@@ -197,37 +204,13 @@ namespace pgDataImporter.Core
                 {
                     Logger.Error($"LifeHistory type not determined:{lifeHistory}");
                 }
+
                 if (duplicateCount > 1)
                 {
                     Logger.Error($"LifeEvent was of multiple types:{lifeHistory}");
                     Console.WriteLine("Too many types");
                 }
             }
-
-            //pg.AddPacks(lifeHistories.Select(s => s.Pack).Distinct());
-            //pg.AddIndividuals(lifeHistories.GroupBy(lh => new {lh.Indiv, lh.Sex})
-            //    .Select(s => new Individual {Name = s.Key.Indiv, Sex = s.Key.Sex}));
-
-            //var pgPacks = pg.GetAllPacks();
-            //var pgIndividuals = pg.GetAllIndividuals();
-
-            //AddPackHistories(
-            //    lifeHistories.Select(lh => new PackHistoryDto(lh.Indiv, lh.Pack, lh.Date)), pgPacks,
-            //    pgIndividuals, pg);
-
-            //AddLitterInfo(lifeHistories.GroupBy(l => new {l.Pack, l.Indiv, l.Litter}).Select(
-            //            l => new LifeHistoryDto {Pack = l.Key.Pack, Individual = l.Key.Indiv, Litter = l.Key.Litter})
-            //        .ToList(),
-            //    pg);
-
-            //AddLitterEvents(lifeHistories.Where(l => string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
-            //                                         !string.IsNullOrEmpty(l.Code)));
-            //AddPackEvents( // note this contains IGI between packs... need to pull them out seperatly or something.
-            //    lifeHistories.Where(l => !string.IsNullOrEmpty(l.Pack) && string.IsNullOrEmpty(l.Indiv) &&
-            //                             !string.IsNullOrEmpty(l.Code)), pg);
-            //AddIndividualEvents(lifeHistories.Where(l => !string.IsNullOrEmpty(l.Indiv) &&
-            //                                             !string.IsNullOrEmpty(l.Code) &&
-            //                                             !string.IsNullOrEmpty(l.Pack)), pg);
 
             Logger.Info("Done adding life history data.");
         }
@@ -415,6 +398,7 @@ namespace pgDataImporter.Core
                     Logger.Error("null femail id.");
                     continue;
                 }
+
                 //Insert main female
                 pg.InsertIndividual(new Individual { Name = oestrus.FEMALE_ID, Sex = "F" });
                 var individualId = pg.GetIndividualId(oestrus.FEMALE_ID);
@@ -452,6 +436,7 @@ namespace pgDataImporter.Core
                     Logger.Info("Capture with no pack or individual.");
                     continue;
                 }
+
                 // do individual
                 pg.InsertIndividual(new Individual { Name = capture.INDIV, Sex = capture.SEX });
                 var individualId = pg.GetIndividualId(capture.INDIV);
@@ -502,6 +487,7 @@ namespace pgDataImporter.Core
                     pg.InsertSinglePack(pupAssociation.GROUP);
                     packId = pg.GetPackId(pupAssociation.GROUP);
                 }
+
                 var pupLitter = pg.GetLitterId(pupAssociation.LITTER);
                 if (pupLitter == null && !string.IsNullOrEmpty(pupAssociation.LITTER))
                 {
@@ -524,7 +510,6 @@ namespace pgDataImporter.Core
                 // get escort id
 
                 var escortId = GetEscortId(pupAssociation, pg);
-
 
                 // put everything in the pups table.
                 pg.InsertPupAssociation(packHistoryId, escortId, pupAssociation);
@@ -567,13 +552,14 @@ namespace pgDataImporter.Core
                     pg.InsertSinglePack(babysitting.GROUP);
                     packId = pg.GetPackId(babysitting.GROUP);
                 }
+
                 var watchedLitter = pg.GetLitterId(babysitting.LITTER_CODE);
                 if (watchedLitter == null && !string.IsNullOrEmpty(babysitting.LITTER_CODE))
                 {
                     pg.InsertSingleLitter(babysitting.LITTER_CODE, packId.Value);
                     watchedLitter = pg.GetLitterId(babysitting.LITTER_CODE);
                 }
-                
+
                 pg.InsertIndividual(new Individual
                 {
                     Name = babysitting.BS,
@@ -585,17 +571,13 @@ namespace pgDataImporter.Core
                 pg.InsertPackHistory(packId.Value, babysitterId, babysitting.DATE);
                 var packHistoryId = pg.GetPackHistoryId(babysitting.GROUP, babysitting.BS);
 
-              
                 var startTime = GetTimeFromString(babysitting.TIME_START);
                 var endTime = GetTimeFromString(babysitting.TIME_END);
 
                 var denDistance = GetDenDistance(babysitting.DEN_DIST);
 
                 pg.InsertBabysittingRecord(packHistoryId, watchedLitter, startTime, endTime, denDistance, babysitting);
-
             }
-
-
         }
 
         private int? GetDenDistance(string babysittingDenDist)
@@ -605,19 +587,22 @@ namespace pgDataImporter.Core
             {
                 return null;
             }
+
             if (babysittingDenDist == ">10")
             {
                 return 10;
             }
+
             if (babysittingDenDist == "400M")
             {
                 return 400;
             }
+
             return int.Parse(babysittingDenDist);
         }
 
         private static DateTime? GetTimeFromString(string timeString)
-        {  
+        {
             //Times are strings that need to be turned into datetime times.
             // Example times are 
             // 12  => 12:00
@@ -634,36 +619,41 @@ namespace pgDataImporter.Core
             }
             else
             {
-          
                 var tims = Array.ConvertAll(timeString.Split('.'), s => int.Parse(s));
                 if (tims.Length == 2)
                 {
                     timestart = timestart.Value.AddHours(tims[0]);
                     var minutes = tims[1];
-                    if (minutes<10)
+                    if (minutes < 10)
                     {
                         minutes = minutes * 10;
                     }
+
                     timestart = timestart.Value.AddMinutes(minutes);
                 }
+
                 if (tims.Length == 1)
                 {
                     timestart = timestart.Value.AddHours(tims[0]);
                 }
             }
+
             //830, 836 and 1505 
             if (timeString == "830")
             {
                 timestart = new DateTime().AddHours(8).AddMinutes(30);
             }
+
             if (timeString == "836")
             {
                 timestart = new DateTime().AddHours(8).AddMinutes(36);
             }
+
             if (timeString == "1705")
             {
                 timestart = new DateTime().AddHours(17).AddMinutes(5);
             }
+
             return timestart;
         }
 
@@ -684,6 +674,7 @@ namespace pgDataImporter.Core
                     pg.InsertSinglePack(groupComposition.Pack);
                     packId = pg.GetPackId(groupComposition.Pack);
                 }
+
                 int? males_over_one_year = GetNumber(groupComposition.Males_one_yr);
                 int? females_over_one_year = GetNumber(groupComposition.Females_one_yr);
                 int? males_over_three_months = GetNumber(groupComposition.Males_three_months);
@@ -707,6 +698,7 @@ namespace pgDataImporter.Core
             {
                 return number;
             }
+
             return null;
         }
 
@@ -720,13 +712,14 @@ namespace pgDataImporter.Core
                     Logger.Info("Capture with no pack or individual.");
                     continue;
                 }
+
                 // do individual
                 if (string.IsNullOrEmpty(pooSample.Individual))
                 {
                     pooSample.Individual = "Unknown";
                 }
 
-                pg.InsertIndividual(new Individual {Name = pooSample.Individual});
+                pg.InsertIndividual(new Individual { Name = pooSample.Individual });
                 var individualId = pg.GetIndividualId(pooSample.Individual);
 
                 // do pack
@@ -736,7 +729,6 @@ namespace pgDataImporter.Core
                 }
 
                 pg.InsertSinglePack(pooSample.Pack);
-
 
                 var packid = pg.GetPackId(pooSample.Pack);
 
@@ -758,6 +750,7 @@ namespace pgDataImporter.Core
             {
                 return null;
             }
+
             time = time.Replace(';', ':');
 
             if (DateTime.TryParse(time, out var date))
@@ -769,20 +762,46 @@ namespace pgDataImporter.Core
             {
                 return new DateTime().AddHours(15).AddMinutes(00);
             }
+
             return null;
         }
 
         public void ProcessWeather(List<METEROLOGICAL_DATA> weatherData)
-        {var pg = new PostgresRepository();
+        {
+            var pg = new PostgresRepository();
             foreach (var meterologicalData in weatherData)
             {
                 pg.InsertWeather(meterologicalData);
             }
         }
 
-        public void ProcessConditionLitters(List<Maternal_Condition_Experiment_Litters> conditionLitter)
+        public void ProcessConditionLitters(List<Maternal_Condition_Experiment_Litters> conditionLitters)
         {
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var litter in conditionLitters)
+            {
+                if (string.IsNullOrEmpty(litter.Pack) && string.IsNullOrEmpty(litter.Litter))
+                {
+                    Logger.Error("No pack or Litter");
+                    continue;
+                }
+
+                // do pack
+                if (string.IsNullOrEmpty(litter.Pack))
+                {
+                    litter.Pack = "Unknown";
+                }
+
+                pg.InsertSinglePack(litter.Pack);
+                var packId = pg.GetPackId(litter.Pack);
+
+                // Create litter
+                pg.InsertSingleLitter(litter.Litter, packId);
+
+                var litterId = pg.GetLitterId(litter.Litter);
+
+                pg.AddConditioningLitter(litterId, litter);
+            }
         }
 
         public void ProcessConditionFemales(List<Maternal_Condition_Experiment_Females> conditionFemales)
@@ -791,12 +810,14 @@ namespace pgDataImporter.Core
         }
 
         public void ProcessBloodData(List<Jennis_blood_data> bloodData)
-        {// freeze times are strings. need to turn em into times.
+        {
+            // freeze times are strings. need to turn em into times.
             throw new NotImplementedException();
         }
 
         public void ProcessHpaSamples(List<HPA_samples> hpaSamples)
-        { // Second_blood_sample_stopwatch_time is string
+        {
+            // Second_blood_sample_stopwatch_time is string
             throw new NotImplementedException();
         }
 

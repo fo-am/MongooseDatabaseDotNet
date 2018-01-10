@@ -169,7 +169,15 @@ join mongoose.pack p on p.pack_id = ph.pack_id;
 
 ALTER TABLE mongoose."Poo Database"
     OWNER TO postgres;
-]]></appended-sql>
+
+CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: Litters" AS
+SELECT experiment_number, p.name as "pack id", l.name as "litter id", pregnancy_check_date, date_started, experiment_type, foetus_age, "number_T_females", "number_C_females", notes
+	FROM mongoose.maternal_conditioning_litter mcl
+    join mongoose.litter l on l.litter_id = mcl.litter_id
+    join mongoose.pack p on p.pack_id = l.pack_id;
+
+ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters" 
+    OWNER TO postgres;]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -1227,7 +1235,7 @@ ALTER TABLE mongoose."Poo Database"
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1020" y="1080"/>
+	<position x="1004.62" y="1158.46"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

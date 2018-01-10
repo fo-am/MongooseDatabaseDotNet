@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="639,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -177,6 +177,18 @@ SELECT experiment_number, p.name as "pack id", l.name as "litter id", pregnancy_
     join mongoose.pack p on p.pack_id = l.pack_id;
 
 ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters" 
+    OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: Females" AS
+SELECT  p.name as pack,l.name as litter,  experiment_type as "Experiment type",focus.name as "Female Id", catagory as "Catagory",i.name as "paired female", notes
+	FROM mongoose.maternel_conditioning_females mcf
+   left join mongoose.individual i on i.individual_id = mcf.paired_female_id
+    join mongoose.pack_history ph on ph.pack_history_id = mcf.pack_history_id
+    join mongoose.individual focus on focus.individual_id = ph.individual_id
+    join mongoose.pack p on p.pack_id = ph.pack_id
+    join mongoose.litter l on l.litter_id = mcf.litter_id;
+
+ALTER TABLE MONGOOSE."Maternal Condition Experiment: Females" 
     OWNER TO postgres;]]></appended-sql>
 </database>
 
@@ -1235,7 +1247,7 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1004.62" y="1158.46"/>
+	<position x="1000" y="1160"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1288,12 +1300,15 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1620" y="20"/>
+	<position x="1540" y="40"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="experiment_type">
 		<type name="text" length="0"/>
+	</column>
+	<column name="litter_id">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="catagory">
 		<type name="text" length="0"/>
@@ -1307,12 +1322,11 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 
 	<customidxs object-type="column">
 		<object name="pack_history_id" index="1"/>
-		<object name="paired_female_id" index="4"/>
+		<object name="paired_female_id" index="3"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="maternel_conditioning_females_uq" index="3"/>
 		<object name="pack_history_fk" index="1"/>
 	</customidxs>
 </table>
@@ -1323,15 +1337,6 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
-	 dst-table="mongoose.maternel_conditioning_females"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="maternel_conditioning_females_has_one_individual" type="rel11"
-	 src-col-pattern="paired_female_id"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
 	 dst-table="mongoose.maternel_conditioning_females"
 	 src-required="false" dst-required="false"/>
 
@@ -1400,7 +1405,7 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1560" y="160"/>
+	<position x="1000" y="160"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1521,7 +1526,7 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1060" y="100"/>
+	<position x="460" y="100"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1728,6 +1733,15 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.pup_association"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="individual_has_many_maternel_conditioning_females" type="rel1n"
+	 src-col-pattern="paired_female_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.maternel_conditioning_females"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

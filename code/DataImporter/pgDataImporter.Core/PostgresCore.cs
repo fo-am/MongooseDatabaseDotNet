@@ -806,7 +806,53 @@ namespace pgDataImporter.Core
 
         public void ProcessConditionFemales(List<Maternal_Condition_Experiment_Females> conditionFemales)
         {
-            throw new NotImplementedException();
+         var pg = new PostgresRepository();
+            foreach (var female in conditionFemales)
+            {
+                if (string.IsNullOrEmpty(female.Pack) && string.IsNullOrEmpty(female.Female_ID))
+                {
+                    Logger.Info("experiment with no pack or individual.");
+                    continue;
+                }
+
+                // do individual
+                if (string.IsNullOrEmpty(female.Female_ID))
+                {
+                    female.Female_ID = "Unknown";
+                }
+
+                pg.InsertIndividual(new Individual { Name =female.Female_ID });
+                var individualId = pg.GetIndividualId(female.Female_ID);
+
+                // do pack
+                if (string.IsNullOrEmpty(female.Pack))
+                {
+                    female.Pack = "Unknown";
+                }
+
+                pg.InsertSinglePack(female.Pack);
+
+                var packId = pg.GetPackId(female.Pack);
+
+                // Link Pack and Individual
+                InsertpackHistory(packId, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(female.Pack, female.Female_ID);
+                
+                // get paired femail id
+                pg.InsertIndividual(new Individual { Name = female.Paired_female_ID });
+                var pairedFemaleId = pg.GetIndividualId(female.Paired_female_ID);
+
+                // get litter
+                // Create litter
+                pg.InsertSingleLitter(female.Litter, packId);
+
+                var litterId = pg.GetLitterId(female.Litter);
+
+                pg.AddConditioningFemale(packHistoryId, pairedFemaleId, litterId, female);
+
+
+            }
         }
 
         public void ProcessBloodData(List<Jennis_blood_data> bloodData)

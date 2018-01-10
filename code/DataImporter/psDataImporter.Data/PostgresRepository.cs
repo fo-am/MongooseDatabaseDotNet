@@ -1012,5 +1012,31 @@ namespace psDataImporter.Data
                 );
             }
         }
+
+        public void AddConditioningFemale(int packHistoryId, int? pairedFemaleId, int? litterId,
+            Maternal_Condition_Experiment_Females female)
+    
+        {
+            Logger.Info($"Insert Conditioning litter: {female.Female_ID}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute($@"INSERT INTO mongoose.maternel_conditioning_females(
+	                             pack_history_id,litter_id, experiment_type, catagory, paired_female_id, notes)
+	                            VALUES ( @pack_history_id, @litter_id, @experiment_type, @catagory, @paired_female_id, @notes);",
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        litter_id = litterId,
+                        experiment_type = female.Experiment_type,
+                        catagory = female.Category,
+                        paired_female_id = pairedFemaleId,
+                        notes = female.Notes
+                    }
+                );
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿using System;
+
+namespace psDataImporter.Contracts.Access
 {
-    internal class Provisioning_data
+    public class ProvisioningData
     {
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Visit_time { get; set; }
         public string Pack { get; set; }
         public string Litter { get; set; }

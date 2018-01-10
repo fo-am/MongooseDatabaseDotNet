@@ -876,5 +876,48 @@ namespace pgDataImporter.Core
         {
             throw new NotImplementedException();
         }
+
+        public void ProcessConditionProvisioning(List<ProvisioningData> provisionings)
+        {
+          var pg = new PostgresRepository();
+            foreach (var provisioning in provisionings)
+            {
+                if (string.IsNullOrEmpty(provisioning.Pack) && string.IsNullOrEmpty(provisioning.Female_ID))
+                {
+                    Logger.Info("experiment with no pack or individual.");
+                    continue;
+                }
+                if (string.IsNullOrEmpty(provisioning.Female_ID))
+                {
+                    provisioning.Female_ID = "Unknown";
+                }
+                pg.InsertIndividual(new Individual {Name = provisioning.Female_ID});
+                var individualId = pg.GetIndividualId(provisioning.Female_ID);
+
+                // do pack
+
+                pg.InsertSinglePack(provisioning.Pack);
+
+                var packId = pg.GetPackId(provisioning.Pack);
+
+                // Link Pack and Individual
+                InsertpackHistory(packId, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(provisioning.Pack, provisioning.Female_ID);
+
+                // get litter
+                // Create litter
+                pg.InsertSingleLitter(provisioning.Litter, packId);
+
+                var litterId = pg.GetLitterId(provisioning.Litter);
+
+                if (string.IsNullOrEmpty(provisioning.Amount_of_egg))
+                {
+                    provisioning.Amount_of_egg = "unknown";
+                }
+
+                pg.insertProvisioning(packHistoryId, litterId, provisioning);
+            }
+        }
     }
 }

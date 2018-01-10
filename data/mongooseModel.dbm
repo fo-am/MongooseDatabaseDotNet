@@ -1121,6 +1121,9 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Females"
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
+	<column name="litter_id">
+		<type name="integer" length="0"/>
+	</column>
 	<column name="date" not-null="true">
 		<type name="date" length="0"/>
 	</column>
@@ -1128,7 +1131,10 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Females"
 		<type name="text" length="0"/>
 	</column>
 	<column name="egg_weight" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="text" length="0"/>
+	</column>
+	<column name="comments">
+		<type name="text" length="0"/>
 	</column>
 	<constraint name="provisioning_data_pk" type="pk-constr" table="mongoose.provisioning_data">
 		<columns names="provisioning_data_id" ref-type="src-columns"/>

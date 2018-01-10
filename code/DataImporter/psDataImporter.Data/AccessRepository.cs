@@ -539,5 +539,26 @@ namespace psDataImporter.Data
                                             FROM [Antiparasite experiment];").ToList();
             }
         }
+
+        public List<ProvisioningData> GetMaternalConditionProvisioning()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Antiparasite_experiment sample data.");
+
+                return conn.Query<ProvisioningData>(@"
+                                            SELECT
+                                             [Date]
+                                            ,[Visit time] as Visit_time
+                                            ,Pack
+                                            ,Litter
+                                            ,[Female ID] as Female_ID
+                                            ,[Amount of egg] as Amount_of_egg
+                                            ,Comments
+                                            FROM [Maternal Condition Experiment: provisioning data];").ToList();
+            }
+        }
     }
 }

@@ -55,11 +55,14 @@ namespace psDataImporter.Console
             var weatherData = accessdata.GetWeather();
             postgresData.ProcessWeather(weatherData);
 
-            List<Maternal_Condition_Experiment_Litters> conditionLitter = accessdata.GetMaternalConditionLitters();
+            var conditionLitter = accessdata.GetMaternalConditionLitters();
             postgresData.ProcessConditionLitters(conditionLitter);
 
             var conditionFemales = accessdata.GetMaternalConditionFemales();
             postgresData.ProcessConditionFemales(conditionFemales);
+
+            var conditionProvisioning = accessdata.GetMaternalConditionProvisioning();
+            postgresData.ProcessConditionProvisioning(conditionProvisioning);
 
             var bloodData = accessdata.GetBloodData();
             postgresData.ProcessBloodData(bloodData);
@@ -70,7 +73,7 @@ namespace psDataImporter.Console
             var dnaSamples = accessdata.GetDnaSamples();
             postgresData.ProcessDnaSamples(dnaSamples);
 
-            List<Antiparasite_experiment> antiParasite = accessdata.GetAntiParasite();
+            var antiParasite = accessdata.GetAntiParasite();
             postgresData.ProcessAntiParasite(antiParasite);
 
             stopwatch.Stop();

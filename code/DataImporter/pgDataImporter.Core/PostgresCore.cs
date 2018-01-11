@@ -875,8 +875,31 @@ namespace pgDataImporter.Core
 
         public void ProcessHpaSamples(List<HPA_samples> hpaSamples)
         {
-            // Second_blood_sample_stopwatch_time is string
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var hpaSample in hpaSamples)
+            {
+                // Second_blood_sample_stopwatch_time is string
+                //First_blood_sample_stopwatch_time
+                //Time_in_trap
+                pg.InsertIndividual(new Individual { Name = hpaSample.ID });
+                var individualId = pg.GetIndividualId(hpaSample.ID);
+
+                var firstBloodTime = GetTimespanFromString(hpaSample.First_blood_sample_stopwatch_time);
+                var secondBloodTime = GetTimespanFromString(hpaSample.Second_blood_sample_stopwatch_time);
+                var timeInTrap = GetTimespanFromString(hpaSample.Time_in_trap);
+                
+                pg.InsertHpaSample(individualId, firstBloodTime, secondBloodTime, timeInTrap, hpaSample);
+            }
+
+
+        }
+
+        private static TimeSpan GetTimespanFromString(string time)
+        {
+            time = time.Replace(';', ':');
+            var times = time.Split(':');
+            return new TimeSpan(int.Parse(times[0]), int.Parse(times[1]), int.Parse(times[2]));
+
         }
 
         public void ProcessDnaSamples(List<DNA_SAMPLES> dnaSamples)

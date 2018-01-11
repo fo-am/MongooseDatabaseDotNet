@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="627,360" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="627,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -211,6 +211,14 @@ plasma_volume_ul as "Ammount of pl", comment as "Comment"
     join mongoose.individual i on i.individual_id = bd.individual_id;
 
 ALTER TABLE MONGOOSE."Jenni's blood data"
+  OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."HPA samples" AS
+SELECT  date, i.name ,time_in_trap,  capture_time, first_blood_sample_taken_time, first_sample_id, first_blood_sample_freezer_time, second_blood_sample_taken_time, second_blood_sample_id, second_blood_sample_freezer_time, head_width, weight, ticks
+	FROM mongoose.hpa_sample hs
+    join mongoose.individual i on i.individual_id = hs.individual_id;
+
+ALTER TABLE MONGOOSE."HPA samples"
   OWNER TO postgres;]]></appended-sql>
 </database>
 
@@ -1447,7 +1455,7 @@ ALTER TABLE MONGOOSE."Jenni's blood data"
 		<type name="time" length="0"/>
 	</column>
 	<column name="first_blood_sample_taken_time">
-		<type name="time" length="0"/>
+		<type name="interval" length="0"/>
 	</column>
 	<column name="first_sample_id">
 		<type name="text" length="0"/>
@@ -1456,7 +1464,7 @@ ALTER TABLE MONGOOSE."Jenni's blood data"
 		<type name="time" length="0"/>
 	</column>
 	<column name="second_blood_sample_taken_time">
-		<type name="time" length="0"/>
+		<type name="interval" length="0"/>
 	</column>
 	<column name="second_blood_sample_id">
 		<type name="text" length="0"/>

@@ -7,9 +7,9 @@ namespace psDataImporter.Contracts.Access
     {
         public DateTime Date { get; set; }
         public string ID { get; set; }
-        public DateTime Time_in_trap { get; set; }
+        public string Time_in_trap { get; set; }
         public DateTime Time_of_capture { get; set; }
-        public DateTime First_blood_sample_stopwatch_time { get; set; }
+        public string First_blood_sample_stopwatch_time { get; set; }
         public string First_sample_number { get; set; }
         public DateTime First_sample_freezer_time { get; set; }
         public string Second_blood_sample_stopwatch_time { get; set; }

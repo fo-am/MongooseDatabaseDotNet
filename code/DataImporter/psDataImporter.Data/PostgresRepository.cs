@@ -1091,5 +1091,36 @@ namespace psDataImporter.Data
                 );
             }
         }
+
+        public void InsertHpaSample(int? individualId, TimeSpan firstBloodTime, TimeSpan secondBloodTime, TimeSpan timeInTrap, HPA_samples hpaSample)
+        {
+            Logger.Info($"Insert HPA sample data for: {hpaSample.ID}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(@"INSERT INTO mongoose.hpa_sample(
+	 individual_id, date, time_in_trap, capture_time, first_blood_sample_taken_time, first_sample_id, first_blood_sample_freezer_time, second_blood_sample_taken_time, second_blood_sample_id, second_blood_sample_freezer_time, head_width, weight, ticks)
+	VALUES ( @individual_id, @date, @time_in_trap, @capture_time, @first_blood_sample_taken_time, @first_sample_id, @first_blood_sample_freezer_time, @second_blood_sample_taken_time, @second_blood_sample_id, @second_blood_sample_freezer_time, @head_width, @weight, @ticks);",
+                    new
+                    {
+                        individual_id = individualId,
+                        date = hpaSample.Date,
+                        time_in_trap = timeInTrap,
+                        capture_time = hpaSample.Time_of_capture,
+                        first_blood_sample_taken_time = firstBloodTime,
+                        first_sample_id = hpaSample.First_sample_number,
+                        first_blood_sample_freezer_time = hpaSample.First_sample_freezer_time,
+                        second_blood_sample_taken_time = secondBloodTime,
+                        second_blood_sample_id = hpaSample.Second_sample_number,
+                        second_blood_sample_freezer_time = hpaSample.Second_sample_freezer_time,
+                        head_width = hpaSample.Head_width,
+                        weight = hpaSample.Weight,
+                        ticks = hpaSample.Ticks
+                    }
+                );
+            }
+        }
     }
 }

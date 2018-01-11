@@ -1039,27 +1039,56 @@ namespace psDataImporter.Data
 
         public void insertProvisioning(int packHistoryId, int? litterId, ProvisioningData provisioning)
         {
-            {
-                Logger.Info($"Insert Provisioning for  : {provisioning.Female_ID}");
 
-                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                    .ConnectionStrings["postgresConnectionString"]
-                    .ConnectionString))
-                {
-                    conn.Execute(@"INSERT INTO mongoose.provisioning_data(
+            Logger.Info($"Insert Provisioning for  : {provisioning.Female_ID}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(@"INSERT INTO mongoose.provisioning_data(
 	             pack_history_id, litter_id, date, visit_time, egg_weight, comments)
 	            VALUES (@pack_history_id, @litter_id, @date, @visit_time, @egg_weight, @comments);",
-                        new
-                        {
-                            pack_history_id = packHistoryId,
-                            litter_id = litterId,
-                            date = provisioning.Date,
-                            visit_time = provisioning.Visit_time,
-                            egg_weight = provisioning.Amount_of_egg,
-                            comments = provisioning.Comments
-                        }
-                    );
-                }
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        litter_id = litterId,
+                        date = provisioning.Date,
+                        visit_time = provisioning.Visit_time,
+                        egg_weight = provisioning.Amount_of_egg,
+                        comments = provisioning.Comments
+                    }
+                );
+            }
+        }
+
+        public void AddBloodData(int? mongooseId, TimeSpan bleedtime, Jennis_blood_data blood)
+        {
+            Logger.Info($"Insert blood data for: {blood.Mongoose}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(@"INSERT INTO mongoose.blood_data(
+	 individual_id, date, trap_time, bleed_time, weight, release_time, sample, spinning_time, freeze_time, focal, plasma_volume_ul, comment)
+	VALUES (@individual_id, @date, @trap_time, @bleed_time, @weight, @release_time, @sample, @spinning_time, @freeze_time, @focal, @plasma_volume_ul, @comment);",
+                    new
+                    {
+                        individual_id = mongooseId,
+                        date = blood.Date,
+                        trap_time = blood.Trap_time,
+                        bleed_time = bleedtime,
+                        weight = blood.Weight,
+                        release_time = blood.Release_time,
+                        sample = blood.Sample,
+                        spinning_time = blood.Spinning_time,
+                        freeze_time = blood.Freeze_time,
+                        focal = blood.Focal,
+                        plasma_volume_ul = blood.Amount_of_plasma,
+                        comment = blood.Comment
+                    }
+                );
             }
         }
     }

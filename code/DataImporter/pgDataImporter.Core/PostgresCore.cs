@@ -857,8 +857,20 @@ namespace pgDataImporter.Core
 
         public void ProcessBloodData(List<Jennis_blood_data> bloodData)
         {
-            // freeze times are strings. need to turn em into times.
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var blood in bloodData)
+            {
+                pg.InsertIndividual(new Individual { Name = blood.Mongoose });
+                var mongooseId = pg.GetIndividualId(blood.Mongoose);
+
+                // bleed times are strings. need to turn em into times.
+                blood.Bleed_time = blood.Bleed_time.Replace(":", ".");
+                var bleedtime = TimeSpan.FromSeconds(double.Parse(blood.Bleed_time));
+
+                pg.AddBloodData(mongooseId, bleedtime, blood);
+
+            }
+
         }
 
         public void ProcessHpaSamples(List<HPA_samples> hpaSamples)

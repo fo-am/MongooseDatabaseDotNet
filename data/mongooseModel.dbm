@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="348,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="627,360" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -202,7 +202,16 @@ SELECT date,  visit_time, p.name as Pack ,l.name as Litter,i.name as "Female ID"
 
 ALTER TABLE MONGOOSE."Maternal Condition Experiment: provisioning data" 
     OWNER TO postgres;
-]]></appended-sql>
+
+CREATE OR REPLACE VIEW MONGOOSE."Jenni's blood data" AS
+SELECT date, i.name as "Mongoose",  trap_time as "Trap Time", bleed_time as "Bleed time (from stopwatch)", weight as "Weight",
+release_time as "Release time", sample as "Sample", spinning_time as "Spinning time", freeze_time as "Freeze time", focal as Focal,
+plasma_volume_ul as "Ammount of pl", comment as "Comment"
+	FROM mongoose.blood_data bd
+    join mongoose.individual i on i.individual_id = bd.individual_id;
+
+ALTER TABLE MONGOOSE."Jenni's blood data"
+  OWNER TO postgres;]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -1373,7 +1382,7 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: provisioning data"
 		<type name="time" length="0"/>
 	</column>
 	<column name="bleed_time">
-		<type name="numeric" length="0"/>
+		<type name="interval" length="0"/>
 	</column>
 	<column name="weight" not-null="true">
 		<type name="integer" length="0"/>

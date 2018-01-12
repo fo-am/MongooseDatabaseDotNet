@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="627,648" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="627,814" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -245,7 +245,17 @@ first_capture_date, experiment_group, "fecal_sample_B_date",
     join mongoose.pack p on p.pack_id = ph.pack_id;
 
 ALTER TABLE MONGOOSE."Antiparasite experiment"
-  OWNER TO postgres;]]></appended-sql>
+  OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."METEROLOGICAL DATA" AS
+SELECT date as "DATE", rain as "RAIN_MWEY", temp_max as "MAX TEMP", temp_min as "MIN TEMP",
+temp as "TEMP", humidity_max as "Max humidity", humidity_min as "Min humidity", observer as "OBSERVER"
+	FROM mongoose.meterology
+    order by date asc;
+
+ALTER TABLE MONGOOSE."METEROLOGICAL DATA"
+  OWNER TO postgres;
+    ]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">

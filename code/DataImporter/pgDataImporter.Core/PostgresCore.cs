@@ -939,9 +939,37 @@ namespace pgDataImporter.Core
             }
         }
 
-        public void ProcessAntiParasite(List<Antiparasite_experiment> antiParasite)
+        public void ProcessAntiParasite(List<Antiparasite_experiment> antiParasiteExperiments)
         {
-            throw new NotImplementedException();
+           var pg = new PostgresRepository();
+            foreach (var antiparasiteExperiment in antiParasiteExperiments)
+            {
+                // do individual
+                if (string.IsNullOrEmpty(antiparasiteExperiment.INDIV))
+                {
+                    antiparasiteExperiment.INDIV = "Unknown";
+                }
+
+                pg.InsertIndividual(new Individual { Name = antiparasiteExperiment.INDIV });
+                var individualId = pg.GetIndividualId(antiparasiteExperiment.INDIV);
+
+                // do pack
+                if (string.IsNullOrEmpty(antiparasiteExperiment.PACK))
+                {
+                    antiparasiteExperiment.PACK = "Unknown";
+                }
+
+                pg.InsertSinglePack(antiparasiteExperiment.PACK);
+
+                var packid = pg.GetPackId(antiparasiteExperiment.PACK);
+
+                // Link Pack and Individual
+                InsertpackHistory(packid, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(antiparasiteExperiment.PACK, antiparasiteExperiment.INDIV);
+
+                pg.AddAntiParasite(packHistoryId, antiparasiteExperiment);
+            }
         }
 
         public void ProcessConditionProvisioning(List<ProvisioningData> provisionings)

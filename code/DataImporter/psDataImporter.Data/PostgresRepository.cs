@@ -1151,5 +1151,35 @@ namespace psDataImporter.Data
                 );
             }
         }
+
+        public void AddAntiParasite(int packHistoryId, Antiparasite_experiment antiparasiteExperiment)
+        {
+            Logger.Info($"Insert anti parasite experiment for: {antiparasiteExperiment.INDIV}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(@"INSERT INTO mongoose.anti_parasite(
+	  pack_history_id, started_date, ""fecal_sample_A_date"", first_capture_date, experiment_group, ""fecal_sample_B_date"", ""fecal_sample_C_date"", second_capture, ""fecal_sample_D_date"", ""fecal_sample_E_date"", ""fecal_sample_F_date"", comments)
+    VALUES ( @pack_history_id, @started_date, @fecal_sample_A_date, @first_capture_date, @experiment_group, @fecal_sample_B_date, @fecal_sample_C_date, @second_capture, @fecal_sample_D_date, @fecal_sample_E_date, @fecal_sample_F_date, @comments);",
+                    new
+                    {
+                        pack_history_id= packHistoryId,
+                        started_date = antiparasiteExperiment.STARTED_EXPERIMENT,
+                        fecal_sample_A_date = antiparasiteExperiment.A_FECAL_SAMPLE,
+                        first_capture_date = antiparasiteExperiment.FIRST_capture,
+                        experiment_group = antiparasiteExperiment.EXPERIMENT_GROUP,
+                        fecal_sample_B_date = antiparasiteExperiment.B_FECAL,
+                        fecal_sample_C_date = antiparasiteExperiment.C_FECAL,
+                        second_capture = antiparasiteExperiment.SECOND_CAPTURE,
+                        fecal_sample_D_date = antiparasiteExperiment.D_FECAL,
+                        fecal_sample_E_date = antiparasiteExperiment.E_FECAL,
+                        fecal_sample_F_date = antiparasiteExperiment.F_FECAL,
+                        comments = antiparasiteExperiment.notes
+                    }
+                );
+            }
+        }
     }
 }

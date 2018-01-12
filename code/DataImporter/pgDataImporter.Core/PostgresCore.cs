@@ -904,7 +904,39 @@ namespace pgDataImporter.Core
 
         public void ProcessDnaSamples(List<DNA_SAMPLES> dnaSamples)
         {
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var dnaSample in dnaSamples)
+            {
+                // do individual
+                if (string.IsNullOrEmpty(dnaSample.ID))
+                {
+                    dnaSample.ID = "Unknown";
+                }
+
+                pg.InsertIndividual(new Individual { Name = dnaSample.ID , Sex = dnaSample.SEX});
+                var individualId = pg.GetIndividualId(dnaSample.ID);
+
+                // do pack
+                if (string.IsNullOrEmpty(dnaSample.PACK))
+                {
+                    dnaSample.PACK = "Unknown";
+                }
+
+                pg.InsertSinglePack(dnaSample.PACK);
+
+                var packid = pg.GetPackId(dnaSample.PACK);
+
+                // Link Pack and Individual
+                InsertpackHistory(packid, individualId, dnaSample.DATE, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(dnaSample.PACK, dnaSample.ID);
+
+                pg.InsertSingleLitter(dnaSample.LITTER, packid);
+
+                var litterId = pg.GetLitterId(dnaSample.LITTER);
+
+                pg.AddDnaSample(packHistoryId, litterId, dnaSample);
+            }
         }
 
         public void ProcessAntiParasite(List<Antiparasite_experiment> antiParasite)

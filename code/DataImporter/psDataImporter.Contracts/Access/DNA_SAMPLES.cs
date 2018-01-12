@@ -5,6 +5,7 @@ namespace psDataImporter.Contracts.Access
     public class DNA_SAMPLES
     {
         public DateTime DATE { get; set; }
+        public string ID { get; set; }
         public string SAMPLE_TYPE { get; set; }
         public string TISSUE { get; set; }
         public string STORAGE_ID { get; set; }

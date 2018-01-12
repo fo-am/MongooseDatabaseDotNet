@@ -1122,5 +1122,34 @@ namespace psDataImporter.Data
                 );
             }
         }
+
+        public void AddDnaSample(int packHistoryId, int? litterId, DNA_SAMPLES dnaSample)
+        {
+            Logger.Info($"Insert DNA sample for: {dnaSample.ID}");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(@"INSERT INTO mongoose.dna_samples(
+	 pack_history_id,litter_id, date, sample_type, tissue, storage, tube_id, age, dispersal, box_slot, comment)
+	VALUES (@pack_history_id, @litter_id, @date, @sample_type, @tissue, @storage, @tube_id, @age, @dispersal, @box_slot, @comment);",
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        litter_id= litterId,
+                        date= dnaSample.DATE,
+                        sample_type= dnaSample.SAMPLE_TYPE,
+                        tissue= dnaSample.TISSUE,
+                        storage= dnaSample.STORAGE_ID,
+                        tube_id= dnaSample.TUBE_ID,
+                        age= dnaSample.AGE,
+                        dispersal= dnaSample.DISPERSAL,
+                        box_slot= dnaSample.box_slot,
+                        comment= dnaSample.COMMENT
+                    }
+                );
+            }
+        }
     }
 }

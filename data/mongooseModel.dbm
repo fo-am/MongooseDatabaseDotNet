@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="627,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="627,288" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -219,6 +219,19 @@ SELECT  date, i.name ,time_in_trap,  capture_time, first_blood_sample_taken_time
     join mongoose.individual i on i.individual_id = hs.individual_id;
 
 ALTER TABLE MONGOOSE."HPA samples"
+  OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."DNA Samples" AS
+SELECT date as "DATE",sample_type as "SAMPLE TYPE", tissue as "TISSUE", storage as "STORAGE", i.name as "ID",tube_id AS "TUBE ID",age as "AGE", i.sex as "SEX", 
+dispersal as "DISPERSAL",p.name as "PACK",  l.name as "LITTER CODE",  box_slot, comment
+	FROM mongoose.dna_samples ds
+    join mongoose.pack_history ph on ph.pack_history_id = ds.pack_history_id
+    join mongoose.individual i on i.individual_id = ph.individual_id
+    join mongoose.pack p on p.pack_id = ph.pack_id
+  left  join mongoose.litter l on l.litter_id = ds.litter_id
+  order by date asc;
+
+ALTER TABLE MONGOOSE."DNA Samples"
   OWNER TO postgres;]]></appended-sql>
 </database>
 
@@ -1512,6 +1525,9 @@ ALTER TABLE MONGOOSE."HPA samples"
 	</column>
 	<column name="date">
 		<type name="date" length="0"/>
+	</column>
+	<column name="litter_id">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="sample_type">
 		<type name="text" length="0"/>

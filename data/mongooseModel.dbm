@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="627,814" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="949,229" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -1817,6 +1817,88 @@ ALTER TABLE MONGOOSE."METEROLOGICAL DATA"
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.maternel_conditioning_females"
+	 src-required="false" dst-required="false"/>
+
+<table name="ox_shielding_feeding" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1929.23" y="1383.08"/>
+	<column name="ox_shielding_feeding_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="time_of_day">
+		<type name="text" length="0"/>
+	</column>
+	<column name="ammount_of_egg">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="comments">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="ox_shielding_feeding_pk" type="pk-constr" table="mongoose.ox_shielding_feeding">
+		<columns names="ox_shielding_feeding_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_ox_shielding_feeding" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.ox_shielding_feeding"
+	 src-required="false" dst-required="false"/>
+
+<table name="ox_shielding_male" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1952.31" y="1555.38"/>
+	<column name="ox_shielding_male_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="status">
+		<type name="text" length="0"/>
+	</column>
+	<column name="start_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="stop_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="ox_shielding_male_pk" type="pk-constr" table="mongoose.ox_shielding_male">
+		<columns names="ox_shielding_male_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_ox_shielding_male" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.ox_shielding_male"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

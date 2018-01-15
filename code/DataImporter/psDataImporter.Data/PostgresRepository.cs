@@ -1193,7 +1193,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.Execute(@"INSERT INTO mongoose.ox_shielding_feeding(
-	 pack_history_id, date, time_of_day, ammount_of_egg, comments)
+	 pack_history_id, date, time_of_day, amount_of_egg, comments)
 	VALUES (@pack_history_id, @date, @time_of_day, @ammount_of_egg, @comments);",
                     new
                     {

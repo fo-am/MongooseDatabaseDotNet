@@ -76,7 +76,6 @@ namespace psDataImporter.Console
             var antiParasite = accessdata.GetAntiParasite();
             postgresData.ProcessAntiParasite(antiParasite);
 
-
             var oxFeeding = accessdata.GetOxFeeding();
             postgresData.ProcessOxFeeding(oxFeeding);
 

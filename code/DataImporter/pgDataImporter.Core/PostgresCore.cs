@@ -806,7 +806,7 @@ namespace pgDataImporter.Core
 
         public void ProcessConditionFemales(List<Maternal_Condition_Experiment_Females> conditionFemales)
         {
-         var pg = new PostgresRepository();
+            var pg = new PostgresRepository();
             foreach (var female in conditionFemales)
             {
                 if (string.IsNullOrEmpty(female.Pack) && string.IsNullOrEmpty(female.Female_ID))
@@ -821,7 +821,7 @@ namespace pgDataImporter.Core
                     female.Female_ID = "Unknown";
                 }
 
-                pg.InsertIndividual(new Individual { Name =female.Female_ID });
+                pg.InsertIndividual(new Individual { Name = female.Female_ID });
                 var individualId = pg.GetIndividualId(female.Female_ID);
 
                 // do pack
@@ -838,7 +838,7 @@ namespace pgDataImporter.Core
                 InsertpackHistory(packId, individualId, null, pg);
 
                 var packHistoryId = pg.GetPackHistoryId(female.Pack, female.Female_ID);
-                
+
                 // get paired femail id
                 pg.InsertIndividual(new Individual { Name = female.Paired_female_ID });
                 var pairedFemaleId = pg.GetIndividualId(female.Paired_female_ID);
@@ -887,7 +887,7 @@ namespace pgDataImporter.Core
                 var firstBloodTime = GetTimespanFromString(hpaSample.First_blood_sample_stopwatch_time);
                 var secondBloodTime = GetTimespanFromString(hpaSample.Second_blood_sample_stopwatch_time);
                 var timeInTrap = GetTimespanFromString(hpaSample.Time_in_trap);
-                
+
                 pg.InsertHpaSample(individualId, firstBloodTime, secondBloodTime, timeInTrap, hpaSample);
             }
 
@@ -913,7 +913,7 @@ namespace pgDataImporter.Core
                     dnaSample.ID = "Unknown";
                 }
 
-                pg.InsertIndividual(new Individual { Name = dnaSample.ID , Sex = dnaSample.SEX});
+                pg.InsertIndividual(new Individual { Name = dnaSample.ID, Sex = dnaSample.SEX });
                 var individualId = pg.GetIndividualId(dnaSample.ID);
 
                 // do pack
@@ -941,7 +941,7 @@ namespace pgDataImporter.Core
 
         public void ProcessAntiParasite(List<Antiparasite_experiment> antiParasiteExperiments)
         {
-           var pg = new PostgresRepository();
+            var pg = new PostgresRepository();
             foreach (var antiparasiteExperiment in antiParasiteExperiments)
             {
                 // do individual
@@ -974,7 +974,7 @@ namespace pgDataImporter.Core
 
         public void ProcessConditionProvisioning(List<ProvisioningData> provisionings)
         {
-          var pg = new PostgresRepository();
+            var pg = new PostgresRepository();
             foreach (var provisioning in provisionings)
             {
                 if (string.IsNullOrEmpty(provisioning.Pack) && string.IsNullOrEmpty(provisioning.Female_ID))
@@ -982,11 +982,13 @@ namespace pgDataImporter.Core
                     Logger.Info("experiment with no pack or individual.");
                     continue;
                 }
+
                 if (string.IsNullOrEmpty(provisioning.Female_ID))
                 {
                     provisioning.Female_ID = "Unknown";
                 }
-                pg.InsertIndividual(new Individual {Name = provisioning.Female_ID});
+
+                pg.InsertIndividual(new Individual { Name = provisioning.Female_ID });
                 var individualId = pg.GetIndividualId(provisioning.Female_ID);
 
                 // do pack
@@ -1017,17 +1019,89 @@ namespace pgDataImporter.Core
 
         public void ProcessOxFeeding(List<OxShieldingFeedingRecord> oxFeeding)
         {
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var feedingRecord in oxFeeding)
+            {
+                if (string.IsNullOrEmpty(feedingRecord.Pack) && string.IsNullOrEmpty(feedingRecord.Female_ID))
+                {
+                    Logger.Info("experiment with no pack or individual.");
+                    continue;
+                }
+
+                pg.InsertIndividual(new Individual { Name = feedingRecord.Female_ID });
+                var individualId = pg.GetIndividualId(feedingRecord.Female_ID);
+
+                // do pack
+
+                pg.InsertSinglePack(feedingRecord.Pack);
+
+                var packId = pg.GetPackId(feedingRecord.Pack);
+
+                // Link Pack and Individual
+                InsertpackHistory(packId, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(feedingRecord.Pack, feedingRecord.Female_ID);
+
+                pg.AddOxFeedingRecord(packHistoryId, feedingRecord);
+            }
         }
 
         public void ProcessOxMale(List<OxShieldingMalesBeingSampled> oxMale)
         {
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var malesBeingSampled in oxMale)
+            {
+                if (string.IsNullOrEmpty(malesBeingSampled.PACK) && string.IsNullOrEmpty(malesBeingSampled.ID))
+                {
+                    Logger.Info("experiment with no pack or individual.");
+                    continue;
+                }
+
+                pg.InsertIndividual(new Individual { Name = malesBeingSampled.ID });
+                var individualId = pg.GetIndividualId(malesBeingSampled.ID);
+
+                // do pack
+
+                pg.InsertSinglePack(malesBeingSampled.PACK);
+
+                var packId = pg.GetPackId(malesBeingSampled.PACK);
+
+                // Link Pack and Individual
+                InsertpackHistory(packId, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(malesBeingSampled.PACK, malesBeingSampled.ID);
+
+                pg.AddOxMaleBeingSampled(packHistoryId, malesBeingSampled);
+            }
         }
 
         public void ProcessOxFemale(List<OxShieldingFemaleTreatmentGroups> oxFemale)
         {
-            throw new NotImplementedException();
+            var pg = new PostgresRepository();
+            foreach (var femaleTreatmentGroup in oxFemale)
+            {
+                if (string.IsNullOrEmpty(femaleTreatmentGroup.Pack) && string.IsNullOrEmpty(femaleTreatmentGroup.ID))
+                {
+                    Logger.Info("experiment with no pack or individual.");
+                    continue;
+                }
+
+                pg.InsertIndividual(new Individual { Name = femaleTreatmentGroup.ID });
+                var individualId = pg.GetIndividualId(femaleTreatmentGroup.ID);
+
+                // do pack
+
+                pg.InsertSinglePack(femaleTreatmentGroup.Pack);
+
+                var packId = pg.GetPackId(femaleTreatmentGroup.Pack);
+
+                // Link Pack and Individual
+                InsertpackHistory(packId, individualId, null, pg);
+
+                var packHistoryId = pg.GetPackHistoryId(femaleTreatmentGroup.Pack, femaleTreatmentGroup.ID);
+
+                pg.AddOxFemaleTreatmentGroup(packHistoryId, femaleTreatmentGroup);
+            }
         }
     }
 }

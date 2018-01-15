@@ -8,7 +8,7 @@ namespace psDataImporter.Contracts.Access
         public string Female_ID { get; set; }
         public string Pack { get; set; }
         public string AMPM { get; set; }
-        public string Amount_of_egg { get; set; }
+        public int Amount_of_egg { get; set; }
         public string Comments { get; set; }
     }
 }

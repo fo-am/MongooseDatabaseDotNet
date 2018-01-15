@@ -1014,5 +1014,20 @@ namespace pgDataImporter.Core
                 pg.insertProvisioning(packHistoryId, litterId, provisioning);
             }
         }
+
+        public void ProcessOxFeeding(List<OxShieldingFeedingRecord> oxFeeding)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessOxMale(List<OxShieldingMalesBeingSampled> oxMale)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessOxFemale(List<OxShieldingFemaleTreatmentGroups> oxFemale)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

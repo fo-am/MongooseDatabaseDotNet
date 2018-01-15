@@ -76,6 +76,16 @@ namespace psDataImporter.Console
             var antiParasite = accessdata.GetAntiParasite();
             postgresData.ProcessAntiParasite(antiParasite);
 
+
+            var oxFeeding = accessdata.GetOxFeeding();
+            postgresData.ProcessOxFeeding(oxFeeding);
+
+            var oxMales = accessdata.GetOxMale();
+            postgresData.ProcessOxMale(oxMales);
+
+            var oxFemales = accessdata.GetOxFemale();
+            postgresData.ProcessOxFemale(oxFemales);
+
             stopwatch.Stop();
 
             Logger.Info($"done. Time taken {stopwatch.Elapsed}.");

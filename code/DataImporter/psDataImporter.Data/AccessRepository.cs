@@ -560,5 +560,66 @@ namespace psDataImporter.Data
                                             FROM [Maternal Condition Experiment: provisioning data];").ToList();
             }
         }
+
+        public List<OxShieldingFeedingRecord> GetOxFeeding()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Ox shielding - feeding record data.");
+
+                return conn.Query<OxShieldingFeedingRecord>(@"
+                                 SELECT
+                                  [Date]
+                                  ,[AM/PM] as AMPM
+                                  ,[Amount of egg (g)] as Amount_of_egg
+                                  ,[Female ID] as Female_ID
+                                  ,[Pack]
+                                  ,[Comments]
+                                  FROM [Ox shielding experiment - feeding record];").ToList();
+            }
+        }
+
+        public List<OxShieldingMalesBeingSampled> GetOxMale()
+        {
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Ox shielding - males being sampled.");
+
+                return conn.Query<OxShieldingMalesBeingSampled>(@"
+                                 SELECT
+                                 [PACK]
+                                ,[ID]
+                                ,[STATUS]
+                                ,[DATE START] as DATE_START
+                                ,[DATE STOP] as DATE_STOP
+                                ,[COMMENT]
+
+                                  FROM [Ox Shielding Experiment - males being sampled];").ToList();
+            }
+        }
+
+        public List<OxShieldingFemaleTreatmentGroups> GetOxFemale()
+        {
+
+            using (var conn = new OleDbConnection(ConfigurationManager
+                .ConnectionStrings["accessConnectionString"]
+                .ConnectionString))
+            {
+                Logger.Info("Getting Ox shielding - males being sampled.");
+
+                return conn.Query<OxShieldingFemaleTreatmentGroups>(@"
+                                 SELECT
+                                     [Pack]
+                                    ,[ID]
+                                    ,[Treatment Group] as Treatment_Group
+                                    ,[Date Started] as Date_Started
+                                    ,[Comment]
+                                  FROM [Ox Shielding Experiment - female treatment groups];").ToList();
+            }
+        }
     }
 }

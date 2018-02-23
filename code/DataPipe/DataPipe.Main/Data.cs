@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Dapper;
 using DataPipe.Main.Model;
+using DataPipe.Main.Model.LifeHistory;
 using Microsoft.Data.Sqlite;
 using NLog;
 using NLog.Config;
@@ -295,6 +296,23 @@ namespace DataPipe.Main
             }
 
             return newWeights;
+        }
+
+        public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()
+        {
+            var stringsSql = @"select 
+                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""date"") as date,
+                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""type"") as ""entity_type"",
+                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""code"") as code,
+                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-uid"") as ""UniqueId"",
+                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-name"") as ""entity_name"",
+                        se.sent
+                        from stream_entity se;";
+             var lifeEvents = RunSql<LifeHistoryEvent>(stringsSql).ToList();
+
+            
+
+            return lifeEvents;
         }
     }
 

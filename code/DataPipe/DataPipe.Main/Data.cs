@@ -18,18 +18,23 @@ namespace DataPipe.Main
     {
         private static Logger logger;
 
-        public Data()
+        public static IDbConnection SimpleDbConnection()
         {
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("Data");
-        }
-
-        public static IDbConnection SimpleDbConnection()
-        {
-      //      SQLitePCL.Batteries_V2.Init();
-
             var dbFile = GetAppSettings.Get().SqliteLocation;
-          
+
+            if (File.Exists(dbFile))
+            {
+                logger.Info($"Database found at '{dbFile}' ");
+            }
+            else
+            {
+                logger.Error($"Database not found at '{dbFile}'");
+
+                throw new FileNotFoundException($"database not located at '{dbFile}'");
+            }
+
             return new SqliteConnection($"Data Source={dbFile};");
         }
 
@@ -90,14 +95,6 @@ namespace DataPipe.Main
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             var logger = LogManager.GetLogger("Data");
 
-            var dbFile = GetAppSettings.Get().SqliteLocation;
-            var fullPath = Path.GetFullPath(dbFile);
-            if (!File.Exists(fullPath))
-            {
-                logger.Error($"Database not found at '{fullPath}'");
-
-                throw new FileNotFoundException($"database not located at '{fullPath}'");
-            }
             using (var cnn = SimpleDbConnection())
             {
                 List<T> result;
@@ -107,7 +104,7 @@ namespace DataPipe.Main
                 }
                 catch (Exception exception)
                 {
-                    logger.Error(exception, $"Could not get data from the database '{fullPath}' sql='{sql}'");
+                    logger.Error(exception, $"Could not get data from the database conn = '{cnn.ConnectionString}' sql='{sql}'");
                     result = new List<T>();
                 }
 
@@ -171,6 +168,7 @@ namespace DataPipe.Main
                     }
                 }
             }
+
             return newIndividuals;
         }
 
@@ -192,6 +190,7 @@ namespace DataPipe.Main
             {
                 return dateTime;
             }
+
             return null;
         }
 
@@ -223,6 +222,7 @@ namespace DataPipe.Main
                 {
                     pack.CreatedDate = dateCreated;
                 }
+
                 if (!string.IsNullOrEmpty(pack.Name) && pack.CreatedDate != null)
                 {
                     newPacks.Add(pack);
@@ -269,7 +269,7 @@ namespace DataPipe.Main
                                                 join stream_value_varchar svv on svv.entity_id = se.entity_id
                                             where se.unique_id = @unique_id and svv.attribute_id = ""id-mongoose"")
                                             and svv.attribute_id = ""name""",
-                        new {unique_id}).FirstOrDefault();
+                        new { unique_id }).FirstOrDefault();
                     var parentId = strings.SingleOrDefault(s => s.unique_id == unique_id && s.attribute_id == "parent")
                         ?.value;
                     var packInfo = conn.Query<dynamic>(
@@ -279,7 +279,7 @@ namespace DataPipe.Main
                                         join stream_value_varchar svv on se.entity_id = svv.entity_id
                                         where se.unique_id = @unique_id and svv.attribute_id = ""pack"")
                                         and svv.attribute_id = ""name""",
-                        new {unique_id = parentId}).FirstOrDefault();
+                        new { unique_id = parentId }).FirstOrDefault();
                     var newWeight = new WeightMeasure
                     {
                         UniqueId = unique_id,
@@ -327,9 +327,9 @@ namespace DataPipe.Main
 	                             se.sent
                             from stream_entity se
                             where se.entity_type = ""lifehist-event"" and se.sent = 0;";
-             var lifeEvents = RunSql<LifeHistoryEvent>(stringsSql).ToList();
+            var lifeEvents = RunSql<LifeHistoryEvent>(stringsSql).ToList();
 
-            
+
 
             return lifeEvents;
         }

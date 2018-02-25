@@ -25,6 +25,8 @@ namespace DataPipe.Main
 
         public void PublishEntity<T>(T message) where T : class, ISendable
         {
+            logger.Info($"publishing {message.UniqueId}");
+
             var factory = new ConnectionFactory
             {
                 HostName = appSettings.RabbitHostName,

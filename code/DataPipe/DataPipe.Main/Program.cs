@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using DataPipe.Main.Model;
+using AutoMapper;
 using DataPipe.Main.Model.LifeHistory;
 using NLog;
 using NLog.Config;
@@ -17,7 +16,7 @@ namespace DataPipe.Main
         {
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("console");
-            logger.Info("DataPipe trying to start");
+            logger.Info("DataPipe trying to start v1.91");
 
             const string mutexId = @"Global\{{7588B7D1-9AC3-4CEF-A199-339EBA4D2571}}";
 
@@ -42,7 +41,16 @@ namespace DataPipe.Main
                     }
 
                     // Perform your work here.
-                    PublishData();
+                    try
+                    {
+                        PublishData();
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error(e,"Exception trying to publish data");
+                        throw;
+                    }
+                  
                 }
                 finally
                 {
@@ -58,7 +66,7 @@ namespace DataPipe.Main
         {
             var numberToSend = 20;
             logger.Info("DataPipe started");
-           
+
             // look for all entities that are not sent
             // make up objects for each entity
             // queue each object.
@@ -72,7 +80,9 @@ namespace DataPipe.Main
 
             // when we send a new object we need to mark in the database which parts have been sent (setting sent = 1 on each row)
             // so we need to gather that information when we construct the object... not sure hwo to do this.
-          
+            logger.Info($"Number to send '{numberToSend}'");
+            var send = new Sender();
+
             foreach (var lifeHistoryEvent in Data.GetLifeHistoryEvents().Take(numberToSend))
             {
                 SendEvent(lifeHistoryEvent);
@@ -109,71 +119,102 @@ namespace DataPipe.Main
 
         private static void SendEvent(LifeHistoryEvent entity)
         {
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
+            var logger = LogManager.GetLogger("Data");
+
+
+            logger.Info($"Sending {entity.Code} for {entity.entity_name}");
             var send = new Sender();
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<LifeHistoryEvent, EndPackEvent>();
+                cfg.CreateMap<LifeHistoryEvent, LostPackEvent>();
+                cfg.CreateMap<LifeHistoryEvent, FoundPackEvent>();
+                cfg.CreateMap<LifeHistoryEvent, UnsuccessfulLitterEvent>();
+                cfg.CreateMap<LifeHistoryEvent, ShortLivedLitterEvent>();
+                cfg.CreateMap<LifeHistoryEvent, SuccessfulLitterEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualAssumedDeadEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualDiedEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualLastSeenEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualFirstSeenEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualStartEvictionEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualEndEvictionEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualLeaveEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualReturnEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualImmigrateEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualEmmigrateEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualPregnantEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualAbortEvent>();
+                cfg.CreateMap<LifeHistoryEvent, IndividualBirthEvent>();
+            });
+
+            var mapper = config.CreateMapper();
+
             switch (entity.Code)
             {
                 case "endgrp":
-                    send.PublishEntity((EndPackEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, EndPackEvent>(entity));
                     break;
                 case "lgrp":
-                    send.PublishEntity((LostPackEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, LostPackEvent>(entity));
                     break;
                 case "fgrp":
-                    send.PublishEntity((FoundPackEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, FoundPackEvent>(entity));
                     break;
                 case "unsuccessful":
-                    send.PublishEntity((UnsuccessfulLitterEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, UnsuccessfulLitterEvent>(entity));
                     break;
                 case "short-lived":
-                    send.PublishEntity((ShortLivedLitterEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, ShortLivedLitterEvent>(entity));
                     break;
                 case "successful":
-                    send.PublishEntity((SuccessfulLitterEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, SuccessfulLitterEvent>(entity));
                     break;
                 case "adied":
-                    send.PublishEntity((IndividualAssumedDeadEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualAssumedDeadEvent>(entity));
                     break;
                 case "died":
-                    send.PublishEntity((IndividualDiedEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualDiedEvent>(entity));
                     break;
                 case "lseen":
-                    send.PublishEntity((IndividualLastSeenEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualLastSeenEvent>(entity));
                     break;
                 case "fseen":
-                    send.PublishEntity((IndividualFirstSeenEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualFirstSeenEvent>(entity));
                     break;
                 case "stev":
-                    send.PublishEntity((IndividualStartEvictionEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualStartEvictionEvent>(entity));
                     break;
                 case "endev":
-                    send.PublishEntity((IndividualEndEvictionEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualEndEvictionEvent>(entity));
                     break;
                 case "leave":
-                    send.PublishEntity((IndividualLeaveEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualLeaveEvent>(entity));
                     break;
                 case "return":
-                    send.PublishEntity((IndividualReturnEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualReturnEvent>(entity));
                     break;
                 case "imm":
-                    send.PublishEntity((IndividualImmigrateEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualImmigrateEvent>(entity));
                     break;
                 case "emm":
-                    send.PublishEntity((IndividualEmmigrateEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualEmmigrateEvent>(entity));
                     break;
                 case "fpreg":
-                    send.PublishEntity((IndividualPregnantEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualPregnantEvent>(entity));
                     break;
                 case "abort":
-                    send.PublishEntity((IndividualAbortEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualAbortEvent>(entity));
                     break;
                 case "birth":
-                    send.PublishEntity((IndividualBirthEvent) entity);
+                    send.PublishEntity(mapper.Map<LifeHistoryEvent, IndividualBirthEvent>(entity));
                     break;
                 default:
                     logger.Error($"Code '{entity.Code}' was not found.");
                     break;
             }
         }
-    }
 
+    }
 }

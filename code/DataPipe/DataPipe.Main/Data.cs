@@ -10,6 +10,8 @@ using Microsoft.Data.Sqlite;
 using NLog;
 using NLog.Config;
 
+
+
 namespace DataPipe.Main
 {
     public class Data
@@ -24,7 +26,10 @@ namespace DataPipe.Main
 
         public static IDbConnection SimpleDbConnection()
         {
+      //      SQLitePCL.Batteries_V2.Init();
+
             var dbFile = GetAppSettings.Get().SqliteLocation;
+          
             return new SqliteConnection($"Data Source={dbFile};");
         }
 
@@ -40,14 +45,20 @@ namespace DataPipe.Main
                     logger.Info(
                         $"Marking {message} as sent. Type = '{message.entity_type}' entity_id = '{message.entity_id}'");
 
-                    var tran = cnn.BeginTransaction();
+                    cnn.Open();
 
-                    cnn.Execute("update sync_entity set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
-                    cnn.Execute("update sync_value_int set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
-                    cnn.Execute("update sync_value_real set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
-                    cnn.Execute("update sync_value_varchar set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    var t = cnn.BeginTransaction();
 
-                    tran.Commit();
+                    cnn.Execute("update sync_entity set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_int set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_real set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update sync_value_varchar set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+
+                    t.Commit();
                 }
             }
             else
@@ -56,15 +67,20 @@ namespace DataPipe.Main
                 {
                     logger.Info(
                         $"Marking {message} as sent. Type = '{message.entity_type}' entity_id = '{message.entity_id}'");
+
                     cnn.Open();
-                    var tran = cnn.BeginTransaction();
+                    var t = cnn.BeginTransaction();
 
-                    cnn.Execute("update stream_entity set sent = 1 where entity_id = @entity_id", new{ entity_id = message.entity_id});
-                    cnn.Execute("update stream_value_int set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
-                    cnn.Execute("update stream_value_real set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
-                    cnn.Execute("update stream_value_varchar set sent = 1 where entity_id = @entity_id", new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_entity set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_value_int set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_value_real set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
+                    cnn.Execute("update stream_value_varchar set sent = 1 where entity_id = @entity_id",
+                        new { entity_id = message.entity_id });
 
-                    tran.Commit();
+                    t.Commit();
                 }
             }
         }
@@ -301,13 +317,16 @@ namespace DataPipe.Main
         public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()
         {
             var stringsSql = @"select 
-                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""date"") as date,
-                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""type"") as ""entity_type"",
-                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""code"") as code,
-                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-uid"") as ""UniqueId"",
-                        (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-name"") as ""entity_name"",
-                        se.sent
-                        from stream_entity se;";
+	                             se.entity_id,
+	                             se.entity_type,
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""date"") as ""Date"",
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""type"") as ""Type"",
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""code"") as ""Code"",
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-uid"") as ""UniqueId"",
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-name"") as ""entity_name"",
+	                             se.sent
+                            from stream_entity se
+                            where se.entity_type = ""lifehist-event"" and se.sent = 0;";
              var lifeEvents = RunSql<LifeHistoryEvent>(stringsSql).ToList();
 
             

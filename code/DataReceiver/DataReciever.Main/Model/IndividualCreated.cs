@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+
+using DataReciever.Main.Model;
 
 namespace DataReciever.Main.Model
 {

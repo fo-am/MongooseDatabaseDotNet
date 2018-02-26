@@ -9,7 +9,10 @@ namespace DataReciever.Main.Handlers
         public void HandleMessage(FoundPackEvent message)
         {
             var data = new PgRepository();
-            // data.InsertNewIndividual(message);
+            data.PackEvent(message);
+           
+
+        
         }
     }
 }

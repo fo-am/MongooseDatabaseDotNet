@@ -59,7 +59,8 @@ namespace DataReciever.Main
                 catch (Exception ex)
                 {
                     PgRepository.FailedToHandleMessage(logId, ex);
-                    throw;
+                    channel.BasicNack(ea.DeliveryTag, false, true);
+                    return;
                 }
 
                 // catch

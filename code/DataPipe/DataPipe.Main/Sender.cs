@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 using DataPipe.Main.Model;
@@ -8,6 +9,9 @@ using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Impl;
+
+using BasicProperties = RabbitMQ.Client.Framing.BasicProperties;
 
 namespace DataPipe.Main
 {
@@ -39,22 +43,33 @@ namespace DataPipe.Main
                 {
                     using (var channel = connection.CreateModel())
                     {
-                        var properties = channel.CreateBasicProperties();
-                        properties.Persistent = true;
+
+                        channel.ExchangeDeclare("mongoose.Dead.Letter", "direct",true);
+
+                        var args = new Dictionary<string, object> { { "x-dead-letter-exchange", "mongoose.Dead.Letter" } };
 
                         channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                             true,
                             false,
                             false,
-                            null);
+                            args);
 
                         var json = JsonConvert.SerializeObject(message);
                         var body = Encoding.UTF8.GetBytes(json);
 
                         channel.TxSelect();
+
+                        var properties = channel.CreateBasicProperties();
+                        properties.Persistent = true;
+                        properties.Headers = new Dictionary<string, object>
+                        {
+                            { "Id", Guid.NewGuid().ToString() }
+
+                        };
+
                         channel.BasicPublish("",
                             $"mongoose_{typeof(T).Name}",
-                            null,
+                            properties,
                             body);
                         Data.MarkAsSent(message);
                         channel.TxCommit();

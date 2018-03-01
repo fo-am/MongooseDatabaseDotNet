@@ -65,13 +65,19 @@ namespace DataReciever.Main
                 }
                 catch (Exception ex)
                 {
-                    PgRepository.FailedToHandleMessage(logId, ex);
+                    var attemptsToHandle = PgRepository.FailedToHandleMessage(logId, ex);
+                    if (attemptsToHandle > 5)
+                    {
+                        //If we have seen this message many times then don't re-que.
+                        channel.BasicNack(ea.DeliveryTag, false, false);
+                        return;
+                    }
+
+                    // re-que so we can re-try later.
                     channel.BasicNack(ea.DeliveryTag, false, true);
                     return;
                 }
 
-                // catch
-                // store exception.
                 Console.WriteLine($"recieved {typeof(T).Name}");
 
                 channel.BasicAck(ea.DeliveryTag, false);

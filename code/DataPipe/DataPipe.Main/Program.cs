@@ -90,23 +90,23 @@ namespace DataPipe.Main
                 logger.Info($"{lifeHistoryEvent} UniqueId: {lifeHistoryEvent.UniqueId}");
             }
 
-            //foreach (var entity in Data.GetNewPacks().Take(numberToSend))
-            //{
-            //    send.PublishEntity(entity);
-            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            //}
+            foreach (var entity in Data.GetNewPacks().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
 
-            //foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
-            //{
-            //    send.PublishEntity(entity);
-            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            //}
+            foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
 
-            //foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
-            //{
-            //    send.PublishEntity(entity);
-            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            //}
+            foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
 
             //foreach (var entity in Data.GetUnsynced().Take(numberToSend))
             //{

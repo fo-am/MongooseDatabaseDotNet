@@ -14,7 +14,6 @@ namespace DataReciever.Main.Data
 {
     public class PgRepository
     {
-        //  private static Logger logger;
         private static readonly Logger logger = LogManager.GetLogger("PgRepository");
 
         public static int StoreMessage(string fullName, string message, string messageId)
@@ -23,7 +22,10 @@ namespace DataReciever.Main.Data
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
                 return conn.ExecuteScalar<int>(
-                    "Insert into mongoose.event_log (type, message_id, object) values (@type, @message_id, @message::json) RETURNING event_log_id",
+                    @"Insert into mongoose.event_log (type, message_id, object)
+                     values (@type, @message_id, @message::json)
+                      ON CONFLICT(message_id) DO UPDATE SET delivered_count = event_log.delivered_count + 1
+                     RETURNING event_log_id",
                     new
                     {
                         type = fullName,
@@ -43,14 +45,14 @@ namespace DataReciever.Main.Data
             }
         }
 
-        public static void FailedToHandleMessage(int entityId, Exception ex)
+        public static int FailedToHandleMessage(int entityId, Exception ex)
         {
             logger.Error(ex, "Failed to handle message.");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
-                conn.Execute(
-                    "update mongoose.event_log set success = false, error = @error where event_log_id = @entityId",
-                    new {entityId, error = ex.ToString()});
+                return conn.ExecuteScalar<int>(
+                    "update mongoose.event_log set success = false, error = @error where event_log_id = @entityId returning delivered_count",
+                    new { entityId, error = ex.ToString() });
             }
         }
 

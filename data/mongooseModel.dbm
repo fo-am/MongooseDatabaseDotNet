@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,367" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,192" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -285,6 +285,31 @@ SELECT  p.name as "PACK", i.name as "ID", treatment_group as "Treatment Group", 
 
 ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
   OWNER TO postgres;
+
+
+INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('lseen');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('fseen');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('stev');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('endev');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('leave');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('return');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('imm');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('emm');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('fpreg');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('abort');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('birth');
+
+INSERT INTO mongoose.litter_event_code(code) VALUES ('unsuccessful');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('short-lived');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('successful');
+
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('endgrp', 'End of pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('lgrp', 'Lost Pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('fgrp', 'Found Pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
+
+
 ]]></appended-sql>
 </database>
 
@@ -1147,7 +1172,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 	<column name="message_id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="delivered_count" not-null="true">
+	<column name="delivered_count" not-null="true" default-value="1">
 		<type name="integer" length="0"/>
 	</column>
 	<column name="type" not-null="true">
@@ -1167,6 +1192,9 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 	</column>
 	<constraint name="EventLog_pk" type="pk-constr" table="mongoose.event_log">
 		<columns names="event_log_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniqueMessageId" type="uq-constr" table="mongoose.event_log">
+		<columns names="message_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 

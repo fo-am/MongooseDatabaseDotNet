@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 using DataReciever.Main.Data;
@@ -34,11 +35,16 @@ namespace DataReciever.Main
             Console.WriteLine($"Setting up reciever for: {typeof(T).Name}");
             var channel = connection.CreateModel();
 
+            channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
+
+            var args = new Dictionary<string, object> { { "x-dead-letter-exchange", "mongoose.Dead.Letter" } };
+
             channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                 true,
                 false,
                 false,
-                null);
+                args);
+
             var consumer = new EventingBasicConsumer(channel);
             channel.BasicConsume($"mongoose_{typeof(T).Name}", false, consumer);
 
@@ -47,8 +53,8 @@ namespace DataReciever.Main
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
-
-                var logId = PgRepository.StoreMessage(typeof(T).FullName, message);
+                var messageId = ea.BasicProperties.Headers["Id"];
+                var logId = PgRepository.StoreMessage(typeof(T).FullName, messageId, message);
 
                 var handler = new GetHandler();
                 try

@@ -9,7 +9,7 @@ namespace DataReciever.Main.Handlers
         public void HandleMessage(IndividualAssumedDeadEvent message)
         {
             var data = new PgRepository();
-            // data.InsertNewIndividual(message);
+            data.NewIndividualEvent(message);
         }
     }
 }

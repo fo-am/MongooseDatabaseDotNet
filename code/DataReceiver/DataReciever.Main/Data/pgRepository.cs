@@ -17,14 +17,19 @@ namespace DataReciever.Main.Data
         //  private static Logger logger;
         private static readonly Logger logger = LogManager.GetLogger("PgRepository");
 
-        public static int StoreMessage(string fullName, string message)
+        public static int StoreMessage(string fullName, object messageId, string message)
         {
-            logger.Info($"Stored message type '{fullName}'");
+            logger.Info($"Stored message type '{fullName}' with Id '{messageId}'");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
                 return conn.ExecuteScalar<int>(
-                    "Insert into mongoose.event_log (type, object) values (@type, @message::json) RETURNING event_log_id",
-                    new {type = fullName, message});
+                    "Insert into mongoose.event_log (type, message_id object) values (@type, @message_id, @message::json) RETURNING event_log_id",
+                    new
+                    {
+                        type = fullName,
+                        message_id = messageId,
+                        message
+                    });
             }
         }
 
@@ -135,8 +140,8 @@ namespace DataReciever.Main.Data
                     var litterId = InsertLitter(message.LitterCode, packId, conn);
                     var individualId = InsertIndividual(message, litterId, conn);
                     var packHistoryId = InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
-                    InsertIndividualBorn(packHistoryId, message, conn);
 
+                    CreateIndividualEvent(individualId, message.DateOfBirth.Value, "born", conn);
                     tr.Commit();
                 }
             }
@@ -166,22 +171,35 @@ namespace DataReciever.Main.Data
 
         private int InsertIndividual(IndividualCreated message, int? litterId, IDbConnection conn)
         {
-            var individualId = conn.ExecuteScalar<int?>(
-                "select individual_id from mongoose.individual where name = @name",
-                new {name = message.Name});
+            var individualId = TryGetIndividualId(message.Name, conn);
 
             // if we have an individual then look at its data and see if we can add some more
 
-            return individualId ?? conn.ExecuteScalar<int>(
-                       "Insert into mongoose.individual (name, sex, litter_id, transponder_id, unique_id) values (@name, @sex, @litter_id, @transponder_id, @unique_id) RETURNING individual_id",
-                       new
-                       {
-                           name = message.Name,
-                           sex = message.Gender,
-                           litter_id = litterId,
-                           transponder_id = message.ChipCode,
-                           unique_id = message.UniqueId
-                       });
+            return individualId ?? AddIndividual(message.Name, message.Gender, message.ChipCode, message.UniqueId,
+                       litterId, conn);
+        }
+
+        private static int AddIndividual(string name, string gender, string chipcode, string uniqueId, int? litterId,
+            IDbConnection conn)
+        {
+            return conn.ExecuteScalar<int>(
+                "Insert into mongoose.individual (name, sex, litter_id, transponder_id, unique_id) values (@name, @sex, @litter_id, @transponder_id, @unique_id) RETURNING individual_id",
+                new
+                {
+                    name,
+                    sex = gender,
+                    litter_id = litterId,
+                    transponder_id = chipcode,
+                    unique_id = uniqueId
+                });
+        }
+
+        private static int? TryGetIndividualId(string name, IDbConnection conn)
+        {
+            var individualId = conn.ExecuteScalar<int?>(
+                "select individual_id from mongoose.individual where name = @name",
+                new {name});
+            return individualId;
         }
 
         private int InsertPackHistory(int packId, int individualId, DateTime? dateOfInteraction, IDbConnection conn)
@@ -222,44 +240,9 @@ namespace DataReciever.Main.Data
             return litterId ?? conn.ExecuteScalar<int>(
                        "Insert into mongoose.litter (name, pack_id) values (@name, @pack_id) RETURNING litter_id",
                        new {name = litterName, pack_id = packId});
-        }
+        } 
 
-        private void InsertIndividualBorn(int packHistoryId, IndividualCreated message, IDbConnection conn)
-        {
-            var eventIdBorn =
-                conn.ExecuteScalar<int?>(
-                    "Select individual_event_code_id from mongoose.individual_event_code where code = @code",
-                    new {code = "BORN"});
-            if (eventIdBorn == null)
-            {
-                eventIdBorn = conn.ExecuteScalar<int>(
-                    "Insert into mongoose.individual_event_code (code) values (@born) RETURNING individual_event_code_id",
-                    new {born = "BORN"});
-            }
-
-            var eventExists = conn.ExecuteScalar<int?>(
-                @"select individual_event_id from mongoose.individual_event where individual_event_code_id = @individual_event_code_id and                                      
-                  pack_history_id = @pack_history_id and date = @date",
-                new
-                {
-                    individual_event_code_id = eventIdBorn,
-                    pack_history_id = packHistoryId,
-                    date = message.DateOfBirth
-                });
-            if (!eventExists.HasValue)
-            {
-                conn.Execute(@"Insert into mongoose.individual_event (individual_event_code_id, pack_history_id, date)
-                                                          values (@individual_event_code_id, @pack_history_id, @date)",
-                    new
-                    {
-                        individual_event_code_id = eventIdBorn,
-                        pack_history_id = packHistoryId,
-                        date = message.DateOfBirth
-                    });
-            }
-        }
-
-        public void PackEvent(LifeHistoryEvent message) 
+        public void PackEvent(LifeHistoryEvent message)
         {
             logger.Info($@"{message.GetType().Name} Event for pack: ""{message.entity_name}"".");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
@@ -304,7 +287,92 @@ namespace DataReciever.Main.Data
                 });
         }
 
-     
 
+        public void NewIndividualEvent(LifeHistoryEvent message)
+        {
+            logger.Info($@"{message.GetType().Name} Event for Individual: ""{message.entity_name}"".");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var individiualId = TryGetIndividualId(message.entity_name, conn);
+
+                    if (!individiualId.HasValue)
+                    {
+                        individiualId = AddIndividual(message.entity_name, null, null, message.UniqueId, null, conn);
+                    }
+
+                    // get a pack_history ID for the individual. WHY THOUGh!
+                    int packHistoryId = GetPackHistoryId(individiualId.Value, conn);
+                    //insert a individual event
+                    CreateIndividualEvent(packHistoryId, message.Date, message.Code, conn);
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private int GetPackHistoryId(int individiualId, IDbConnection conn)
+        {
+            var packHistoryId = TryGetPackHistoryId(individiualId,conn);
+            if (packHistoryId.HasValue)
+            {
+                return packHistoryId.Value;
+            }
+
+            var unknownPackId = conn.ExecuteScalar<int>(@"select pack_id from mongoose.pack where pack.name = 'Unknown'");
+
+            packHistoryId = conn.ExecuteScalar<int>(@"INSERT INTO mongoose.pack_history(
+	                                        pack_id, individual_id, date_joined)
+	                                        VALUES ( @unknownPackId, @individiualId, @date) RETURNING pack_history_id;", new
+            {
+                unknownPackId,
+                individiualId,
+                date = DateTime.UtcNow
+            });
+
+            return packHistoryId.Value;
+        }
+
+        private int? TryGetPackHistoryId(int? individiualId, IDbConnection conn)
+        {
+            logger.Info($"Getting Pack History Id for individuaulId '{individiualId}'.");
+
+            var packHistoryId = conn.ExecuteScalar<int?>(@"select pack_history_id from mongoose.pack_history
+                                                    where pack_history.individual_id = @individualId 
+                                                    order by date_joined desc NULLS LAST
+                                                    limit 1"
+                ,
+                new
+                {
+                    individualId = individiualId
+                });
+
+            return packHistoryId;
+        }
+
+        private void CreateIndividualEvent(int packHistoryId, DateTime messageDate, string code, IDbConnection conn)
+        {
+
+            logger.Info($"Adding '{code}' event for pack history '{packHistoryId}'.");
+
+            var eventId = conn.ExecuteScalar<int>(
+                @"SELECT individual_event_code_id FROM mongoose.individual_event_code where code = @code",
+                new
+                {
+                    code
+                });
+
+            conn.Execute(@"INSERT INTO mongoose.individual_event
+                            (pack_history_id, individual_event_code_id, date)
+	                        VALUES (@pack_history_id, @individual_event_code_id, @date);",
+                new
+                {
+                    pack_history_id = packHistoryId,
+                    individual_event_code_id = eventId,
+                    date = messageDate
+                });
+        }
     }
 }

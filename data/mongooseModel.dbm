@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="949,605" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,367" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -299,7 +299,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1040" y="560"/>
+	<position x="1040" y="563"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -326,7 +326,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="620"/>
+	<position x="1400" y="623"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -364,7 +364,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="640"/>
+	<position x="1760" y="643"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -418,7 +418,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2420" y="540"/>
+	<position x="2420" y="543"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -465,7 +465,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="540" y="820"/>
+	<position x="540" y="823"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -510,7 +510,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1080" y="700"/>
+	<position x="1080" y="703"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -563,7 +563,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="920"/>
+	<position x="1000" y="923"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -584,7 +584,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="800"/>
+	<position x="1760" y="803"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -624,7 +624,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1740" y="980"/>
+	<position x="1740" y="983"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -651,7 +651,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1440" y="500"/>
+	<position x="1440" y="503"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -681,7 +681,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="760"/>
+	<position x="2780" y="763"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -714,7 +714,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="ultrasound">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2760" y="20"/>
+	<position x="2760" y="23"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -753,7 +753,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2840" y="260"/>
+	<position x="2840" y="263"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -835,7 +835,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2460" y="20"/>
+	<position x="2460" y="23"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -897,7 +897,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="960"/>
+	<position x="1380" y="963"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -915,7 +915,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="760"/>
+	<position x="1400" y="763"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -967,7 +967,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="1000"/>
+	<position x="2780" y="1003"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1137,12 +1137,18 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 	 dst-table="mongoose.capture"
 	 src-required="false" dst-required="false"/>
 
-<table name="event_log">
+<table name="event_log" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="140" y="960"/>
+	<position x="140" y="963"/>
 	<column name="event_log_id" not-null="true">
 		<type name="serial" length="0"/>
+	</column>
+	<column name="message_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="delivered_count" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="type" not-null="true">
 		<type name="text" length="0"/>
@@ -1167,7 +1173,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="440"/>
+	<position x="1720" y="443"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1213,7 +1219,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2940" y="520"/>
+	<position x="2940" y="523"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1257,7 +1263,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2120" y="60"/>
+	<position x="2120" y="63"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1310,10 +1316,10 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 	 dst-table="mongoose.poo_sample"
 	 src-required="false" dst-required="false"/>
 
-<table name="meterology">
+<table name="meterology" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="480" y="960"/>
+	<position x="480" y="963"/>
 	<column name="meterology_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1349,7 +1355,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="1160"/>
+	<position x="1000" y="1163"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1402,7 +1408,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1540" y="40"/>
+	<position x="1540" y="43"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1445,7 +1451,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="blood_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2160" y="1000"/>
+	<position x="2160" y="1003"/>
 	<column name="blood_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1507,7 +1513,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="160"/>
+	<position x="1000" y="163"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1572,7 +1578,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="dna_samples" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2500" y="840"/>
+	<position x="2500" y="843"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1631,7 +1637,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="460" y="100"/>
+	<position x="460" y="103"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1708,7 +1714,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="babysitting" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="1100"/>
+	<position x="1720" y="1103"/>
 	<column name="babysitting_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1772,7 +1778,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="anti_parasite" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2480" y="1280"/>
+	<position x="2480" y="1283"/>
 	<column name="anti_parasite_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1852,7 +1858,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="ox_shielding_feeding" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1929.23" y="1383.08"/>
+	<position x="1929.23" y="1386.08"/>
 	<column name="ox_shielding_feeding_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1893,7 +1899,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="ox_shielding_male" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1952.31" y="1555.38"/>
+	<position x="1952.31" y="1558.38"/>
 	<column name="ox_shielding_male_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1934,7 +1940,7 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
 <table name="ox_shielding_group" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1930.77" y="1695.38"/>
+	<position x="1930.77" y="1698.38"/>
 	<column name="ox_shielding_group_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

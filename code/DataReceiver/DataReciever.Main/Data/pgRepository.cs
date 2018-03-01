@@ -17,13 +17,13 @@ namespace DataReciever.Main.Data
         //  private static Logger logger;
         private static readonly Logger logger = LogManager.GetLogger("PgRepository");
 
-        public static int StoreMessage(string fullName, object messageId, string message)
+        public static int StoreMessage(string fullName, string message, string messageId)
         {
             logger.Info($"Stored message type '{fullName}' with Id '{messageId}'");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
                 return conn.ExecuteScalar<int>(
-                    "Insert into mongoose.event_log (type, message_id object) values (@type, @message_id, @message::json) RETURNING event_log_id",
+                    "Insert into mongoose.event_log (type, message_id, object) values (@type, @message_id, @message::json) RETURNING event_log_id",
                     new
                     {
                         type = fullName,

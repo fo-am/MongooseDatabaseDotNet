@@ -53,8 +53,9 @@ namespace DataReciever.Main
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
-                var messageId = ea.BasicProperties.Headers["Id"];
-                var logId = PgRepository.StoreMessage(typeof(T).FullName, messageId, message);
+                var messageIdBytes =(byte[]) ea.BasicProperties.Headers["Id"];
+                var messageId = Encoding.UTF8.GetString(messageIdBytes);
+                var logId = PgRepository.StoreMessage(typeof(T).FullName,  message, messageId);
 
                 var handler = new GetHandler();
                 try

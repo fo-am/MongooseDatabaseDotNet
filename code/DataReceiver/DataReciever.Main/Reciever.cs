@@ -7,6 +7,8 @@ using DataReciever.Main.Handlers;
 
 using Newtonsoft.Json;
 
+using NLog;
+
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -37,7 +39,14 @@ namespace DataReciever.Main
 
             channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
 
-            var args = new Dictionary<string, object> { { "x-dead-letter-exchange", "mongoose.Dead.Letter" } };
+            var args = new Dictionary<string, object>
+            {
+                { "x-dead-letter-exchange", "mongoose.Dead.Letter" },
+                {
+                    "x-dead-letter-routing-key", $"mongoose_{typeof(T).Name}.DLQ"
+
+                }
+            };
 
             channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                 true,
@@ -55,7 +64,18 @@ namespace DataReciever.Main
                 var output = JsonConvert.DeserializeObject<T>(message);
                 var messageIdBytes =(byte[]) ea.BasicProperties.Headers["Id"];
                 var messageId = Encoding.UTF8.GetString(messageIdBytes);
-                var logId = PgRepository.StoreMessage(typeof(T).FullName,  message, messageId);
+                int logId;
+                try
+                {
+                    logId = PgRepository.StoreMessage(typeof(T).FullName, message, messageId);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                  
+                    throw;
+                }
+               
 
                 var handler = new GetHandler();
                 try

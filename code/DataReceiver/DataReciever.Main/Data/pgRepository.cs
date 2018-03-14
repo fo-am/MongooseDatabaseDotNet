@@ -236,13 +236,13 @@ namespace DataReciever.Main.Data
                 return null;
             }
 
-            var litterId = conn.ExecuteScalar<int?>("select litter_id from mongoose.litter where name = @name",
-                new {name = litterName});
+            var litterId = TryGetLitterId(litterName, conn);
 
             return litterId ?? conn.ExecuteScalar<int>(
                        "Insert into mongoose.litter (name, pack_id) values (@name, @pack_id) RETURNING litter_id",
                        new {name = litterName, pack_id = packId});
-        } 
+        }
+
 
         public void PackEvent(LifeHistoryEvent message)
         {
@@ -305,7 +305,6 @@ namespace DataReciever.Main.Data
                         individiualId = AddIndividual(message.entity_name, null, null, message.UniqueId, null, conn);
                     }
 
-                    // get a pack_history ID for the individual. WHY THOUGh!
                     int packHistoryId = GetPackHistoryId(individiualId.Value, conn);
                     //insert a individual event
                     CreateIndividualEvent(packHistoryId, message.Date, message.Code, conn);
@@ -375,6 +374,58 @@ namespace DataReciever.Main.Data
                     individual_event_code_id = eventId,
                     date = messageDate
                 });
+        }
+
+        public void InsertNewLitterEvent(LifeHistoryEvent message)
+        {
+            logger.Info($@"{message.GetType().Name} Event for litter: ""{message.entity_name}"".");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var litterId = TryGetLitterId(message.entity_name, conn);
+
+                    if (!litterId.HasValue)
+                    {
+                        throw new Exception($"No Litter Found with Id {message.entity_name}");
+                    }
+
+                    //insert a packo evento
+                    CreateLitterEvent(litterId.Value, message.Date, message.Code, conn);
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void CreateLitterEvent(int litterId, DateTime messageDate, string code, IDbConnection conn)
+        {
+            logger.Info($"Adding '{code}' event for Litter '{litterId}'");
+
+            var eventId = conn.ExecuteScalar<int>(
+                @"SELECT litter_event_code_id FROM mongoose.litter_event_code where code = @code",
+                new
+                {
+                    code
+                });
+
+            conn.Execute(@"INSERT INTO mongoose.litter_event
+                            (litter_id, litter_event_code_id, date)
+	                        VALUES (@litter_id, @litter_event_code_id, @date);",
+                new
+                {
+                    litter_id = litterId,
+                    litter_event_code_id = eventId,
+                    date = messageDate
+                });
+        }
+
+        private static int? TryGetLitterId(string litterName, IDbConnection conn)
+        {
+            var litterId = conn.ExecuteScalar<int?>("select litter_id from mongoose.litter where name = @name",
+                new { name = litterName });
+            return litterId;
         }
     }
 }

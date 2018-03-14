@@ -19,6 +19,7 @@ namespace DataReciever.Main
             reciever.Recieve<PackCreated>();
             reciever.Recieve<IndividualCreated>();
             reciever.Recieve<WeightMeasure>();
+
             reciever.Recieve<EndPackEvent>();
             reciever.Recieve<LostPackEvent>();
             reciever.Recieve<FoundPackEvent>();

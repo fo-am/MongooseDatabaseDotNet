@@ -1,8 +1,6 @@
 using System;
 
-using DataPipe.Main.Model;
-
-namespace DataPipe.Main
+namespace DataPipe.Main.Model
 {
     public class IndividualCreated : ISendable
     {

@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,192" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="627,164" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -285,31 +285,6 @@ SELECT  p.name as "PACK", i.name as "ID", treatment_group as "Treatment Group", 
 
 ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
   OWNER TO postgres;
-
-
-INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('lseen');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('fseen');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('stev');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('endev');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('leave');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('return');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('imm');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('emm');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('fpreg');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('abort');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('birth');
-
-INSERT INTO mongoose.litter_event_code(code) VALUES ('unsuccessful');
-INSERT INTO mongoose.litter_event_code(code) VALUES ('short-lived');
-INSERT INTO mongoose.litter_event_code(code) VALUES ('successful');
-
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('endgrp', 'End of pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('lgrp', 'Lost Pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('fgrp', 'Found Pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
-
-
 ]]></appended-sql>
 </database>
 
@@ -324,7 +299,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1040" y="563"/>
+	<position x="1040" y="560"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -351,7 +326,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="623"/>
+	<position x="1400" y="620"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -389,7 +364,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="643"/>
+	<position x="1760" y="640"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -443,7 +418,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2420" y="543"/>
+	<position x="2420" y="540"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -490,7 +465,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="540" y="823"/>
+	<position x="540" y="820"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -535,7 +510,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1080" y="703"/>
+	<position x="1080" y="700"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -588,7 +563,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="923"/>
+	<position x="1000" y="920"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -609,7 +584,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="803"/>
+	<position x="1760" y="800"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -649,7 +624,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1740" y="983"/>
+	<position x="1740" y="1020"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -676,7 +651,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1440" y="503"/>
+	<position x="1440" y="500"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -706,7 +681,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="763"/>
+	<position x="2780" y="760"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -739,7 +714,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="ultrasound">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2760" y="23"/>
+	<position x="2760" y="20"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -778,7 +753,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2840" y="263"/>
+	<position x="2840" y="260"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -860,7 +835,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2460" y="23"/>
+	<position x="2460" y="20"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -922,7 +897,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="963"/>
+	<position x="1380" y="960"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -940,7 +915,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="763"/>
+	<position x="1400" y="760"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -992,7 +967,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="1003"/>
+	<position x="2780" y="1000"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1162,18 +1137,12 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 	 dst-table="mongoose.capture"
 	 src-required="false" dst-required="false"/>
 
-<table name="event_log" hide-ext-attribs="true">
+<table name="event_log">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="140" y="963"/>
+	<position x="140" y="960"/>
 	<column name="event_log_id" not-null="true">
 		<type name="serial" length="0"/>
-	</column>
-	<column name="message_id" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<column name="delivered_count" not-null="true" default-value="1">
-		<type name="integer" length="0"/>
 	</column>
 	<column name="type" not-null="true">
 		<type name="text" length="0"/>
@@ -1193,15 +1162,12 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 	<constraint name="EventLog_pk" type="pk-constr" table="mongoose.event_log">
 		<columns names="event_log_id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="uniqueMessageId" type="uq-constr" table="mongoose.event_log">
-		<columns names="message_id" ref-type="src-columns"/>
-	</constraint>
 </table>
 
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="443"/>
+	<position x="1720" y="440"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1247,7 +1213,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2940" y="523"/>
+	<position x="2940" y="520"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1291,7 +1257,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2120" y="63"/>
+	<position x="2120" y="60"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1344,10 +1310,10 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 	 dst-table="mongoose.poo_sample"
 	 src-required="false" dst-required="false"/>
 
-<table name="meterology" hide-ext-attribs="true">
+<table name="meterology">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="480" y="963"/>
+	<position x="480" y="960"/>
 	<column name="meterology_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1383,7 +1349,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="1163"/>
+	<position x="1000" y="1160"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1436,7 +1402,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1540" y="43"/>
+	<position x="1540" y="40"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1479,7 +1445,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="blood_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2160" y="1003"/>
+	<position x="2160" y="1000"/>
 	<column name="blood_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1541,7 +1507,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="163"/>
+	<position x="1000" y="160"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1606,7 +1572,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="dna_samples" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2500" y="843"/>
+	<position x="2500" y="840"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1665,7 +1631,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="460" y="103"/>
+	<position x="460" y="100"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1742,7 +1708,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="babysitting" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="1103"/>
+	<position x="1720" y="1100"/>
 	<column name="babysitting_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1806,7 +1772,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="anti_parasite" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2480" y="1283"/>
+	<position x="2480" y="1280"/>
 	<column name="anti_parasite_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1886,7 +1852,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="ox_shielding_feeding" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1929.23" y="1386.08"/>
+	<position x="1920" y="1380"/>
 	<column name="ox_shielding_feeding_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1927,7 +1893,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="ox_shielding_male" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1952.31" y="1558.38"/>
+	<position x="1960" y="1560"/>
 	<column name="ox_shielding_male_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1968,7 +1934,7 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 <table name="ox_shielding_group" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1930.77" y="1698.38"/>
+	<position x="1940" y="1700"/>
 	<column name="ox_shielding_group_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

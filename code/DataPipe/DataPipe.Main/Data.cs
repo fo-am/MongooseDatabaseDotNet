@@ -43,7 +43,7 @@ namespace DataPipe.Main
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("Data");
 
-            if (message.entity_type == "mongoose" || message.entity_type == "pack")
+            if (message.entity_type == "mongoose" || message.entity_type == "pack"|| message.entity_type == "litter")
             {
                 using (var cnn = SimpleDbConnection())
                 {
@@ -129,7 +129,7 @@ namespace DataPipe.Main
                         join sync_value_real svr on se.entity_id = svr.entity_id
                         where se.entity_type = ""mongoose""  and se.sent = 0
                         group by    se.unique_id , svr.attribute_id ,svr.value;";
-            var longs = RunSql<DatabaseRow<double>>(longSql).ToList();
+            var longs = RunSql<DatabaseRow<double?>>(longSql).ToList();
 
             foreach (var uniqueCode in longs.Select(l => l.unique_id).Distinct())
             {
@@ -248,7 +248,7 @@ namespace DataPipe.Main
                              from stream_entity se
                              join stream_value_int svi on se.entity_id = svi.entity_id
                             where se.entity_type = ""group-comp-weight"" and se.sent = 0";
-            var ints = RunSql<DatabaseRow<int>>(intSql).ToList();
+            var ints = RunSql<DatabaseRow<int?>>(intSql).ToList();
 
             var realSql = @" select se.entity_type, se.entity_id, se.unique_id, svi.attribute_id, svi.value 
                              from stream_entity se
@@ -316,7 +316,7 @@ namespace DataPipe.Main
 
         public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()
         {
-            var stringsSql = @"select 
+            var stringSql = @"select 
 	                             se.entity_id,
 	                             se.entity_type,
 	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""date"") as ""Date"",
@@ -327,13 +327,56 @@ namespace DataPipe.Main
 	                             se.sent
                             from stream_entity se
                             where se.entity_type = ""lifehist-event"" and se.sent = 0;";
-            var lifeEvents = RunSql<LifeHistoryEvent>(stringsSql).ToList();
+            var lifeEvents = RunSql<LifeHistoryEvent>(stringSql).ToList();
 
 
 
             return lifeEvents;
         }
+
+        public static IEnumerable<LitterCreated> GetUnsynchedLitters()
+        {
+            var stringSql = @"select 
+                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as ""Date"",
+                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'name') as ""LitterName"",
+                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'unique_id') as ""UniqueId"",
+                        (select svv.value as 'packName' from sync_entity se
+                        join sync_value_varchar svv on svv.entity_id = se.entity_id 
+                        where se.unique_id = svv.unique_id and svv.attribute_id = 'name') as 'PackName',
+                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'parent') as ""PackUniqueId"",
+                        ""litter"" as entity_type,
+                        se.entity_id
+                        from sync_entity se 
+                        where se.entity_type = ""litter"" and se.sent = 0;";
+
+            var lifeEvents = RunSql<LitterCreated>(stringSql).ToList();
+            return lifeEvents; 
+        }
+
+        public static IEnumerable<PackMove> GetUnsynchedPackMoves()
+        {
+            var stringSql = @"select entity_id, entity_type, unique_id,
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-name') as 'mongoose-name',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-id') as 'pack-dst-id',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-name') as 'pack-dst-name',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-id') as 'pack-src-id',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-name') as 'pack-src-name',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'time') as 'time',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'user') as 'user',
+                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lat') as 'lat',
+                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lon') as 'lon'
+                            from stream_entity se
+                            where se.entity_type = 'movepack-event' and se.sent = 0";
+
+            var lifeEvents = RunSql<PackMove>(stringSql).ToList();
+            return lifeEvents;
+        }
     }
+
+  
 
     public class DatabaseRow<T>
     {

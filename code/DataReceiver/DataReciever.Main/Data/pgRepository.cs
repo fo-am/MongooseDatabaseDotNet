@@ -459,7 +459,6 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
-
         }
 
         private void CreateLitter(string litterName, int packId, DateTime dateFormed, IDbConnection conn)
@@ -479,7 +478,50 @@ namespace DataReciever.Main.Data
 
         public void PackMove(PackMove message)
         {
-            throw new NotImplementedException();
+            //get inital packId
+            // get destination packId
+            // get individual Id
+
+            // move the individual to the new pack.
+            logger.Info($@"Moving '{message.MongooseName}' from Pack '{message.PackSourceName}' to Pack '{message.PackDestintionName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var sourcePackId = TryGetPackId(message.PackSourceName, conn);
+                    if (!sourcePackId.HasValue)
+                    {
+                        throw new Exception($"Source Pack Name '{message.PackSourceName}' not found.");
+                    }
+
+                    var destinationPackId = TryGetPackId(message.PackDestintionName, conn);
+                    if (!destinationPackId.HasValue)
+                    {
+                        throw new Exception($"Destination Pack Name '{message.PackSourceName}' not found.");
+                    }
+
+                    var individualId = TryGetIndividualId(message.MongooseName, conn);
+                    //insert a packo evento
+                    MovePack(sourcePackId, destinationPackId, individualId, message.Time, conn);
+
+                    tr.Commit();
+                }
+            }
+
+        }
+
+        private void MovePack(int? sourcePackId, int? destinationPackId, int? individualId, string date, IDbConnection conn)
+        {
+            conn.Execute(@"INSERT INTO mongoose.pack_history(
+	                     pack_id, individual_id, date_joined)
+	                    VALUES (@pack_id, @individual_id, @date_joined);",
+                new
+                {
+                    pack_id = destinationPackId,
+                    name = individualId,
+                    date = date
+                });
         }
     }
 }

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+
 using AutoMapper;
+
 using DataPipe.Main.Model.LifeHistory;
+
 using NLog;
 using NLog.Config;
 
 namespace DataPipe.Main
 {
-    internal class Program
+    public class Program
     {
         private static Logger logger;
 
@@ -47,10 +50,9 @@ namespace DataPipe.Main
                     }
                     catch (Exception e)
                     {
-                        logger.Error(e,"Exception trying to publish data");
+                        logger.Error(e, "Exception trying to publish data");
                         throw;
                     }
-                  
                 }
                 finally
                 {
@@ -83,13 +85,6 @@ namespace DataPipe.Main
             logger.Info($"Number to send '{numberToSend}'");
             var send = new Sender();
 
-            foreach (var lifeHistoryEvent in Data.GetLifeHistoryEvents().Take(numberToSend))
-            {
-                SendEvent(lifeHistoryEvent);
-
-                logger.Info($"{lifeHistoryEvent} UniqueId: {lifeHistoryEvent.UniqueId}");
-            }
-
             foreach (var entity in Data.GetNewPacks().Take(numberToSend))
             {
                 send.PublishEntity(entity);
@@ -114,6 +109,19 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
+            foreach (var lifeHistoryEvent in Data.GetLifeHistoryEvents().Take(numberToSend))
+            {
+                SendEvent(lifeHistoryEvent);
+
+                logger.Info($"{lifeHistoryEvent} UniqueId: {lifeHistoryEvent.UniqueId}");
+            }
+
+            foreach (var entity in Data.GetUnsynchedPackMoves().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
+
             //foreach (var entity in Data.GetUnsynced().Take(numberToSend))
             //{
             //    send.PublishEntity(entity);
@@ -127,7 +135,6 @@ namespace DataPipe.Main
         {
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             var logger = LogManager.GetLogger("Data");
-
 
             logger.Info($"Sending {entity.Code} for {entity.entity_name}");
             var send = new Sender();
@@ -221,6 +228,5 @@ namespace DataPipe.Main
                     break;
             }
         }
-
     }
 }

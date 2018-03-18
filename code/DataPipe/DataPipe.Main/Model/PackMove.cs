@@ -7,15 +7,15 @@
         public int entity_id { get; set; }
         public string entity_type { get; set; }
 
-        public string mongooseId { get; set; }
-        public string mongooseName { get; set; }
-        public string packDestinationId { get; set; }
-        public string packDestintionName { get; set; }
-        public string packSourceId { get; set; }
-        public string packSourceName { get; set; }
-        public string time { get; set; }
-        public string user { get; set; }
-        public long latitude { get; set; }
-        public long longitude { get; set; }
+        public string MongooseId { get; set; }
+        public string MongooseName { get; set; }
+        public string PackDestinationId { get; set; }
+        public string PackDestintionName { get; set; }
+        public string PackSourceId { get; set; }
+        public string PackSourceName { get; set; }
+        public string Time { get; set; }
+        public string User { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

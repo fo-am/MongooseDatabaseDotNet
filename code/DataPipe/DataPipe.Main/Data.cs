@@ -24,6 +24,9 @@ namespace DataPipe.Main
             logger = LogManager.GetLogger("Data");
             var dbFile = GetAppSettings.Get().SqliteLocation;
 
+            var file = new FileInfo(dbFile);
+            Console.WriteLine(file.Directory);
+
             if (File.Exists(dbFile))
             {
                 logger.Info($"Database found at '{dbFile}' ");
@@ -356,18 +359,16 @@ namespace DataPipe.Main
         public static IEnumerable<PackMove> GetUnsynchedPackMoves()
         {
             var stringSql = @"select entity_id, entity_type, unique_id,
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'mongoose-id',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-name') as 'mongoose-name',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-id') as 'pack-dst-id',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-name') as 'pack-dst-name',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-id') as 'pack-src-id',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-name') as 'pack-src-name',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'time') as 'time',
-                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'user') as 'user',
-                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lat') as 'lat',
-                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lon') as 'lon'
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'MongooseId',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-name') as 'MongooseName',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-id') as 'PackDestinationId',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-name') as 'PackDestintionName',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-id') as 'PackSourceId',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-src-name') as 'PackSourceName',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'time') as 'Time',
+                            (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'user') as 'User',
+                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lat') as 'Latitude',
+                            (select value from stream_value_real where entity_id = se.entity_id and attribute_id = 'lon') as 'Longitude'
                             from stream_entity se
                             where se.entity_type = 'movepack-event' and se.sent = 0";
 

@@ -40,6 +40,9 @@ namespace DataReciever.Main
             reciever.Recieve<IndividualAbortEvent>();
             reciever.Recieve<IndividualBirthEvent>();
 
+            reciever.Recieve<PackMove>();
+            reciever.Recieve<LitterCreated>();
+
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

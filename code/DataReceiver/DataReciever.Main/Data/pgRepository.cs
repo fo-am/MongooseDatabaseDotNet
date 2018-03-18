@@ -427,5 +427,59 @@ namespace DataReciever.Main.Data
                 new { name = litterName });
             return litterId;
         }
+
+        public void InsertNewLitter(LitterCreated message)
+        {
+            // get pack id
+            // see if litter exists. if so log it and move on
+            // if not then add it.
+            logger.Info($@"Adding New Litter : ""{message.LitterName}"".");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.PackName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Pack Name '{message.PackName}' not found.");
+                    }
+
+                    var litterId = TryGetLitterId(message.LitterName, conn);
+
+                    if (litterId.HasValue)
+                    {
+                        logger.Info($"Litter already in database!  {message.LitterName}");
+                        return;
+                    }
+
+                    //insert a packo evento
+                    CreateLitter(message.LitterName, packId.Value, message.Date, conn);
+
+                    tr.Commit();
+                }
+            }
+
+        }
+
+        private void CreateLitter(string litterName, int packId, DateTime dateFormed, IDbConnection conn)
+        {
+
+            conn.Execute(@"INSERT INTO mongoose.litter
+                            (pack_id, name, dateformed) 
+                            VALUES 
+                            (@pack_id, @name, @dateformed);",
+                new
+                {
+                    pack_id = packId,
+                    name = litterName,
+                    date = dateFormed
+                });
+        }
+
+        public void PackMove(PackMove message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

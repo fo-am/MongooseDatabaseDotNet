@@ -34,6 +34,9 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(IndividualAbortEvent), new IndividualAbortEventHandler());
             handlers.Add(typeof(IndividualBirthEvent), new IndividualBirthEventHandler());
 
+            handlers.Add(typeof(PackMove), new PackMoveEventHandler());
+            handlers.Add(typeof(LitterCreated), new LitterCreatedEventHandler());
+
         }
 
         public void Handle<T>(T output)
@@ -49,4 +52,6 @@ namespace DataReciever.Main.Handlers
             }
         }
     }
+
+
 }

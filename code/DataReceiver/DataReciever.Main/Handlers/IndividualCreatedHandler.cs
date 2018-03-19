@@ -1,7 +1,6 @@
 ﻿using DataReciever.Main.Data;
 using DataReciever.Main.Interfaces;
 using DataReciever.Main.Model;
-using DataReciever.Main.Model.LifeHistory;
 
 namespace DataReciever.Main.Handlers
 {

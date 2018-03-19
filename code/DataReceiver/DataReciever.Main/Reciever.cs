@@ -43,8 +43,7 @@ namespace DataReciever.Main
             {
                 { "x-dead-letter-exchange", "mongoose.Dead.Letter" },
                 {
-                    "x-dead-letter-routing-key", $"mongoose_{typeof(T).Name}.DLQ"
-
+                    "x-dead-letter-routing-key", $"DLQ.mongoose_{typeof(T).Name}"
                 }
             };
 
@@ -53,6 +52,12 @@ namespace DataReciever.Main
                 false,
                 false,
                 args);
+
+            channel.QueueDeclare($"DLQ.mongoose_{typeof(T).Name}",
+                true,
+                false,
+                false,
+                null);
 
             var consumer = new EventingBasicConsumer(channel);
             channel.BasicConsume($"mongoose_{typeof(T).Name}", false, consumer);

@@ -141,9 +141,17 @@ namespace DataReciever.Main.Data
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
                     var litterId = InsertLitter(message.LitterCode, packId, conn);
                     var individualId = InsertIndividual(message, litterId, conn);
-                    var packHistoryId = InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
+                    InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
 
-                    CreateIndividualEvent(individualId, message.DateOfBirth.Value, "born", conn);
+                    if (message.DateOfBirth.HasValue)
+                    {
+                        CreateIndividualEvent(individualId, message.DateOfBirth, "born", conn);
+                    }
+                    else
+                    {
+                        CreateIndividualEvent(individualId, DateTime.UtcNow, "fseen", conn);
+                    }
+
                     tr.Commit();
                 }
             }
@@ -353,7 +361,7 @@ namespace DataReciever.Main.Data
             return packHistoryId;
         }
 
-        private void CreateIndividualEvent(int packHistoryId, DateTime messageDate, string code, IDbConnection conn)
+        private void CreateIndividualEvent(int packHistoryId, DateTime? messageDate, string code, IDbConnection conn)
         {
 
             logger.Info($"Adding '{code}' event for pack history '{packHistoryId}'.");
@@ -374,6 +382,7 @@ namespace DataReciever.Main.Data
                     individual_event_code_id = eventId,
                     date = messageDate
                 });
+
         }
 
         public void InsertNewLitterEvent(LifeHistoryEvent message)
@@ -472,7 +481,7 @@ namespace DataReciever.Main.Data
                 {
                     pack_id = packId,
                     name = litterName,
-                    date = dateFormed
+                    dateformed = dateFormed
                 });
         }
 
@@ -498,7 +507,7 @@ namespace DataReciever.Main.Data
                     var destinationPackId = TryGetPackId(message.PackDestintionName, conn);
                     if (!destinationPackId.HasValue)
                     {
-                        throw new Exception($"Destination Pack Name '{message.PackSourceName}' not found.");
+                        throw new Exception($"Destination Pack Name '{message.PackDestintionName}' not found.");
                     }
 
                     var individualId = TryGetIndividualId(message.MongooseName, conn);
@@ -511,7 +520,7 @@ namespace DataReciever.Main.Data
 
         }
 
-        private void MovePack(int? sourcePackId, int? destinationPackId, int? individualId, string date, IDbConnection conn)
+        private void MovePack(int? sourcePackId, int? destinationPackId, int? individualId, DateTime date, IDbConnection conn)
         {
             conn.Execute(@"INSERT INTO mongoose.pack_history(
 	                     pack_id, individual_id, date_joined)
@@ -519,8 +528,8 @@ namespace DataReciever.Main.Data
                 new
                 {
                     pack_id = destinationPackId,
-                    name = individualId,
-                    date = date
+                    individual_id = individualId,
+                    date_joined = date
                 });
         }
     }

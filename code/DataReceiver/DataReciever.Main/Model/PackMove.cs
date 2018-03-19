@@ -1,4 +1,6 @@
-﻿namespace DataReciever.Main.Model
+﻿using System;
+
+namespace DataReciever.Main.Model
 {
     public class PackMove : ISendable
     {
@@ -13,7 +15,7 @@
         public string PackDestintionName { get; set; }
         public string PackSourceId { get; set; }
         public string PackSourceName { get; set; }
-        public string Time { get; set; }
+        public DateTime Time { get; set; }
         public string User { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }

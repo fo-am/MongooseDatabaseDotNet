@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   rabbit1:
-    image: "rabbitmq:3.7.3-management-alpine"
+    build: .
     hostname: "rabbit1"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"

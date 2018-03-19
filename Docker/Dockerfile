@@ -1,16 +1,3 @@
-FROM microsoft/aspnetcore-build:2.0.5-2.1.4-stretch AS build-env
-WORKDIR /app
+FROM  "rabbitmq:3.7.3-management-alpine"
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
-
-# Copy everything else and build
-COPY . ./
-RUN dotnet publish -c Release -o out
-
-# Build runtime image
-FROM microsoft/aspnetcore:2.0
-WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "DataReciever.Main.dll"]
+RUN rabbitmq-plugins enable rabbitmq_shovel rabbitmq_shovel_management

@@ -117,77 +117,51 @@ namespace DataPipe.Main
 
         public static IEnumerable<IndividualCreated> GetUnsyncedIndividuals()
         {
-            var newIndividuals = new List<IndividualCreated>();
-            var stringsSql = @"
-                        select se.entity_id, se.unique_id as unique_id,se.entity_type, svv.attribute_id as attribute_id ,svv.value
-                        from sync_entity se
-                        join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.entity_type = ""mongoose"" and se.sent = 0
-                        group by    se.unique_id , svv.attribute_id ,svv.value;";
-            var strings = RunSql<DatabaseRow<string>>(stringsSql).ToList();
+            var newIndividualsSql = @"
+                                    select se.entity_id, 
+                                    se.unique_id as 'UniqueId',
+                                    se.sent,
+                                    se.entity_type,
+                                    svvName.value as 'Name',
+                                    svvChip.value as 'ChipCode'	,
+                                    svvDob.value as 'DateOfBirthString',
+                                    svvLitter.value as 'litter_code',
+                                    svvGender.value as 'Gender',
+                                    svvPack.value as 'PackUniqueId',
+                                    (select svv.value as PackCode
+                                    from sync_entity se
+                                    join sync_value_varchar svv on se.entity_id = svv.entity_id and svv.attribute_id = 'name'
+                                    where se.unique_id = svvPack.value ) as 'PackCode',
+                                    svrColler.value as CollerWeight,
+                                    svrLat.value as Latitude,
+                                    svrLon.value as Longitude
+                                    from sync_entity se 
+                                    left join sync_value_varchar svvName on svvName.entity_id = se.entity_id and svvName.attribute_id = 'name'
+                                    left join sync_value_varchar svvChip on svvchip.entity_id = se.entity_id and svvchip.attribute_id = 'chip-code'
+                                    left join sync_value_varchar svvDob on svvDob.entity_id = se.entity_id and svvDob.attribute_id = 'dob'
+                                    left join sync_value_varchar svvGender on svvGender.entity_id = se.entity_id and svvGender.attribute_id = 'gender'
+                                    left join sync_value_varchar svvLitter on svvLitter.entity_id = se.entity_id and svvLitter.attribute_id = 'litter-code'
+                                    left join sync_value_varchar svvPack on svvPack.entity_id = se.entity_id and svvPack.attribute_id = 'pack-id'
+                                    left join sync_value_real svrColler on svrColler.entity_id = se.entity_id and svrColler.attribute_id = 'collar_weight'
+                                    left join sync_value_real svrLat on svrLat.entity_id = se.entity_id and svrLat.attribute_id = 'lat'
+                                    left join sync_value_real svrLon on svrLon.entity_id = se.entity_id and svrLon.attribute_id = 'lon'
+                                    
+                                    where se.entity_type = 'mongoose' and se.sent = 0";
+             var newIndividuals = RunSql<IndividualCreated>(newIndividualsSql).ToList();
 
-            var longSql = @"
-                        select se.entity_id, se.unique_id as unique_id, se.entity_type, svr.attribute_id ,svr.value 
-                        from sync_entity se
-                        join sync_value_real svr on se.entity_id = svr.entity_id
-                        where se.entity_type = ""mongoose""  and se.sent = 0
-                        group by    se.unique_id , svr.attribute_id ,svr.value;";
-            var longs = RunSql<DatabaseRow<double?>>(longSql).ToList();
-
-            foreach (var uniqueCode in longs.Select(l => l.unique_id).Distinct())
+            foreach (var individualCreated in newIndividuals)
             {
-                var newIndividual = new IndividualCreated
+                if (DateTime.TryParse(individualCreated.DateOfBirthString, out var dateOfBirth))
                 {
-                    entity_id = strings.SingleOrDefault(s => s.attribute_id == "name" && s.unique_id == uniqueCode)
-                        .entity_id,
-                    UniqueId = uniqueCode,
-                    entity_type = strings.SingleOrDefault(s => s.attribute_id == "name" && s.unique_id == uniqueCode)
-                        ?.entity_type,
-                    ChipCode = strings.SingleOrDefault(s => s.attribute_id == "chip-code" && s.unique_id == uniqueCode)
-                        ?.value,
-                    CollerWeight =
-                        longs.SingleOrDefault(s => s.attribute_id == "collar-weight" && s.unique_id == uniqueCode)
-                            ?.value,
-                    DateOfBirth =
-                        GetDate(
-                            strings.SingleOrDefault(s => s.attribute_id == "dob" && s.unique_id == uniqueCode)?.value),
-                    Gender =
-                        strings.SingleOrDefault(s => s.attribute_id == "gender" && s.unique_id == uniqueCode)?.value,
-                    Name = strings.SingleOrDefault(s => s.attribute_id == "name" && s.unique_id == uniqueCode)?.value,
-                    LitterCode =
-                        strings.SingleOrDefault(s => s.attribute_id == "litter-code" && s.unique_id == uniqueCode)
-                            ?.value,
-                    PackCode = GetPackName(strings
-                        .SingleOrDefault(s => s.attribute_id == "pack-id" && s.unique_id == uniqueCode)?.value),
-                    PackUniqueId = strings
-                        .SingleOrDefault(s => s.attribute_id == "pack-id" && s.unique_id == uniqueCode)
-                        ?.value
-                };
-                if (!string.IsNullOrEmpty(newIndividual.Name))
-                {
-                    if (newIndividual.DateOfBirth != null && newIndividual.DateOfBirth != DateTime.MinValue)
-                    {
-                        newIndividuals.Add(newIndividual);
-                    }
+                    individualCreated.DateOfBirth = dateOfBirth;
                 }
             }
+        
 
             return newIndividuals;
         }
 
-        private static string GetPackName(string packUniqueId)
-        {
-            var sql = $@"
-                        select svv.value from sync_entity se 
-                        join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.unique_id = ""{packUniqueId}"" and svv.attribute_id = ""name""";
-
-            var name = RunSql<DatabaseRow<string>>(sql).FirstOrDefault()?.value;
-
-            return name ?? "Unknown Pack";
-        }
-
-        private static DateTime? GetDate(string dateString)
+       private static DateTime? GetDate(string dateString)
         {
             if (DateTime.TryParse(dateString, out var dateTime))
             {
@@ -340,17 +314,18 @@ namespace DataPipe.Main
         public static IEnumerable<LitterCreated> GetUnsynchedLitters()
         {
             var stringSql = @"select 
-                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as ""Date"",
-                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'name') as ""LitterName"",
-                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'unique_id') as ""UniqueId"",
-                        (select svv.value as 'packName' from sync_entity se
-                        join sync_value_varchar svv on svv.entity_id = se.entity_id 
-                        where se.unique_id = svv.unique_id and svv.attribute_id = 'name') as 'PackName',
-                        (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'parent') as ""PackUniqueId"",
-                        ""litter"" as entity_type,
-                        se.entity_id
-                        from sync_entity se 
-                        where se.entity_type = ""litter"" and se.sent = 0;";
+                             (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as 'Date',
+                             (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'name') as 'LitterName',
+                             (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'unique_id') as 'UniqueId',
+                             (select svv.value from sync_entity se
+                                join sync_value_varchar svv on svv.entity_id = se.entity_id
+                                where se.unique_id = svvPackId.value and svv.attribute_id = 'name') as 'PackName',
+                             svvPackId.value as 'PackUniqueId',
+                             'litter' as entity_type,
+                             se.entity_id
+                             from sync_entity se 
+                             join sync_value_varchar svvPackId on svvPackId.entity_id = se.entity_id and svvPackId.attribute_id = 'parent'
+                             where se.entity_type = 'litter' and se.sent = 0;";
 
             var lifeEvents = RunSql<LitterCreated>(stringSql).ToList();
             return lifeEvents; 

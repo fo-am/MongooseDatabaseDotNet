@@ -10,6 +10,7 @@ namespace DataPipe.Main.Model
 
         public string Name { get; set; }
         public string Gender { get; set; }
+        public string DateOfBirthString { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string LitterCode { get; set; }
         public string ChipCode { get; set; }
@@ -17,5 +18,7 @@ namespace DataPipe.Main.Model
         public int sent { get; set; }
         public string PackCode { get; set; }
         public string PackUniqueId { get; set; }
+        public double? Longitude { get; set; }
+        public double? Latitude { get; set; }
     }
 }

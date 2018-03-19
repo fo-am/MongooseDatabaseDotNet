@@ -43,16 +43,28 @@ namespace DataPipe.Main
                 {
                     using (var channel = connection.CreateModel())
                     {
+                        Console.WriteLine($"Setting up queues for: {typeof(T).Name}");
+                        channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
 
-                        channel.ExchangeDeclare("mongoose.Dead.Letter", "direct",true);
-
-                        var args = new Dictionary<string, object> { { "x-dead-letter-exchange", "mongoose.Dead.Letter" } };
+                        var args = new Dictionary<string, object>
+                        {
+                            { "x-dead-letter-exchange", "mongoose.Dead.Letter" },
+                            {
+                                "x-dead-letter-routing-key", $"DLQ.mongoose_{typeof(T).Name}"
+                            }
+                        };
 
                         channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                             true,
                             false,
                             false,
                             args);
+
+                        channel.QueueDeclare($"DLQ.mongoose_{typeof(T).Name}",
+                            true,
+                            false,
+                            false,
+                            null);
 
                         var json = JsonConvert.SerializeObject(message);
                         var body = Encoding.UTF8.GetBytes(json);

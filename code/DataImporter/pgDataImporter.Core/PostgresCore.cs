@@ -844,7 +844,7 @@ namespace pgDataImporter.Core
 
                 // get paired femail id
                 pg.InsertIndividual(new Individual { Name = female.Paired_female_ID });
-                var pairedFemaleId = pg.GetIndividualId(female.Paired_female_ID);
+                var pairedFemaleId = pg.GetPossibleNullIndividualId(female.Paired_female_ID);
 
                 // get litter
                 // Create litter

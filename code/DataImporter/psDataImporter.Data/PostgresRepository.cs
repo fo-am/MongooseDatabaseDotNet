@@ -572,7 +572,7 @@ namespace psDataImporter.Data
             }
         }
 
-        private int? GetPossibleNullIndividualId(string individualName)
+        public int? GetPossibleNullIndividualId(string individualName)
         {
             return string.IsNullOrEmpty(individualName) ? (int?)null : GetIndividualId(individualName);
         }

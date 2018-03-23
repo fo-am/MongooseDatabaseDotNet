@@ -296,14 +296,14 @@ namespace DataPipe.Main
             var stringSql = @"select 
 	                             se.entity_id,
 	                             se.entity_type,
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""date"") as ""Date"",
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""type"") as ""Type"",
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""code"") as ""Code"",
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-uid"") as ""UniqueId"",
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = ""entity-name"") as ""entity_name"",
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as 'Date',
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'type') as 'Type',
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'code') as 'Code',
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'entity-uid') as 'UniqueId',
+	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'entity-name') as 'entity_name',
 	                             se.sent
                             from stream_entity se
-                            where se.entity_type = ""lifehist-event"" and se.sent = 0;";
+                            where se.entity_type = 'lifehist-event' and se.sent = 0;";
             var lifeEvents = RunSql<LifeHistoryEvent>(stringSql).ToList();
 
 

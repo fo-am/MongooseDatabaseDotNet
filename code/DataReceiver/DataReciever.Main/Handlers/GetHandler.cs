@@ -11,15 +11,15 @@ namespace DataReciever.Main.Handlers
 
         public GetHandler()
         {
-            handlers.Add(typeof(IndividualCreated), new IndividualCreatedHandler());
-            handlers.Add(typeof(PackCreated), new PackCreatedHandler());
             handlers.Add(typeof(WeightMeasure), new WeightHandler());
+
+            handlers.Add(typeof(PackCreated), new PackCreatedHandler());
+            handlers.Add(typeof(PackMove), new PackMoveEventHandler());
             handlers.Add(typeof(EndPackEvent), new EndPackEventHandler());
             handlers.Add(typeof(LostPackEvent), new LostPackEventHandler());
             handlers.Add(typeof(FoundPackEvent), new FoundPackEventHandler());
-            handlers.Add(typeof(UnsuccessfulLitterEvent), new UnsuccessfulLitterEventHandler());
-            handlers.Add(typeof(ShortLivedLitterEvent), new ShortLivedLitterEventHandler());
-            handlers.Add(typeof(SuccessfulLitterEvent), new SuccessfulLitterEventHandler());
+
+            handlers.Add(typeof(IndividualCreated), new IndividualCreatedHandler());
             handlers.Add(typeof(IndividualAssumedDeadEvent), new IndividualAssumedDeadEventHandler());
             handlers.Add(typeof(IndividualDiedEvent), new IndividualDiedEventHandler());
             handlers.Add(typeof(IndividualLastSeenEvent), new IndividualLastSeenEventHandler());
@@ -34,9 +34,10 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(IndividualAbortEvent), new IndividualAbortEventHandler());
             handlers.Add(typeof(IndividualBirthEvent), new IndividualBirthEventHandler());
 
-            handlers.Add(typeof(PackMove), new PackMoveEventHandler());
             handlers.Add(typeof(LitterCreated), new LitterCreatedEventHandler());
-
+            handlers.Add(typeof(ShortLivedLitterEvent), new ShortLivedLitterEventHandler());
+            handlers.Add(typeof(SuccessfulLitterEvent), new SuccessfulLitterEventHandler());
+            handlers.Add(typeof(UnsuccessfulLitterEvent), new UnsuccessfulLitterEventHandler());
         }
 
         public void Handle<T>(T output)

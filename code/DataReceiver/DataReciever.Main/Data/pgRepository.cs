@@ -146,6 +146,13 @@ namespace DataReciever.Main.Data
                     if (message.DateOfBirth.HasValue)
                     {
                         CreateIndividualEvent(individualId, message.DateOfBirth, "born", conn);
+                        if (litterId.HasValue)
+                        {
+                            if (LitterIsNotBorn(litterId.Value, conn))
+                            {
+                                CreateLitterEvent(litterId.Value, message.DateOfBirth.Value, "born", conn);
+                            }
+                        }
                     }
                     else
                     {
@@ -155,6 +162,20 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
+        }
+
+        private bool LitterIsNotBorn(int litterId, IDbConnection conn)
+        {
+            var litterName = conn.Query<string>(@"SELECT l.name
+	                                    FROM mongoose.litter l
+                                        join mongoose.litter_event le on  le.litter_id = l.litter_id
+                                        join mongoose.litter_event_code lec on lec.litter_event_code_id = le.litter_event_code_id
+                                        where lec.code = 'born' and l.litter_id = @litterId", new
+            {
+                litterId
+            });
+
+            return string.IsNullOrEmpty(litterName.FirstOrDefault());
         }
 
         private int InsertPack(string packName, string packUniqueId, IDbConnection conn,

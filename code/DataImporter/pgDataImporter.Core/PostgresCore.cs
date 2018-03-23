@@ -367,11 +367,11 @@ namespace pgDataImporter.Core
             }
         }
 
-        private void InsertpackHistory(int packId, int? individualId, DateTime? date, PostgresRepository pg)
+        private void InsertpackHistory(int packId, int individualId, DateTime? date, PostgresRepository pg)
         {
-            var databasePackHistory = pg.GetPackHistory(packId, individualId);
+            var databasePackHistory = pg.GetPackHistory(individualId);
 
-            if (databasePackHistory != null && date.HasValue)
+            if (databasePackHistory != null && databasePackHistory.PackId == packId && date.HasValue)
             {
                 if (databasePackHistory.DateJoined > date)
                 {
@@ -504,7 +504,9 @@ namespace pgDataImporter.Core
 
                 var pupId = pg.GetIndividualId(pupAssociation.PUP);
                 // get pack record
-                pg.InsertPackHistory(packId.Value, pupId, pupAssociation.DATE);
+
+                InsertpackHistory(packId.Value, pupId, pupAssociation.DATE, pg);
+           
                 var packHistoryId = pg.GetPackHistoryId(pupAssociation.GROUP, pupAssociation.PUP);
 
                 // get escort id
@@ -568,7 +570,8 @@ namespace pgDataImporter.Core
 
                 var babysitterId = pg.GetIndividualId(babysitting.BS);
 
-                pg.InsertPackHistory(packId.Value, babysitterId, babysitting.DATE);
+                InsertpackHistory(packId.Value, babysitterId, babysitting.DATE, pg);
+       
                 var packHistoryId = pg.GetPackHistoryId(babysitting.GROUP, babysitting.BS);
 
                 var startTime = GetTimeFromString(babysitting.TIME_START);

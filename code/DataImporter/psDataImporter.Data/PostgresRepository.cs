@@ -163,7 +163,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public PackHistory GetPackHistory(int packId, int? individualId)
+        public PackHistory GetPackHistory(int individualId)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -171,8 +171,11 @@ namespace psDataImporter.Data
 
             {
                 return conn.Query<PackHistory>(
-                    "SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined from mongoose.pack_history where pack_id = @pack and individual_id = @individual",
-                    new { pack = packId, individual = individualId }).FirstOrDefault();
+                    @"SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined 
+                      from mongoose.pack_history 
+                      where  individual_id = @individual
+                      order by datejoined desc  NULLS LAST limit 1;",
+                    new { individual = individualId }).FirstOrDefault();
             }
         }
 
@@ -494,11 +497,11 @@ namespace psDataImporter.Data
             }
         }
 
-        public int? GetIndividualId(string individualName)
+        public int GetIndividualId(string individualName)
         {
             if (string.IsNullOrEmpty(individualName))
             {
-                return null;
+              throw new Exception("Individual not found");
             }
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -532,12 +535,14 @@ namespace psDataImporter.Data
             var packHistoryId = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
             var femailId = GetIndividualId(oestrus.FEMALE_ID);
             //guardId
-            var guardid = GetIndividualId(oestrus.GUARD_ID);
+          
+            var guardid = GetPossibleNullIndividualId(oestrus.GUARD_ID);
+
             //pesterir 1-4 id
-            var pesterer1Id = GetIndividualId(oestrus.PESTERER_ID);
-            var pesterer2Id = GetIndividualId(oestrus.PESTERER_ID_2);
-            var pesterer3Id = GetIndividualId(oestrus.PESTERER_ID_3);
-            var pesterer4Id = GetIndividualId(oestrus.PESTERER_ID_4);
+            var pesterer1Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID);
+            var pesterer2Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_2);
+            var pesterer3Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_3);
+            var pesterer4Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_4);
 
             var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
@@ -565,6 +570,11 @@ namespace psDataImporter.Data
                     comment = oestrus.COMMENT
                 });
             }
+        }
+
+        private int? GetPossibleNullIndividualId(string individualName)
+        {
+            return string.IsNullOrEmpty(individualName) ? (int?)null : GetIndividualId(individualName);
         }
 
         public void InsertSingleLitter(string litterName, int packId)

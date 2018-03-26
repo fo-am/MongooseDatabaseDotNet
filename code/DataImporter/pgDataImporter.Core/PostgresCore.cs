@@ -369,20 +369,49 @@ namespace pgDataImporter.Core
 
         private void InsertpackHistory(int packId, int individualId, DateTime? date, PostgresRepository pg)
         {
-            var databasePackHistory = pg.GetPackHistory(individualId);
 
-            if (databasePackHistory != null && databasePackHistory.PackId == packId && date.HasValue)
+            // If no historys then add it
+            // if exactly the same as any ph ignore it
+            // if date is between existing entrys then do magic so it works...
+
+            // eg if older than latest entry, but different pack then check previous ph and if same pack then skip, if different pack add
+            // if older than current best, and older than second and same pack then use lower date?
+
+
+
+            var databasePackHistory = pg.GetCurrentPackHistory(individualId);
+
+            if (databasePackHistory == null)
             {
+                pg.InsertPackHistory(packId, individualId, date);
+                return;
+            }
+          
+
+            if (pg.PackHistoryExitsAlready(packId, individualId, date))
+            {
+                return;
+            }
+
+
+            if (databasePackHistory.PackId != packId)
+            {
+                pg.InsertPackHistory(packId, individualId, date);
+                return;
+            }
+            if ( databasePackHistory.PackId == packId && date.HasValue)
+            {
+                if (databasePackHistory.DateJoined == DateTime.MinValue)
+                {
+                    databasePackHistory.DateJoined = DateTime.MaxValue;
+                }
+
                 if (databasePackHistory.DateJoined > date)
                 {
                     pg.UpdatePackHistoryDate(date.Value, databasePackHistory);
                 }
             }
-            else
-            {
-                // if not insert new info
-                pg.InsertPackHistory(packId, individualId, date);
-            }
+
         }
 
         public void ProcessOestrusData(IEnumerable<Oestrus> oestruses)
@@ -506,7 +535,7 @@ namespace pgDataImporter.Core
                 // get pack record
 
                 InsertpackHistory(packId.Value, pupId, pupAssociation.DATE, pg);
-           
+
                 var packHistoryId = pg.GetPackHistoryId(pupAssociation.GROUP, pupAssociation.PUP);
 
                 // get escort id
@@ -571,7 +600,7 @@ namespace pgDataImporter.Core
                 var babysitterId = pg.GetIndividualId(babysitting.BS);
 
                 InsertpackHistory(packId.Value, babysitterId, babysitting.DATE, pg);
-       
+
                 var packHistoryId = pg.GetPackHistoryId(babysitting.GROUP, babysitting.BS);
 
                 var startTime = GetTimeFromString(babysitting.TIME_START);

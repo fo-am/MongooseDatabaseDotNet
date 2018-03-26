@@ -163,7 +163,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public PackHistory GetPackHistory(int individualId)
+        public PackHistory GetCurrentPackHistory(int individualId)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -174,7 +174,7 @@ namespace psDataImporter.Data
                     @"SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined 
                       from mongoose.pack_history 
                       where  individual_id = @individual
-                      order by datejoined desc  NULLS LAST limit 1;",
+                      order by datejoined asc  NULLS LAST limit 1;",
                     new { individual = individualId }).FirstOrDefault();
             }
         }
@@ -432,7 +432,7 @@ namespace psDataImporter.Data
             {
                 return conn.ExecuteScalar<int>(
                     "Select pack_event_code_id  from mongoose.pack_event_code where code = @code",
-                    new {code = code.ToLower()});
+                    new { code = code.ToLower() });
             }
         }
 
@@ -501,7 +501,7 @@ namespace psDataImporter.Data
         {
             if (string.IsNullOrEmpty(individualName))
             {
-              throw new Exception("Individual not found");
+                throw new Exception("Individual not found");
             }
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
@@ -535,7 +535,7 @@ namespace psDataImporter.Data
             var packHistoryId = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
             var femailId = GetIndividualId(oestrus.FEMALE_ID);
             //guardId
-          
+
             var guardid = GetPossibleNullIndividualId(oestrus.GUARD_ID);
 
             //pesterir 1-4 id
@@ -1261,6 +1261,24 @@ namespace psDataImporter.Data
                     }
                 );
             }
+        }
+
+        public bool PackHistoryExitsAlready(int packId, int individualId, DateTime? date)
+        {
+            List<int> list;
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+
+                list = conn.Query<int>(@"SELECT pack_history_id, pack_id, individual_id, date_joined
+	                                    FROM mongoose.pack_history
+                                        where pack_id = @pack_id and individual_id = @individual_id and date_joined is not distinct from @date_joined;",
+                    new { pack_id = packId, individual_id = individualId, date_joined = date }).ToList();
+            }
+
+            return list.Count > 0;
         }
     }
 }

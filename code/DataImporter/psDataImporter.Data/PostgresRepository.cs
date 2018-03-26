@@ -163,22 +163,6 @@ namespace psDataImporter.Data
             }
         }
 
-        public PackHistory GetCurrentPackHistory(int individualId)
-        {
-            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                .ConnectionStrings["postgresConnectionString"]
-                .ConnectionString))
-
-            {
-                return conn.Query<PackHistory>(
-                    @"SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined 
-                      from mongoose.pack_history 
-                      where  individual_id = @individual
-                      order by datejoined asc  NULLS LAST limit 1;",
-                    new { individual = individualId }).FirstOrDefault();
-            }
-        }
-
         public void AddIndividuals(IEnumerable<Individual> individuals)
         {
             foreach (var newIndividual in individuals)
@@ -319,17 +303,6 @@ namespace psDataImporter.Data
             }
         }
 
-        public void RemoveRadioCollarData()
-        {
-            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                .ConnectionStrings["postgresConnectionString"]
-                .ConnectionString))
-            {
-                conn.Execute("truncate mongoose.radiocollar");
-                Logger.Info("Truncated radiocollar table");
-            }
-        }
-
         public void AddRadioCollar(int pack_history_id, DateTime? fitted, DateTime? turnedOn, DateTime? removed,
             int? frequency, int weight, DateTime? dateEntered, string comment)
         {
@@ -375,14 +348,6 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddPackEventCodes(IEnumerable<string> codes)
-        {
-            foreach (var code in codes)
-            {
-                AddPackEventCode(code);
-            }
-        }
-
         public void AddPackEventCode(string code)
         {
             if (!string.IsNullOrEmpty(code))
@@ -397,30 +362,6 @@ namespace psDataImporter.Data
                         "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
                         new { codeValue = code.ToLower() });
                 }
-            }
-        }
-
-        public List<IndividualEventCode> GetIndividualCodes()
-        {
-            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                .ConnectionStrings["postgresConnectionString"]
-                .ConnectionString))
-            {
-                return conn.Query<IndividualEventCode>(
-                        "Select individual_event_code_id as IndividualEventCodeId, code from mongoose.individual_event_code")
-                    .ToList();
-            }
-        }
-
-        public List<PackEventCode> GetPackEventCodes()
-        {
-            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
-                .ConnectionStrings["postgresConnectionString"]
-                .ConnectionString))
-            {
-                return conn.Query<PackEventCode>(
-                        "Select pack_event_code_id as PackEventCodeId, code, detail from mongoose.pack_event_code")
-                    .ToList();
             }
         }
 
@@ -1279,6 +1220,21 @@ namespace psDataImporter.Data
             }
 
             return list.Count > 0;
+        }
+
+        public List<PackHistory> GetAllPackHistoriesForIndividual(int individualId)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+                return conn.Query<PackHistory>(
+                    @"SELECT pack_history_id as PackHistoryId, pack_id as PackId, individual_id as IndividualId, date_joined as DateJoined
+	                    FROM mongoose.pack_history
+                        where  individual_id = @individual_id;",
+                    new { individual_id = individualId }).ToList();
+            }
         }
     }
 }

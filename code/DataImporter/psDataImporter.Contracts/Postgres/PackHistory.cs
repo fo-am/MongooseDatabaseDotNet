@@ -7,6 +7,6 @@ namespace psDataImporter.Contracts.Postgres
         public int PackHistoryId { get; set; }
         public int PackId { get; set; }
         public int IndividualId { get; set; }
-        public DateTime DateJoined { get; set; }
+        public DateTime? DateJoined { get; set; }
     }
 }

@@ -370,48 +370,48 @@ namespace pgDataImporter.Core
         private void InsertpackHistory(int packId, int individualId, DateTime? date, PostgresRepository pg)
         {
 
-            // If no historys then add it
-            // if exactly the same as any ph ignore it
-            // if date is between existing entrys then do magic so it works...
+            // Get all pack histories for an individual
 
-            // eg if older than latest entry, but different pack then check previous ph and if same pack then skip, if different pack add
-            // if older than current best, and older than second and same pack then use lower date?
-
-
-
-            var databasePackHistory = pg.GetCurrentPackHistory(individualId);
-
-            if (databasePackHistory == null)
+            var packHistories = pg.GetAllPackHistoriesForIndividual(individualId);
+            // if none then add it
+            if (!packHistories.Any())
             {
                 pg.InsertPackHistory(packId, individualId, date);
                 return;
             }
-          
 
-            if (pg.PackHistoryExitsAlready(packId, individualId, date))
+            // if the same as an entry then skip
+            if (packHistories.Any(p => p.DateJoined == date && p.PackId == packId && p.IndividualId == individualId))
             {
                 return;
             }
 
-
-            if (databasePackHistory.PackId != packId)
+            // if this individual has not been in this pack before add it.
+            if (!packHistories.Any(p => p.PackId == packId))
             {
                 pg.InsertPackHistory(packId, individualId, date);
                 return;
             }
-            if ( databasePackHistory.PackId == packId && date.HasValue)
-            {
-                if (databasePackHistory.DateJoined == DateTime.MinValue)
-                {
-                    databasePackHistory.DateJoined = DateTime.MaxValue;
-                }
 
-                if (databasePackHistory.DateJoined > date)
+            // if match on pack and individual id then check date, if older then update.
+            if (date.HasValue)
+            {
+                var existingHistory = packHistories.Single(p => p.PackId == packId && p.IndividualId == individualId);
+
+                if (existingHistory != null)
                 {
-                    pg.UpdatePackHistoryDate(date.Value, databasePackHistory);
+                    // if date is null then set it to the far future, therfore updating it to the one we have.
+                    if (existingHistory.DateJoined == null)
+                    {
+                        existingHistory.DateJoined = DateTime.MaxValue;
+                    }
+
+                    if (existingHistory.DateJoined > date)
+                    {
+                        pg.UpdatePackHistoryDate(date.Value, existingHistory);
+                    }
                 }
             }
-
         }
 
         public void ProcessOestrusData(IEnumerable<Oestrus> oestruses)

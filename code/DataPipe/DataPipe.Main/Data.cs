@@ -293,7 +293,7 @@ namespace DataPipe.Main
 
         public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()
         {
-            var stringSql = @"select 
+            const string stringSql = @"select 
 	                             se.entity_id,
 	                             se.entity_type,
 	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as 'Date',
@@ -313,7 +313,7 @@ namespace DataPipe.Main
 
         public static IEnumerable<LitterCreated> GetUnsynchedLitters()
         {
-            var stringSql = @"select 
+            const string stringSql = @"select 
                              (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as 'Date',
                              (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'name') as 'LitterName',
                              (select value from sync_value_varchar where entity_id = se.entity_id and attribute_id = 'unique_id') as 'UniqueId',
@@ -333,7 +333,7 @@ namespace DataPipe.Main
 
         public static IEnumerable<PackMove> GetUnsynchedPackMoves()
         {
-            var stringSql = @"select entity_id, entity_type, unique_id,
+            const string stringSql = @"select entity_id, entity_type, unique_id,
                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-id') as 'MongooseId',
                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'mongoose-name') as 'MongooseName',
                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'pack-dst-id') as 'PackDestinationId',
@@ -349,6 +349,40 @@ namespace DataPipe.Main
 
             var lifeEvents = RunSql<PackMove>(stringSql).ToList();
             return lifeEvents;
+        }
+
+        public static IEnumerable<InterGroupInteractionEvent> GetUnsynchedInterGroupInteractions()
+        {
+            const string stringSql = @"
+                    select se.entity_id 
+                    ,se.sent
+                    ,se.entity_type
+                    ,se.unique_id
+                    ,outcome.value as 'outcome'
+                    ,(select svv.value from sync_entity se
+                    join sync_value_varchar svv on svv.entity_id = se.entity_id
+                    where se.unique_id = leader.value and svv.attribute_id = 'name' ) as 'leaderName'
+                    ,leader.value as 'leaderUniqueId'
+                    ,(select svv.value from sync_entity se
+                    join sync_value_varchar svv on svv.entity_id = se.entity_id
+                    where se.unique_id = pack.value and svv.attribute_id = 'name' ) as 'packName'
+                    ,pack.value as 'packUniqueId'
+                    ,time.value as 'time'
+                    ,lat.value as 'latitude'
+                    ,lon.value as 'longitude'
+                    ,duration.value as 'duration'
+                    from stream_entity se
+                    join stream_value_varchar outcome on outcome.entity_id = se.entity_id and outcome.attribute_id = 'outcome'
+                    join stream_value_varchar leader on leader.entity_id = se.entity_id and leader.attribute_id = 'id-leader'
+                    join stream_value_varchar pack on pack.entity_id = se.entity_id and pack.attribute_id = 'id-pack'
+                    join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+                    join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+                    join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+                    join stream_value_int duration on duration.entity_id = se.entity_id and duration.attribute_id = 'duration'
+                    where se.sent = 0 and se.entity_type = 'group-interaction';";
+
+            var a =  RunSql<InterGroupInteractionEvent>(stringSql).ToList();
+            return a;
         }
     }
 

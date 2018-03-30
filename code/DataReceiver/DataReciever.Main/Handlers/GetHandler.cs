@@ -38,6 +38,8 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(ShortLivedLitterEvent), new ShortLivedLitterEventHandler());
             handlers.Add(typeof(SuccessfulLitterEvent), new SuccessfulLitterEventHandler());
             handlers.Add(typeof(UnsuccessfulLitterEvent), new UnsuccessfulLitterEventHandler());
+            handlers.Add(typeof(InterGroupInteractionEvent), new InterGroupInteractionEventHandler());
+            
         }
 
         public void Handle<T>(T output)

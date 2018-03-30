@@ -43,6 +43,8 @@ namespace DataReciever.Main
             reciever.Recieve<PackMove>();
             reciever.Recieve<LitterCreated>();
 
+            reciever.Recieve<InterGroupInteractionEvent>();
+
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

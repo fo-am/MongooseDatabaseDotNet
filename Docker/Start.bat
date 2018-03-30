@@ -1,5 +1,5 @@
-docker system prune -f
+set COMPOSE_CONVERT_WINDOWS_PATHS=1
 
-Docker-compose up
+docker-compose down && docker system prune -f && Docker-compose up -d
 
 pause

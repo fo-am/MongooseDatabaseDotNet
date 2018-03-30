@@ -23,9 +23,7 @@ services:
         POSTGRES_PASSWORD: changeme
         PGDATA: /data/postgres
       ports:
-        - "5433:5432"
-      volumes:
-        - /data/postgres:/data/postgres
+        - "5433:5432"    
       networks:
         - postgres
       restart: unless-stopped

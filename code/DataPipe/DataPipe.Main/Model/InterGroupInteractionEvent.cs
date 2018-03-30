@@ -22,6 +22,5 @@ namespace DataPipe.Main.Model
         public double latitude { get; set; }
         public double longitude { get; set; }
         public int duration { get; set; }
-
     }
 }

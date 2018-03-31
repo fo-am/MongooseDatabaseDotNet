@@ -44,8 +44,23 @@ namespace DataPipe.Main
                     using (var channel = connection.CreateModel())
                     {
                         Console.WriteLine($"Setting up queues for: {typeof(T).Name}");
-                        channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
 
+                        channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
+                        var queueArgs = new Dictionary<string, object>
+                        {
+                            { "x-dead-letter-exchange", "mongoose" },
+                            {
+                                "x-dead-letter-routing-key", $"mongoose_{typeof(T).Name}"
+                            }
+                            ,{ "x-message-ttl", 30000 }
+                        };
+
+                        channel.QueueDeclare($"DLQ.mongoose_{typeof(T).Name}",
+                            true,
+                            false,
+                            false,
+                            queueArgs);
+                        channel.QueueBind($"DLQ.mongoose_{typeof(T).Name}", "mongoose.Dead.Letter", $"DLQ.mongoose_{typeof(T).Name}", null);
                         var args = new Dictionary<string, object>
                         {
                             { "x-dead-letter-exchange", "mongoose.Dead.Letter" },
@@ -53,18 +68,15 @@ namespace DataPipe.Main
                                 "x-dead-letter-routing-key", $"DLQ.mongoose_{typeof(T).Name}"
                             }
                         };
-
+                        channel.ExchangeDeclare("mongoose", "direct", true);
                         channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                             true,
                             false,
                             false,
                             args);
+                        channel.QueueBind($"mongoose_{typeof(T).Name}", "mongoose", $"mongoose_{typeof(T).Name}", null);
 
-                        channel.QueueDeclare($"DLQ.mongoose_{typeof(T).Name}",
-                            true,
-                            false,
-                            false,
-                            null);
+
 
                         var json = JsonConvert.SerializeObject(message);
                         var body = Encoding.UTF8.GetBytes(json);

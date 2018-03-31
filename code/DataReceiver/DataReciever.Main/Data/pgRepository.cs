@@ -41,7 +41,7 @@ namespace DataReciever.Main.Data
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
                 conn.Execute("update mongoose.event_log set success = true where event_log_id = @entityId",
-                    new {entityId});
+                    new { entityId });
             }
         }
 
@@ -190,13 +190,13 @@ namespace DataReciever.Main.Data
 
             return packId ?? conn.ExecuteScalar<int>(
                        "Insert into mongoose.pack (name, unique_id, pack_created_date) values (@name, @unique_id, @pack_created_date) RETURNING pack_id",
-                       new {name = packName, unique_id = packUniqueId, pack_created_date = packCreatedDate});
+                       new { name = packName, unique_id = packUniqueId, pack_created_date = packCreatedDate });
         }
 
         private static int? TryGetPackId(string packName, IDbConnection conn)
         {
             var packId = conn.ExecuteScalar<int?>("select pack_id from mongoose.pack where name = @name",
-                new {name = packName});
+                new { name = packName });
             return packId;
         }
 
@@ -229,7 +229,7 @@ namespace DataReciever.Main.Data
         {
             var individualId = conn.ExecuteScalar<int?>(
                 "select individual_id from mongoose.individual where name = @name",
-                new {name});
+                new { name });
             return individualId;
         }
 
@@ -239,7 +239,7 @@ namespace DataReciever.Main.Data
             int? packHistoryId = null;
             var packHistory = conn.Query(
                 "select pack_history_id, date_joined from mongoose.pack_history where pack_id = @packId and individual_id = @individualId",
-                new {packId, individualId}).FirstOrDefault();
+                new { packId, individualId }).FirstOrDefault();
             // if one exists
             if (packHistory?.pack_history_id != null)
             {
@@ -248,14 +248,14 @@ namespace DataReciever.Main.Data
                 if (packHistory.date_joined == null || dateOfInteraction < packHistory.date_joined)
                 {
                     conn.Execute("Update mongoose.pack_history set date_joined = @date_joined",
-                        new {date_joined = dateOfInteraction});
+                        new { date_joined = dateOfInteraction });
                 }
             }
 
             // if no pack history then add one.
             return packHistoryId ?? conn.ExecuteScalar<int>(
                        "Insert into mongoose.pack_history (pack_id, individual_id, date_joined) values (@pack_id, @individual_id, @date_joined) RETURNING pack_history_id",
-                       new {pack_id = packId, individual_id = individualId, date_joined = dateOfInteraction});
+                       new { pack_id = packId, individual_id = individualId, date_joined = dateOfInteraction });
         }
 
         private int? InsertLitter(string litterName, int packId, IDbConnection conn)
@@ -269,7 +269,7 @@ namespace DataReciever.Main.Data
 
             return litterId ?? conn.ExecuteScalar<int>(
                        "Insert into mongoose.litter (name, pack_id) values (@name, @pack_id) RETURNING litter_id",
-                       new {name = litterName, pack_id = packId});
+                       new { name = litterName, pack_id = packId });
         }
 
 
@@ -345,7 +345,7 @@ namespace DataReciever.Main.Data
 
         private int GetPackHistoryId(int individiualId, IDbConnection conn)
         {
-            var packHistoryId = TryGetPackHistoryId(individiualId,conn);
+            var packHistoryId = TryGetPackHistoryId(individiualId, conn);
             if (packHistoryId.HasValue)
             {
                 return packHistoryId.Value;
@@ -421,7 +421,7 @@ namespace DataReciever.Main.Data
                         throw new Exception($"No Litter Found with Id {message.entity_name}");
                     }
 
-                    //insert a packo evento
+                    //insert a litter evento
                     CreateLitterEvent(litterId.Value, message.Date, message.Code, conn);
 
                     tr.Commit();
@@ -441,7 +441,7 @@ namespace DataReciever.Main.Data
                 });
 
             conn.Execute(@"INSERT INTO mongoose.litter_event
-                            (litter_id, litter_event_code_id, date)
+                            (litter_id, litter_event_code_id, last_seen)
 	                        VALUES (@litter_id, @litter_event_code_id, @date);",
                 new
                 {
@@ -513,7 +513,8 @@ namespace DataReciever.Main.Data
             // get individual Id
 
             // move the individual to the new pack.
-            logger.Info($@"Moving '{message.MongooseName}' from Pack '{message.PackSourceName}' to Pack '{message.PackDestintionName}'.");
+            logger.Info(
+                $@"Moving '{message.MongooseName}' from Pack '{message.PackSourceName}' to Pack '{message.PackDestintionName}'.");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
                 conn.Open();
@@ -551,6 +552,71 @@ namespace DataReciever.Main.Data
                     pack_id = destinationPackId,
                     individual_id = individualId,
                     date_joined = date
+                });
+        }
+
+        public void HandleInterGroupInteraction(InterGroupInteractionEvent message)
+        {
+            logger.Info(
+                $@"Inter Group Event between '{message.packName}' and '{message.otherPackName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var focalPackId = TryGetPackId(message.packName, conn);
+                    if (!focalPackId.HasValue)
+                    {
+                        throw new Exception($"Focal Pack Name '{message.packName}' not found.");
+                    }
+
+                    var secondPackId = TryGetPackId(message.otherPackName, conn);
+                    if (!secondPackId.HasValue)
+                    {
+                        throw new Exception($"Second pack name '{message.otherPackName}' not found.");
+                    }
+
+                    var leaderId = TryGetIndividualId(message.leaderName, conn);
+
+                    var outcomeId = GetOutcomeId(message.outcome, conn);
+
+                    //insert a packo evento
+                    RecordInterGroupInteraction(focalPackId, secondPackId, leaderId,outcomeId, message.time,message.latitude, message.longitude, conn);
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private int GetOutcomeId(string outcome, IDbConnection conn)
+        {
+            var outcomeId = conn.ExecuteScalar<int?>(
+                  @"Select interaction_outcome_id 
+                    from mongoose.interaction_outcome 
+                    where outcome = @outcome;",
+                new
+                {
+                    outcome
+                });
+
+            return outcomeId ?? throw new Exception($"Outcome '{outcome}' not found in database");
+        }
+
+        private void RecordInterGroupInteraction(int? focalPackId, int? secondPackId, int? leaderId, object outcomeId,
+            DateTime time, double latitude, double longitude, IDbConnection conn)
+        {
+            var loc = GetLocationString(latitude, longitude);
+
+            conn.Execute($@"INSERT INTO mongoose.inter_group_interaction(
+	                       focalpack_id, secondpack_id, leader_individual_id,  interaction_outcome_id, ""time"", location)
+	                       VALUES ( @focalpack_id, @secondpack_id, @leader_individual_id, @interaction_outcome_id, @time, {loc});",
+                new
+                {
+                    focalpack_id = focalPackId,
+                    secondpack_id = secondPackId,
+                    interaction_outcome_id = outcomeId,
+                    leader_individual_id = leaderId,
+                    time = time
                 });
         }
     }

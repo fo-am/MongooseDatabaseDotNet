@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,17" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -285,6 +285,20 @@ SELECT  p.name as "PACK", i.name as "ID", treatment_group as "Treatment Group", 
 
 ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
   OWNER TO postgres;
+  
+ CREATE OR REPLACE VIEW MONGOOSE."Inter Group Interactions" AS
+select focal.name as "focal pack", second.name as "second pack", leader.name as leader, outcome.outcome as outcome, igi.time
+	,ST_X(igi.location::geometry) as latitude
+    ,ST_Y(igi.location::geometry) as longitude
+	from mongoose.inter_group_interaction igi
+	join mongoose.pack focal on focal.pack_id = igi.focalpack_id
+	join mongoose.pack second on second.pack_id = igi.secondpack_id
+	left join mongoose.individual leader on leader.individual_id = igi.leader_individual_id
+	left join mongoose.interaction_outcome outcome on outcome.interaction_outcome_id = igi.interaction_outcome_id
+	order by igi.time asc;
+
+ALTER TABLE MONGOOSE."Inter Group Interactions"
+  OWNER TO postgres;
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
@@ -311,7 +325,10 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('fgrp', 'Found Pack')
 INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 
 
-INSERT INTO mongoose.pack (name) VALUES('Unknown')]]></appended-sql>
+INSERT INTO mongoose.pack (name) VALUES('Unknown');
+
+INSERT INTO mongoose.interaction_outcome(outcome)
+ VALUES ('retreat'),('advance'),('fight-retreat'),('fight-win');]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -491,7 +508,7 @@ INSERT INTO mongoose.pack (name) VALUES('Unknown')]]></appended-sql>
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="540" y="823"/>
+	<position x="396.923" y="613.769"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -513,9 +530,13 @@ INSERT INTO mongoose.pack (name) VALUES('Unknown')]]></appended-sql>
 
 	<customidxs object-type="column">
 		<object name="focalpack_id" index="1"/>
+		<object name="interaction_outcome_id" index="4"/>
+		<object name="leader_individual_id" index="3"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
+		<object name="individual_fk" index="4"/>
+		<object name="interaction_outcome_fk" index="3"/>
 		<object name="pack_fk" index="1"/>
 	</customidxs>
 </table>
@@ -2002,6 +2023,39 @@ INSERT INTO mongoose.pack (name) VALUES('Unknown')]]></appended-sql>
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
 	 dst-table="mongoose.ox_shielding_group"
+	 src-required="false" dst-required="false"/>
+
+<table name="interaction_outcome" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="236.923" y="398.462"/>
+	<column name="interaction_outcome_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="outcome" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="ineraction_outcome_pk" type="pk-constr" table="mongoose.interaction_outcome">
+		<columns names="interaction_outcome_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="ineraction_outcome_has_many_inter_group_interaction" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.interaction_outcome"
+	 dst-table="mongoose.inter_group_interaction"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="individual_has_many_inter_group_interaction" type="rel1n"
+	 src-col-pattern="leader_individual_id"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.inter_group_interaction"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

@@ -619,5 +619,42 @@ namespace DataReciever.Main.Data
                     time = time
                 });
         }
+
+        public void InsertGroupAlarm(GroupAlarmEvent message)
+        {
+            logger.Info(
+                $@"Group Alarm pack:'{message.packName}' type: '{message.cause}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.packName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Pack Name '{message.packName}' not found.");
+                    }
+
+                    var callerId = TryGetIndividualId(message.callerName, conn);
+
+                    var causeId = GetCauseId(message.cause, conn);
+
+                    //insert a packo evento
+                    RecordGroupAlarm(packId, causeId, callerId, message.time, message.Latitude, message.Longitude, conn);
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void RecordGroupAlarm(int? packId, int causeId, int? callerId, DateTime messageTime, double messageLatitude, double messageLongitude, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        private int GetCauseId(string cause, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

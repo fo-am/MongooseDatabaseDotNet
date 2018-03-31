@@ -44,6 +44,7 @@ namespace DataReciever.Main
             reciever.Recieve<LitterCreated>();
 
             reciever.Recieve<InterGroupInteractionEvent>();
+            reciever.Recieve<GroupAlarmEvent>();
 
 
             Console.WriteLine("Waiting for values. Return to Exit.");

@@ -4,6 +4,7 @@ using System.Threading;
 
 using AutoMapper;
 
+using DataPipe.Main.Model;
 using DataPipe.Main.Model.LifeHistory;
 
 using NLog;
@@ -66,7 +67,7 @@ namespace DataPipe.Main
 
         private static void PublishData()
         {
-            var numberToSend = 20;
+            var numberToSend = 2000;
             logger.Info("DataPipe started");
 
             // look for all entities that are not sent
@@ -121,14 +122,22 @@ namespace DataPipe.Main
                 send.PublishEntity(entity);
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
-            
+
             foreach (var entity in Data.GetUnsynchedInterGroupInteractions().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
-            logger.Info("DataPipe end");
 
+            foreach (var entity in Data.GetUnsynchedGroupAlarms().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
+
+
+            logger.Info("DataPipe end");
+            Console.ReadLine();
             Environment.Exit(0);
         }
 

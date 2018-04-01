@@ -300,6 +300,20 @@ select focal.name as "focal pack", second.name as "second pack", leader.name as 
 ALTER TABLE MONGOOSE."Inter Group Interactions"
   OWNER TO postgres;
 
+ CREATE OR REPLACE VIEW MONGOOSE."Pack Alarms" AS
+	select p.name as "Pack", i.name as "Alarm Caller", ac.cause as "Cause", a.others_join, a.date, 
+    ST_X(a.location::geometry) as latitude,
+    ST_Y(a.location::geometry) as longitude
+	from mongoose.alarm a
+	join mongoose.individual i on i.individual_id = a.caller_individual_id
+	join mongoose.pack p on p.pack_id = a.pack_id
+	join mongoose.alarm_cause ac on ac.alarm_cause_id = a.alarm_cause_id
+	order by date asc;
+
+ALTER TABLE MONGOOSE."Pack Alarms"
+  OWNER TO postgres;
+
+
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('adied');
@@ -328,7 +342,10 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 INSERT INTO mongoose.pack (name) VALUES('Unknown');
 
 INSERT INTO mongoose.interaction_outcome(outcome)
- VALUES ('retreat'),('advance'),('fight-retreat'),('fight-win');]]></appended-sql>
+ VALUES ('retreat'),('advance'),('fight-retreat'),('fight-win');
+
+INSERT INTO mongoose.alarm_cause(cause)
+ VALUES ('predator'),('other-pack'),('humans'),('other'),('unknown');]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -2061,16 +2078,34 @@ INSERT INTO mongoose.interaction_outcome(outcome)
 <table name="alarm" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="683.077" y="396.923"/>
+	<position x="681.538" y="420"/>
 	<column name="alarm_id" not-null="true">
-		<type name="integer" length="0"/>
+		<type name="serial" length="0"/>
 	</column>
 	<column name="date" not-null="true">
 		<type name="timestamp" length="0"/>
 	</column>
+	<column name="others_join">
+		<type name="text" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
 	<constraint name="alarm_pk" type="pk-constr" table="mongoose.alarm">
 		<columns names="alarm_id" ref-type="src-columns"/>
 	</constraint>
+
+	<customidxs object-type="column">
+		<object name="alarm_cause_id" index="4"/>
+		<object name="caller_individual_id" index="3"/>
+		<object name="pack_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="alarm_cause_fk" index="3"/>
+		<object name="individual_fk" index="2"/>
+		<object name="pack_fk" index="1"/>
+	</customidxs>
 </table>
 
 <relationship name="pack_has_many_alarm" type="rel1n"

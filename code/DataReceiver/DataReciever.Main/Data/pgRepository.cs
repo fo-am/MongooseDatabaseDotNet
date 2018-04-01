@@ -639,22 +639,45 @@ namespace DataReciever.Main.Data
 
                     var causeId = GetCauseId(message.cause, conn);
 
-                    //insert a packo evento
-                    RecordGroupAlarm(packId, causeId, callerId, message.time, message.Latitude, message.Longitude, conn);
+                    RecordGroupAlarm(packId, causeId, callerId, message.time,message.othersJoin, message.Latitude, message.Longitude, conn);
 
                     tr.Commit();
                 }
             }
         }
 
-        private void RecordGroupAlarm(int? packId, int causeId, int? callerId, DateTime messageTime, double messageLatitude, double messageLongitude, IDbConnection conn)
+        private void RecordGroupAlarm(int? packId, int causeId, int? callerId, DateTime time, string othersJoin, double latitude,
+            double longitude,
+            IDbConnection conn)
         {
-            throw new NotImplementedException();
+            var loc = GetLocationString(latitude, longitude);
+
+            conn.Execute($@"INSERT INTO mongoose.alarm(
+	                         date, pack_id, caller_individual_id, alarm_cause_id, others_join, location)
+	                        VALUES (@date, @pack_id, @caller_individual_id, @alarm_cause_id, @others_join, {loc});",
+                new
+                {
+                    date = time,
+                    pack_id = packId,
+                    caller_individual_id = callerId,
+                    alarm_cause_id = causeId,
+                    others_join = othersJoin
+                });
+
         }
 
         private int GetCauseId(string cause, IDbConnection conn)
         {
-            throw new NotImplementedException();
+            var causeId = conn.ExecuteScalar<int?>(
+                @"Select alarm_cause_id 
+                    from mongoose.alarm_cause 
+                    where cause = @cause;",
+                new
+                {
+                    cause
+                });
+
+            return causeId ?? throw new Exception($"Cause '{cause}' not found in database");
         }
     }
 }

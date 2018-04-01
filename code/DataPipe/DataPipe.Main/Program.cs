@@ -135,9 +135,8 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
-
             logger.Info("DataPipe end");
-            Console.ReadLine();
+            
             Environment.Exit(0);
         }
 

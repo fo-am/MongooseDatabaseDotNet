@@ -679,5 +679,10 @@ namespace DataReciever.Main.Data
 
             return causeId ?? throw new Exception($"Cause '{cause}' not found in database");
         }
+
+        public void InsertNewGroupMoveEvent(GroupMoveEvent message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

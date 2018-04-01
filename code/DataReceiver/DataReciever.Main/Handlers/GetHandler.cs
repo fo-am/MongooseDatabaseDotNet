@@ -40,6 +40,7 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(UnsuccessfulLitterEvent), new UnsuccessfulLitterEventHandler());
             handlers.Add(typeof(InterGroupInteractionEvent), new InterGroupInteractionEventHandler());
             handlers.Add(typeof(GroupAlarmEvent), new GroupAlarmEventHandler());
+            handlers.Add(typeof(GroupMoveEvent), new GroupMoveEventHandler()); 
         }
 
         public void Handle<T>(T output)

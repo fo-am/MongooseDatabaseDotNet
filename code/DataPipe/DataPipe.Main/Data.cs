@@ -427,6 +427,48 @@ namespace DataPipe.Main
 
             return RunSql<GroupAlarmEvent>(stringSql).ToList();
         }
+
+        public static IEnumerable<GroupMoveEvent> GetUnsynchedGroupMoves()
+        {
+            const string stringSql = @"
+                         select  se.sent
+                        ,se.entity_id
+                        ,se.entity_type
+                        ,se.unique_id as 'UniqueId'
+						,(select svv.value from sync_entity se
+                        join sync_value_varchar svv on svv.entity_id = se.entity_id
+                        where se.unique_id = idpack.value and svv.attribute_id = 'name' ) as 'pack'
+                        , idpack.value as 'packUniqueId'
+                        ,(select svv.value from sync_entity se
+                        join sync_value_varchar svv on svv.entity_id = se.entity_id
+                        where se.unique_id = idleader.value and svv.attribute_id = 'name' ) as 'leader'
+                        ,idleader.value as 'leaderUniqueId'
+                        ,destination.value as 'Destination'
+                        ,direction.value as 'Direction'
+                        ,time.value as 'Time'
+                        ,user.value as 'User'
+                        ,CAST(packcount.value as NUMERIC) as 'HowMany'
+                        ,CAST(packwidth.value as NUMERIC) as'Width'
+                        ,CAST(packdepth.value as NUMERIC) as'Depth'
+                        ,lat.value as 'latitude'
+                        ,lon.value as 'longitude'                     
+                        from stream_entity se 
+                        left join stream_value_varchar destination on destination.entity_id = se.entity_id and destination.attribute_id = 'destination'
+                        left join stream_value_varchar direction on direction.entity_id = se.entity_id and direction.attribute_id = 'direction'
+                        left join stream_value_varchar idleader on idleader.entity_id = se.entity_id and idleader.attribute_id = 'id-leader'
+                        left join stream_value_varchar idpack on idpack.entity_id = se.entity_id and idpack.attribute_id = 'id-pack'
+                        left join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+                        left join stream_value_varchar user on user.entity_id = se.entity_id and user.attribute_id = 'user'
+                        left join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+                        left join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon' 
+                        left join stream_value_int packcount on packcount.entity_id = se.entity_id and packcount.attribute_id = 'pack-count' 
+                        left join stream_value_int packdepth on packdepth.entity_id = se.entity_id and packdepth.attribute_id = 'pack-depth' 
+                        left join stream_value_int packwidth on packwidth.entity_id = se.entity_id and packwidth.attribute_id = 'pack-width' 
+                        where se.sent = 0 and se.entity_type = 'group-move' order by packcount.value is null;";
+
+         var a = RunSql<GroupMoveEvent>(stringSql).ToList();
+            return a;
+        }
     }
 
 

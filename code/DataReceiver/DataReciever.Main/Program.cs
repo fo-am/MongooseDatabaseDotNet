@@ -45,6 +45,7 @@ namespace DataReciever.Main
 
             reciever.Recieve<InterGroupInteractionEvent>();
             reciever.Recieve<GroupAlarmEvent>();
+            reciever.Recieve<GroupMoveEvent>();
 
 
             Console.WriteLine("Waiting for values. Return to Exit.");

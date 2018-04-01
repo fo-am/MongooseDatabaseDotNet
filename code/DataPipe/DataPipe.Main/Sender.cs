@@ -44,7 +44,7 @@ namespace DataPipe.Main
                     using (var channel = connection.CreateModel())
                     {
                         Console.WriteLine($"Setting up queues for: {typeof(T).Name}");
-
+                     // Declair dead letter queue for this type
                         channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
                         var queueArgs = new Dictionary<string, object>
                         {
@@ -61,6 +61,9 @@ namespace DataPipe.Main
                             false,
                             queueArgs);
                         channel.QueueBind($"DLQ.mongoose_{typeof(T).Name}", "mongoose.Dead.Letter", $"DLQ.mongoose_{typeof(T).Name}", null);
+                        
+                     // declair queue for this type
+                        channel.ExchangeDeclare("mongoose", "direct", true);
                         var args = new Dictionary<string, object>
                         {
                             { "x-dead-letter-exchange", "mongoose.Dead.Letter" },
@@ -68,7 +71,7 @@ namespace DataPipe.Main
                                 "x-dead-letter-routing-key", $"DLQ.mongoose_{typeof(T).Name}"
                             }
                         };
-                        channel.ExchangeDeclare("mongoose", "direct", true);
+                    
                         channel.QueueDeclare($"mongoose_{typeof(T).Name}",
                             true,
                             false,
@@ -77,7 +80,7 @@ namespace DataPipe.Main
                         channel.QueueBind($"mongoose_{typeof(T).Name}", "mongoose", $"mongoose_{typeof(T).Name}", null);
 
 
-
+                        // use the queue
                         var json = JsonConvert.SerializeObject(message);
                         var body = Encoding.UTF8.GetBytes(json);
 
@@ -91,7 +94,7 @@ namespace DataPipe.Main
 
                         };
 
-                        channel.BasicPublish("",
+                        channel.BasicPublish("mongoose",
                             $"mongoose_{typeof(T).Name}",
                             properties,
                             body);

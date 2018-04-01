@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="0,90" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="40,90" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -313,6 +313,22 @@ ALTER TABLE MONGOOSE."Inter Group Interactions"
 ALTER TABLE MONGOOSE."Pack Alarms"
   OWNER TO postgres;
 
+CREATE OR REPLACE VIEW MONGOOSE."Pack Move" AS
+    select p.name as pack, i.name as leader, pm.direction, pmd.destination, pm.time, pm.width, pm.depth, pm.number_of_individuals,
+	ST_X(pm.location::geometry) as latitude,
+    ST_Y(pm.location::geometry) as longitude
+	from mongoose.pack_move pm
+	join mongoose.pack p on p.pack_id = pm.pack_id
+	join mongoose.individual i on i.individual_id = pm.leader_individual_id
+	join mongoose.pack_move_destination pmd on pmd.pack_move_destination_id = pm.pack_move_destination_id
+	order by pm.time;
+
+ALTER TABLE MONGOOSE."Pack Move"
+  OWNER TO postgres;
+
+
+
+
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
@@ -345,7 +361,10 @@ INSERT INTO mongoose.interaction_outcome(outcome)
  VALUES ('retreat'),('advance'),('fight-retreat'),('fight-win');
 
 INSERT INTO mongoose.alarm_cause(cause)
- VALUES ('predator'),('other-pack'),('humans'),('other'),('unknown');]]></appended-sql>
+ VALUES ('predator'),('other-pack'),('humans'),('other'),('unknown');
+
+INSERT INTO mongoose.pack_move_destination(destination)
+ VALUES ('latrine'),('water'),('food'),('nothing'),('den'),('unknown');]]></appended-sql>
 </database>
 
 <schema name="public" fill-color="#e1e1e1" sql-disabled="true">
@@ -2148,6 +2167,90 @@ INSERT INTO mongoose.alarm_cause(cause)
 	 custom-color="#83af1f"
 	 src-table="mongoose.alarm_cause"
 	 dst-table="mongoose.alarm"
+	 src-required="true" dst-required="false"/>
+
+<table name="pack_move" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="636.923" y="766.154"/>
+	<column name="pack_move_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="direction" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="width">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="depth">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number_of_individuals">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pack_move_pk" type="pk-constr" table="mongoose.pack_move">
+		<columns names="pack_move_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="leader_individual_id" index="2"/>
+		<object name="pack_id" index="1"/>
+		<object name="pack_move_destination_id" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="pack_fk" index="1"/>
+		<object name="pack_move_destination_fk" index="3"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_has_many_pack_move" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack"
+	 dst-table="mongoose.pack_move"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_pack_move" type="rel1n"
+	 src-col-pattern="leader_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pack_move"
+	 src-required="false" dst-required="false"/>
+
+<table name="pack_move_destination" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="150.769" y="767.692"/>
+	<column name="pack_move_destination_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="destination" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="pack_move_destinations_pk" type="pk-constr" table="mongoose.pack_move_destination">
+		<columns names="pack_move_destination_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="pack_move_destinations_has_many_pack_move" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_move_destination"
+	 dst-table="mongoose.pack_move"
 	 src-required="true" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

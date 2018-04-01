@@ -141,11 +141,11 @@ namespace DataReciever.Main.Data
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
                     var litterId = InsertLitter(message.LitterCode, packId, conn);
                     var individualId = InsertIndividual(message, litterId, conn);
-                    InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
+                var packhistory =    InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
 
                     if (message.DateOfBirth.HasValue)
                     {
-                        CreateIndividualEvent(individualId, message.DateOfBirth, "born", conn);
+                        CreateIndividualEvent(packhistory, message.DateOfBirth, "born", conn);
                         if (litterId.HasValue)
                         {
                             if (LitterIsNotBorn(litterId.Value, conn))
@@ -156,7 +156,7 @@ namespace DataReciever.Main.Data
                     }
                     else
                     {
-                        CreateIndividualEvent(individualId, DateTime.UtcNow, "fseen", conn);
+                        CreateIndividualEvent(packhistory, DateTime.UtcNow, "fseen", conn);
                     }
 
                     tr.Commit();
@@ -682,7 +682,67 @@ namespace DataReciever.Main.Data
 
         public void InsertNewGroupMoveEvent(GroupMoveEvent message)
         {
-            throw new NotImplementedException();
+            logger.Info(
+                $@"Group move pack:'{message.pack}' '{message.Direction}' '{message.Destination}'.");
+
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.pack, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Pack Name '{message.pack}' not found.");
+                    }
+
+                    var leaderId = TryGetIndividualId(message.leader, conn);
+
+                    var destinationId = GetDestinationId(message.Destination, conn);
+
+                    RecordGroupMove(packId, destinationId, leaderId, message.Time, message.Direction, message.HowMany,
+                        message.Depth, message.Width, message.latitude, message.longitude, conn);
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void RecordGroupMove(int? packId, int destinationId, int? leaderId, DateTime time, string direction, int? howMany,
+            int? depth, int? width, double latitude, double longitude, IDbConnection conn)
+        {
+            var loc = GetLocationString(latitude, longitude);
+
+            conn.Execute($@"INSERT INTO mongoose.pack_move(
+	                        pack_id, leader_individual_id, pack_move_destination_id, direction, time, width, depth, number_of_individuals, location)
+	                        VALUES (@pack_id, @leader_individual_id, @pack_move_destination_id, @direction, @time, @width, @depth, @number_of_individuals, {
+                        loc
+                    });",
+                new
+                {
+                    pack_id = packId,
+                    leader_individual_id = leaderId,
+                    pack_move_destination_id = destinationId,
+                    direction = direction,
+                    time = time,
+                    width = width,
+                    depth = depth,
+                    number_of_individuals = howMany,
+                });
+        }
+
+        private int GetDestinationId(string destination, IDbConnection conn)
+        {
+            var destinationId = conn.ExecuteScalar<int?>(
+                @"Select pack_move_destination_id
+                    from mongoose.pack_move_destination
+                    where destination = @destination;",
+                new
+                {
+                    destination = destination
+                });
+
+            return destinationId ?? throw new Exception($"Destination '{destination}' not found in database");
         }
     }
 }

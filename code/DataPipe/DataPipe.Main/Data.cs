@@ -472,7 +472,7 @@ namespace DataPipe.Main
             return a;
         }
 
-        public static IEnumerable<OestrusEvent> GetUnsynchedOesturus()
+        public static IEnumerable<OestrusEvent> GetUnsynchedOesturusFocals()
         {
             //get oestrus focal info
             // use UniqueId to get
@@ -739,11 +739,12 @@ where se.entity_id in ({oestrusEventMaleaggr});";
 
         private static List<string> GetClose(string listClose)
         {
+            //converts the comma delimenet list of individual is to a list of individual names
             var names = new List<string>();
             if (!string.IsNullOrEmpty(listClose))
             {
-                var Ids = listClose.Split(',');
-                foreach (var id in Ids)
+                var ids = listClose.Split(',');
+                foreach (var id in ids)
                 {
                     names.Add(GetNameFromId(id));
                 }
@@ -756,7 +757,7 @@ where se.entity_id in ({oestrusEventMaleaggr});";
         {
             if (id == "Unknown")
             {
-                return "unknown";
+                return "Unknown";
             }
 
             if (id == "None")

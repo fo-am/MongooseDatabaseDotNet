@@ -16,9 +16,9 @@ namespace DataReciever.Main.Model.PupFocal
         public string user { get; set; }
         public double longitude { get; set; }
         public double latitude { get; set; }
-        public string visibleIndividuals { get; set; }
-        public string depth { get; set; }
-        public string width { get; set; }
+        public int? visibleIndividuals { get; set; }
+        public int? depth { get; set; }
+        public int? width { get; set; }
         public string packName { get; set; }
         public string packUniqueId { get; set; }
         public string nearest { get; set; }

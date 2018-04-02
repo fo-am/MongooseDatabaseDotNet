@@ -982,17 +982,115 @@ namespace DataReciever.Main.Data
                     }
 
                     //insert a event
-                    var pupFocalId = InsertPackFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                    var pupFocalId = InsertPupFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
                         message.width, message.time, message.latitude, message.longitude, conn);
                     InsertPupCare(message.PupCareList, pupFocalId, conn);
-                    //      InsertAffiliation(message.AffiliationEventList, pupFocalId, conn);
-                    //       InsertMaleAggresssion(message.MaleAggressionList, pupFocalId, conn);
-                    //        InsertMate(message.MateEventList, pupFocalId, conn);
-                    //        InsertNearest(message.NearestList, pupFocalId, conn);
+                    InsertPupAggression(message.PupAggressionList, pupFocalId, conn);
+                    InsertPupFeed(message.PupFeedList, pupFocalId, conn);
+                    InsertPupFind(message.PupFindList, pupFocalId, conn);
+                    InsertPupNearest(message.PupNearestList, pupFocalId, conn);
 
 
                     tr.Commit();
                 }
+            }
+        }
+
+        private void InsertPupNearest(List<PupNearest> pupNearestList, int pupFocalId, IDbConnection conn)
+        {
+            foreach (var pupNearest in pupNearestList)
+            {
+               // var loc = GetLocationString(pupNearest.latitude, pupNearest.longitude);
+
+                var nearestIndividualId = TryGetIndividualId(pupNearest.nearestIndividualName, conn);
+                if (!nearestIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pupNearest.nearestIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pup_nearest(
+	                     pup_focal_id, nearest_individual_id, list_of_closest_individuals, scan_time)
+	                    VALUES (  @pup_focal_id, @nearest_individual_id, @list_of_closest_individuals, @scan_time);",
+                    new
+                    {
+                        pup_focal_id = pupFocalId,
+
+                        nearest_individual_id = nearestIndividualId,
+                        list_of_closest_individuals = string.Join(",", pupNearest.CloseListNames),
+                        scan_time = pupNearest.scanTime
+                    });
+            }
+        }
+
+        private void InsertPupFind(List<PupFind> pupFindList, int pupFocalId, IDbConnection conn)
+        {
+            foreach (var pupFind in pupFindList)
+            {
+                var loc = GetLocationString(pupFind.latitude, pupFind.longitude);
+
+                conn.Execute($@"INSERT INTO mongoose.pup_find(
+	                 pup_focal_id, size, time, location)
+	                 VALUES ( @pup_focal_id,  @size, @time, {loc});",
+                    new
+                    {
+                        pup_focal_id = pupFocalId,
+                        size = pupFind.size,
+                        time = pupFind.time
+                    });
+            }
+        }
+
+        private void InsertPupFeed(List<PupFeed> pupFeedList, int pupFocalId, IDbConnection conn)
+        {
+            foreach (var pupFeed in pupFeedList)
+            {
+                var loc = GetLocationString(pupFeed.latitude, pupFeed.longitude);
+
+                var whoIndividualId = TryGetIndividualId(pupFeed.whoIndividualName, conn);
+                if (!whoIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pupFeed.whoIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pup_feed(
+	                 pup_focal_id, who_individual_id, size, time, location)
+	                VALUES ( @pup_focal_id, @who_individual_id, @size, @time, {loc});",
+                    new
+                    {
+                        pup_focal_id = pupFocalId,
+                        who_individual_id = whoIndividualId,
+                        size = pupFeed.size,
+                        time = pupFeed.time
+                    });
+            }
+        }
+
+        private void InsertPupAggression(List<PupAggressionEvent> pupAggressionList, int pupFocalId, IDbConnection conn)
+        {
+            foreach (var pupAggressionEvent in pupAggressionList)
+            {
+                var loc = GetLocationString(pupAggressionEvent.latitude, pupAggressionEvent.longitude);
+
+                var withIndividualId = TryGetIndividualId(pupAggressionEvent.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pupAggressionEvent.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pup_aggression(
+                    pup_focal_id, with_individual_id, initiate, level, over, win, time, location)
+                    VALUES (@pup_focal_id, @with_individual_id, @initiate, @level, @over, @win, @time, {loc});",
+                    new
+                    {
+                        pup_focal_id = pupFocalId,
+
+                        with_individual_id = withIndividualId,
+                        initiate = pupAggressionEvent.initiate,
+                        level = pupAggressionEvent.level,
+                        over = pupAggressionEvent.over,
+                        win = pupAggressionEvent.win,
+                        time = pupAggressionEvent.time
+                    });
             }
         }
 
@@ -1021,15 +1119,15 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private int InsertPackFocal(int packId, int individualId, string depth, string visibleIndividuals, string width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        private int InsertPupFocal(int packId, int individualId, int? depth, int? visibleIndividuals, int? width, DateTime time, double latitude, double longitude, IDbConnection conn)
         {
             var loc = GetLocationString(latitude, longitude);
             var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
 
             var pupFocalId = conn.ExecuteScalar<int>(
-                $@"INSERT INTO mongoose.pack_focal(
+                $@"INSERT INTO mongoose.pup_focal(
 	             pack_history_id, depth, individuals, width, time, location)
-	            VALUES (@pack_history_id, @depth, @individuals, @width, @time, {loc}) RETURNING pack_focal_id;",
+	            VALUES (@pack_history_id, @depth, @individuals, @width, @time, {loc}) RETURNING pup_focal_id;",
                 new
                 {
                     pack_history_id = packHistoryId,

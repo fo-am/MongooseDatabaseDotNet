@@ -468,7 +468,7 @@ namespace DataPipe.Main
                         left join stream_value_int packwidth on packwidth.entity_id = se.entity_id and packwidth.attribute_id = 'pack-width' 
                         where se.sent = 0 and se.entity_type = 'group-move' order by packcount.value is null;";
 
-         var a = RunSql<GroupMoveEvent>(stringSql).ToList();
+            var a = RunSql<GroupMoveEvent>(stringSql).ToList();
             return a;
         }
 
@@ -577,7 +577,7 @@ left join stream_value_int packWidth on packWidth.entity_id = se.entity_id and p
                 oestrusEvent.AggressionEventList = GetOestrusAggressions(oestrusEvent.aggr);
                 oestrusEvent.AffiliationEventList = GetOestrusAffiliations(oestrusEvent.affil);
             }
-           
+
             return a;
         }
 
@@ -728,7 +728,50 @@ where se.entity_id in ({oestrusEventMaleaggr});";
             join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'scan-time'
             where se.entity_id in ({oestrusEventNearest});";
 
-            return RunSql<OestrusNearest>(stringSql).ToList();
+            var list = RunSql<OestrusNearest>(stringSql).ToList();
+            foreach (var oestrusNearest in list)
+            {
+                oestrusNearest.CloseListNames = GetClose(oestrusNearest.listClose);
+            }
+
+            return list;
+        }
+
+        private static List<string> GetClose(string listClose)
+        {
+            var names = new List<string>();
+            if (!string.IsNullOrEmpty(listClose))
+            {
+                var Ids = listClose.Split(',');
+                foreach (var id in Ids)
+                {
+                    names.Add(GetNameFromId(id));
+                }
+            }
+
+            return names;
+        }
+
+        private static string GetNameFromId(string id)
+        {
+            if (id == "Unknown")
+            {
+                return "unknown";
+            }
+
+            if (id == "None")
+            {
+                return null;
+            }
+
+            using (var cnn = SimpleDbConnection())
+            {
+                return cnn.ExecuteScalar<string>(@"select svv.value as 'name'
+                                from sync_entity se
+                                join sync_value_varchar svv on svv.entity_id = se.entity_id
+                                where se.unique_id = @id and svv.attribute_id = 'name'  ;",
+                    new { id = id });
+            }
         }
     }
 

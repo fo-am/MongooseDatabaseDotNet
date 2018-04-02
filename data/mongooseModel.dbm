@@ -445,7 +445,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2442.23" y="372.231"/>
+	<position x="2766.85" y="541.462"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -499,7 +499,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2434.54" y="544.538"/>
+	<position x="3105.31" y="556.846"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1307,7 +1307,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2954.54" y="524.538"/>
+	<position x="2806.85" y="296.846"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2258,7 +2258,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3314" y="730.769"/>
+	<position x="3140.15" y="301.538"/>
 	<column name="oestrus_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2351,7 +2351,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_mating" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3152.31" y="226.154"/>
+	<position x="3129.23" y="141.538"/>
 	<column name="oestrus_mating_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2409,7 +2409,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_male_aggression" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3523.08" y="375.385"/>
+	<position x="3444.62" y="130.769"/>
 	<column name="oestrus_male_aggression_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2467,7 +2467,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_affiliation" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3513.85" y="115.385"/>
+	<position x="3475.38" y="10.7692"/>
 	<column name="oestrus_affiliation_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2519,7 +2519,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_aggression" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3513.85" y="647.692"/>
+	<position x="3581.54" y="278.462"/>
 	<column name="oestrus_aggression_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2572,6 +2572,99 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.oestrus_aggression"
+	 src-required="false" dst-required="false"/>
+
+<table name="pup_focal" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3495.38" y="501.538"/>
+	<column name="pup_focal_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="depth">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="width">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="individuals">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pup_focal_pk" type="pk-constr" table="mongoose.pup_focal">
+		<columns names="pup_focal_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_pup_focal" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.pup_focal"
+	 src-required="true" dst-required="false"/>
+
+<table name="pup_care" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3640" y="775.385"/>
+	<column name="pup_care_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="type">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pup_care_pk" type="pk-constr" table="mongoose.pup_care">
+		<columns names="pup_care_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pup_focal_id" index="1"/>
+		<object name="who_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="pup_focal_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pup_focal_has_many_pup_care" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pup_focal"
+	 dst-table="mongoose.pup_care"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_pup_care" type="rel1n"
+	 src-col-pattern="who_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pup_care"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

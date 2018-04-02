@@ -982,17 +982,42 @@ namespace DataReciever.Main.Data
                     }
 
                     //insert a event
-                    var oestrusEventId = InsertPackFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                    var pupFocalId = InsertPackFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
                         message.width, message.time, message.latitude, message.longitude, conn);
-           //         InsertAggression(message.AggressionEventList, oestrusEventId, conn);
-              //      InsertAffiliation(message.AffiliationEventList, oestrusEventId, conn);
-             //       InsertMaleAggresssion(message.MaleAggressionList, oestrusEventId, conn);
-            //        InsertMate(message.MateEventList, oestrusEventId, conn);
-            //        InsertNearest(message.NearestList, oestrusEventId, conn);
+                    InsertPupCare(message.PupCareList, pupFocalId, conn);
+                    //      InsertAffiliation(message.AffiliationEventList, pupFocalId, conn);
+                    //       InsertMaleAggresssion(message.MaleAggressionList, pupFocalId, conn);
+                    //        InsertMate(message.MateEventList, pupFocalId, conn);
+                    //        InsertNearest(message.NearestList, pupFocalId, conn);
 
 
                     tr.Commit();
                 }
+            }
+        }
+
+        private void InsertPupCare(List<PupCare> pupCareList, int pupFocalId, IDbConnection conn)
+        {
+            foreach (var pupCare in pupCareList)
+            {
+                var loc = GetLocationString(pupCare.latitude, pupCare.longitude);
+
+                var whoIndividualId = TryGetIndividualId(pupCare.whoIndividualName, conn);
+                if (!whoIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pupCare.whoIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pup_care(
+	                         pup_focal_id, who_individual_id, type, time, location)
+	                        VALUES (@pup_focal_id, @who_individual_id, @type, @time, {loc});",
+                    new
+                    {
+                        pup_focal_id = pupFocalId,
+                        who_individual_id = whoIndividualId,
+                        type = pupCare.type,
+                        time = pupCare.time
+                    });
             }
         }
 
@@ -1001,20 +1026,20 @@ namespace DataReciever.Main.Data
             var loc = GetLocationString(latitude, longitude);
             var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
 
-            var oestrusEventId = conn.ExecuteScalar<int>(
+            var pupFocalId = conn.ExecuteScalar<int>(
                 $@"INSERT INTO mongoose.pack_focal(
-	             pack_history_id, depth_of_pack, number_of_individuals, width, time, location)
-	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_event_id;",
+	             pack_history_id, depth, individuals, width, time, location)
+	            VALUES (@pack_history_id, @depth, @individuals, @width, @time, {loc}) RETURNING pack_focal_id;",
                 new
                 {
                     pack_history_id = packHistoryId,
-                    depth_of_pack = depth,
-                    number_of_individuals = visibleIndividuals,
+                    depth = depth,
+                    individuals = visibleIndividuals,
                     width,
                     time
                 });
 
-            return oestrusEventId;
+            return pupFocalId;
         }
     }
 }

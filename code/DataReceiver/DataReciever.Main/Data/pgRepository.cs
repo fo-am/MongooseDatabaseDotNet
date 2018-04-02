@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -541,7 +542,6 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
-
         }
 
         private void MovePack(int? sourcePackId, int? destinationPackId, int? individualId, DateTime date, IDbConnection conn)
@@ -749,7 +749,111 @@ namespace DataReciever.Main.Data
 
         public void InsertOestrusEvent(OestrusEvent message)
         {
-            var a = message;
+            // store the top level thing
+            // then store all the lists of things
+            // also remember lists of ids of individuals.
+
+            // move the individual to the new pack.
+            logger.Info(
+                $@"Oestrus '{message.packName}' Individual '{message.focalIndividualName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.packName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Source Pack Name '{message.packName}' not found.");
+                    }
+
+                    var individualId = TryGetIndividualId(message.focalIndividualName, conn);
+                    if (!individualId.HasValue)
+                    {
+                        throw new Exception($"Individual Name '{message.focalIndividualName}' not found.");
+                    }
+
+                    //insert a event
+                    var oestrusEventId = InsertOestrus(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                        message.width, message.time, message.latitude, message.longitude, conn);
+                    InsertAggression(message.AggressionEventList, oestrusEventId, conn);
+                    InsertAffiliation(message.AffiliationEventList, oestrusEventId, conn);
+                    InsertMaleAggresssion(message.MaleAggressionList, oestrusEventId, conn);
+                    InsertMate(message.MateEventList, oestrusEventId, conn);
+                    InsertNearest(message.NearestList, oestrusEventId, conn);
+
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void InsertNearest(List<OestrusNearest> nearestList, int oestrusEventId, IDbConnection conn)
+        {
+            foreach (var oestrusNearest in nearestList)
+            {
+                // var loc = GetLocationString(latitude, longitude);
+
+                var individualId = TryGetIndividualId(oestrusNearest.nearestIndividualName, conn);
+                if (!individualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusNearest.nearestIndividualName}' not found.");
+                }
+
+                conn.Execute(@"INSERT INTO mongoose.oestrus_nearest(
+	                            oestrus_event_id, nearest_individual_id, close_individuals, time)
+	                            VALUES (@oestrus_event_id, @nearest_individual_id, @close_individuals, @time);",
+                    new
+                    {
+                        oestrus_event_id = oestrusEventId,
+                        nearest_individual_id = individualId,
+                        close_individuals = string.Join(",", oestrusNearest.CloseListNames),
+                        time = oestrusNearest.scanTime
+                    });
+            }
+        }
+
+        private void InsertMate(List<OestrusMateEvent> MateEventList, int oestrusEventId, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void InsertMaleAggresssion(List<OestrusMaleAggression> MaleAggressionList, int oestrusEventId, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void InsertAffiliation(List<OestrusAffiliationEvent> AffiliationEventList, int oestrusEventId, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void InsertAggression(List<OestrusAggressionEvent> AggressionEventList, int oestrusEventId, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        private int InsertOestrus(int packId, int individualId, int? depth, int? numberOfIndividuals, int? width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        {
+
+            var loc = GetLocationString(latitude, longitude);
+            var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
+
+            var oestrusEventId = conn.ExecuteScalar<int>(
+               $@"INSERT INTO mongoose.oestrus_event(
+	             pack_history_id, depth_of_pack, number_of_individuals, width, time, location)
+	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_event_id;",
+                new
+                {
+                    pack_history_id = packHistoryId,
+                    depth_of_pack= depth,
+                    number_of_individuals= numberOfIndividuals,
+                    width,
+                    time
+                });
+
+            return oestrusEventId;
+
         }
     }
 }

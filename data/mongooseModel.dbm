@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="40,90" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="1596,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -378,7 +378,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1040" y="566.077"/>
+	<position x="1054.54" y="564.538"/>
 	<column name="pack_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -405,7 +405,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="626.077"/>
+	<position x="1414.54" y="624.538"/>
 	<column name="litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -443,7 +443,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="646.077"/>
+	<position x="1774.54" y="644.538"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -497,7 +497,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_history" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2420" y="546.077"/>
+	<position x="2434.54" y="544.538"/>
 	<column name="pack_history_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -544,7 +544,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="inter_group_interaction" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="396.923" y="616.846"/>
+	<position x="411.462" y="615.308"/>
 	<column name="inter_group_interaction_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -593,7 +593,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1080" y="706.077"/>
+	<position x="1094.54" y="704.538"/>
 	<column name="pack_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -646,7 +646,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="926.077"/>
+	<position x="1014.54" y="924.538"/>
 	<column name="pack_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -667,7 +667,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="individual_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1760" y="806.077"/>
+	<position x="1774.54" y="804.538"/>
 	<column name="individual_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -707,7 +707,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="individual_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1740" y="986.077"/>
+	<position x="1754.54" y="984.538"/>
 	<column name="individual_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -734,7 +734,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pregnancy" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1440" y="506.077"/>
+	<position x="1454.54" y="504.538"/>
 	<column name="pregnancy_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -764,7 +764,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="766.077"/>
+	<position x="2794.54" y="764.538"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -797,7 +797,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="ultrasound">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2760" y="26.0769"/>
+	<position x="2774.54" y="24.5385"/>
 	<column name="ultrasound_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -836,7 +836,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2840" y="266.077"/>
+	<position x="2854.54" y="264.538"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -918,7 +918,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2460" y="26.0769"/>
+	<position x="2474.54" y="24.5385"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -980,7 +980,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="litter_event_code" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1380" y="966.077"/>
+	<position x="1394.54" y="964.538"/>
 	<column name="litter_event_code_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -998,7 +998,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1400" y="766.077"/>
+	<position x="1414.54" y="764.538"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1050,7 +1050,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="capture" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2780" y="1006.08"/>
+	<position x="2794.54" y="1004.54"/>
 	<column name="capture_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1223,7 +1223,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="event_log" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="140" y="966.077"/>
+	<position x="154.538" y="964.538"/>
 	<column name="event_log_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1259,7 +1259,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="446.077"/>
+	<position x="1734.54" y="444.538"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1305,7 +1305,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="provisioning_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2940" y="526.077"/>
+	<position x="2954.54" y="524.538"/>
 	<column name="provisioning_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1349,7 +1349,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="poo_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2120" y="66.0769"/>
+	<position x="2134.54" y="64.5385"/>
 	<column name="poo_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1405,7 +1405,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="meterology" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="480" y="966.077"/>
+	<position x="494.538" y="964.538"/>
 	<column name="meterology_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1441,7 +1441,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="maternal_conditioning_litter" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="1166.08"/>
+	<position x="1014.54" y="1164.54"/>
 	<column name="maternal_conditioning_litter_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1494,7 +1494,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="maternel_conditioning_females" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1540" y="46.0769"/>
+	<position x="1554.54" y="44.5385"/>
 	<column name="maternel_conditioning_females_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1537,7 +1537,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="blood_data" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2160" y="1006.08"/>
+	<position x="2174.54" y="1004.54"/>
 	<column name="blood_data_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1599,7 +1599,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="hpa_sample" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1000" y="166.077"/>
+	<position x="1014.54" y="164.538"/>
 	<column name="hpa_sample_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1664,7 +1664,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="dna_samples" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2500" y="846.077"/>
+	<position x="2514.54" y="844.538"/>
 	<column name="dna_samples_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1723,7 +1723,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="group_composition" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="460" y="106.077"/>
+	<position x="474.538" y="104.538"/>
 	<column name="group_composition_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1800,7 +1800,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="babysitting" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1720" y="1106.08"/>
+	<position x="1734.54" y="1104.54"/>
 	<column name="babysitting_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1864,7 +1864,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="anti_parasite" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2480" y="1286.08"/>
+	<position x="2494.54" y="1284.54"/>
 	<column name="anti_parasite_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1944,7 +1944,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="ox_shielding_feeding" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1929.23" y="1389.16"/>
+	<position x="1943.77" y="1387.62"/>
 	<column name="ox_shielding_feeding_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1985,7 +1985,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="ox_shielding_male" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1952.31" y="1561.46"/>
+	<position x="1966.85" y="1559.92"/>
 	<column name="ox_shielding_male_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2026,7 +2026,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="ox_shielding_group" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1930.77" y="1701.46"/>
+	<position x="1945.31" y="1699.92"/>
 	<column name="ox_shielding_group_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2064,7 +2064,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="interaction_outcome" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="236.923" y="401.538"/>
+	<position x="251.462" y="400"/>
 	<column name="interaction_outcome_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2097,7 +2097,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="alarm" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="681.538" y="420"/>
+	<position x="696.077" y="418.462"/>
 	<column name="alarm_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2148,7 +2148,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="alarm_cause" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="350.769" y="518.462"/>
+	<position x="365.308" y="516.923"/>
 	<column name="alarm_cause_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2172,7 +2172,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_move" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="636.923" y="766.154"/>
+	<position x="651.462" y="764.615"/>
 	<column name="pack_move_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2232,7 +2232,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pack_move_destination" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="150.769" y="767.692"/>
+	<position x="165.308" y="766.154"/>
 	<column name="pack_move_destination_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2252,6 +2252,99 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 src-table="mongoose.pack_move_destination"
 	 dst-table="mongoose.pack_move"
 	 src-required="true" dst-required="false"/>
+
+<table name="oestrus_event" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3240.15" y="586.154"/>
+	<column name="oestrus_event_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="depth_of_pack">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="number_of_individuals">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="width">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="oestrus_event_pk" type="pk-constr" table="mongoose.oestrus_event">
+		<columns names="oestrus_event_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_oestrus_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.oestrus_event"
+	 src-required="true" dst-required="false"/>
+
+<table name="oestrus_nearest" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3149.92" y="24.6154"/>
+	<column name="oestrus_nearest_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="close_individuals">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="oestrus_nearest_pk" type="pk-constr" table="mongoose.oestrus_nearest">
+		<columns names="oestrus_nearest_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="nearest_individual_id" index="2"/>
+		<object name="oestrus_event_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="oestrus_event_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="oestrus_event_has_many_oestrus_nearest" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.oestrus_event"
+	 dst-table="mongoose.oestrus_nearest"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_oestrus_nearest" type="rel1n"
+	 src-col-pattern="nearest_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.oestrus_nearest"
+	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">

@@ -847,7 +847,34 @@ namespace DataReciever.Main.Data
         {
             foreach (var oestrusMaleAggression in maleAggressionList)
             {
-                throw new NotImplementedException();
+                var loc = GetLocationString(oestrusMaleAggression.latitude, oestrusMaleAggression.longitude);
+
+                var initiatorIndividualId = TryGetIndividualId(oestrusMaleAggression.initiatorIndividualName, conn);
+                if (!initiatorIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusMaleAggression.initiatorIndividualName}' not found.");
+                }
+
+                var recieverIndividualId = TryGetIndividualId(oestrusMaleAggression.receiverIndividualName, conn);
+                if (!recieverIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusMaleAggression.receiverIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.oestrus_male_aggression(
+	                oestrus_event_id, initiator_individual_id, reciever_individual_id, level, winner, owner, time, location)
+	                VALUES (@oestrus_event_id, @initiator_individual_id, @reciever_individual_id, @level, @winner, @owner, @time, {loc});",
+                    new
+                    {
+                        oestrus_event_id = oestrusEventId,
+                        initiator_individual_id = initiatorIndividualId,
+                        reciever_individual_id = recieverIndividualId,
+                        level = oestrusMaleAggression.level,
+                        winner = oestrusMaleAggression.winner,
+                        owner = oestrusMaleAggression.owner,
+                        time = oestrusMaleAggression.time
+
+                    });
             }
         }
 

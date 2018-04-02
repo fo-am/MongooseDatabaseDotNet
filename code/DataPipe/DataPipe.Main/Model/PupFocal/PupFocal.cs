@@ -26,6 +26,7 @@ namespace DataPipe.Main.Model.PupFocal
         public string pupFeed { get; set; }
         public List<PupFeed> PupFeedList { get; set; }
         public string pupFind { get; set; }
+        public List<PupFind> PupFindList { get; set; }
         public string pupCare { get; set; }
         public List<PupCare> PupCareList { get; set; }
         public string pupAggression { get; set; }

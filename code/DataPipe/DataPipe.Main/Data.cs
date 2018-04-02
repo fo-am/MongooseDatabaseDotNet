@@ -536,10 +536,32 @@ left join stream_value_int packWidth on packWidth.entity_id = se.entity_id and p
                 pupFocal.PupAggressionList = GetPupAggressions(pupFocal.pupAggression);
                 pupFocal.PupCareList = GetPupCare(pupFocal.pupCare);
                 pupFocal.PupFeedList = GetPupFeeds(pupFocal.pupFeed);
-            //    pupFocal.PupFindList = GetPupFinds(pupFocal.pupFind);
+                pupFocal.PupFindList = GetPupFinds(pupFocal.pupFind);
             }
 
             return pupFocals;
+        }
+
+        private static List<PupFind> GetPupFinds(string pupFocalPupFind)
+        {
+
+            var stringSql = $@"
+            select se.entity_id 
+        ,se.sent
+        ,se.entity_type
+        ,se.unique_id as 'UniqueId'
+        ,size.value as 'size'
+        ,time.value as 'time'
+        ,lat.value as 'latitude'
+        ,lon.value as 'longitude'
+        from stream_entity se
+        join stream_value_varchar size on size.entity_id = se.entity_id and size.attribute_id = 'size'
+        join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+        join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+        join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+        where se.entity_id in ({pupFocalPupFind}) and entity_type = 'pup-focal-pupfind';;";
+
+            return RunSql<PupFind>(stringSql).ToList();
         }
 
         private static List<PupFeed> GetPupFeeds(string pupFocalPupFeed)

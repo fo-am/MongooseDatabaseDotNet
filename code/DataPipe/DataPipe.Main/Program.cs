@@ -141,7 +141,13 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
-            foreach (var entity in Data.GetUnsynchedOesturus().Take(numberToSend))
+            foreach (var entity in Data.GetUnsynchedOesturusFocals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
+
+            foreach (var entity in Data.GetUnsynchedPupFocals().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");

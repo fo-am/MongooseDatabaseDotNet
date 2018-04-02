@@ -230,6 +230,11 @@ namespace DataReciever.Main.Data
 
         private static int? TryGetIndividualId(string name, IDbConnection conn)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "Unknown";
+            }
+
             var individualId = conn.ExecuteScalar<int?>(
                 "select individual_id from mongoose.individual where name = @name",
                 new { name });
@@ -794,6 +799,8 @@ namespace DataReciever.Main.Data
             {
                 // var loc = GetLocationString(latitude, longitude);
 
+
+                //todo: everywhere I look for an individual look in the ID to see if it is unknown or nothing.
                 var individualId = TryGetIndividualId(oestrusNearest.nearestIndividualName, conn);
                 if (!individualId.HasValue)
                 {
@@ -829,7 +836,7 @@ namespace DataReciever.Main.Data
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_mating(
 	                             oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, location)
-	                            VALUES ( oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, {loc});",
+	                            VALUES ( @oestrus_event_id, @with_individual_id, @behaviour, @female_response, @male_response, @success, @time, {loc});",
                     new
                     {
                         oestrus_event_id = oestrusEventId,

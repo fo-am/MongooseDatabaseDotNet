@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="1590,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="1725,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -356,6 +356,8 @@ INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
 
 
 INSERT INTO mongoose.pack (name) VALUES('Unknown');
+
+INSERT INTO mongoose.individual (name) VALUES('Unknown');
 
 INSERT INTO mongoose.interaction_outcome(outcome)
  VALUES ('retreat'),('advance'),('fight-retreat'),('fight-win');

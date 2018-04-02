@@ -2462,6 +2462,58 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 dst-table="mongoose.oestrus_male_aggression"
 	 src-required="false" dst-required="false"/>
 
+<table name="oestrus_affiliation" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3513.85" y="115.385"/>
+	<column name="oestrus_affiliation_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="initiate">
+		<type name="text" length="0"/>
+	</column>
+	<column name="over">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="oestrus_affiliation_pk" type="pk-constr" table="mongoose.oestrus_affiliation">
+		<columns names="oestrus_affiliation_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="oestrus_event_id" index="1"/>
+		<object name="with_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="oestrus_event_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="oestrus_event_has_many_oestrus_affiliation" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.oestrus_event"
+	 dst-table="mongoose.oestrus_affiliation"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_oestrus_affiliation" type="rel1n"
+	 src-col-pattern="with_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.oestrus_affiliation"
+	 src-required="false" dst-required="false"/>
+
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">
 	<columns names="secondpack_id" ref-type="src-columns"/>

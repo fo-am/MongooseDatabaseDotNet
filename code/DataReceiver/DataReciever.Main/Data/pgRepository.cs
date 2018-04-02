@@ -880,7 +880,29 @@ namespace DataReciever.Main.Data
 
         private void InsertAffiliation(List<OestrusAffiliationEvent> affiliationEventList, int oestrusEventId, IDbConnection conn)
         {
-            throw new NotImplementedException();
+            foreach (var oestrusAffiliationEvent in affiliationEventList)
+            {
+                var loc = GetLocationString(oestrusAffiliationEvent.latitude, oestrusAffiliationEvent.longitude);
+
+                var withIndividualId = TryGetIndividualId(oestrusAffiliationEvent.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusAffiliationEvent.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.oestrus_affiliation(
+	 oestrus_event_id, with_individual_id, initiate, over, time, location)
+	VALUES (@oestrus_event_id, @with_individual_id, @initiate, @over, @time, {loc});",
+                    new
+                    {
+                        oestrus_event_id= oestrusEventId,
+                        with_individual_id= withIndividualId,
+                        initiate= oestrusAffiliationEvent.initiate,
+                        over= oestrusAffiliationEvent.over,
+                        time= oestrusAffiliationEvent.time
+
+                    });
+            }
         }
 
         private void InsertAggression(List<OestrusAggressionEvent> aggressionEventList, int oestrusEventId, IDbConnection conn)

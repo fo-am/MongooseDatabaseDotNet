@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
+using DataReciever.Main.Model.Oestrus;
 
 namespace DataReciever.Main.Handlers
 {
@@ -40,7 +41,9 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(UnsuccessfulLitterEvent), new UnsuccessfulLitterEventHandler());
             handlers.Add(typeof(InterGroupInteractionEvent), new InterGroupInteractionEventHandler());
             handlers.Add(typeof(GroupAlarmEvent), new GroupAlarmEventHandler());
-            handlers.Add(typeof(GroupMoveEvent), new GroupMoveEventHandler()); 
+            handlers.Add(typeof(GroupMoveEvent), new GroupMoveEventHandler());
+            handlers.Add(typeof(OestrusEvent), new OestrusEventHandler());
+            
         }
 
         public void Handle<T>(T output)

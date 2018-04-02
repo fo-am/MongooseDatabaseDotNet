@@ -6,6 +6,8 @@ using Dapper;
 
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
+using DataReciever.Main.Model.Oestrus;
+
 using NLog;
 
 using Npgsql;
@@ -743,6 +745,11 @@ namespace DataReciever.Main.Data
                 });
 
             return destinationId ?? throw new Exception($"Destination '{destination}' not found in database");
+        }
+
+        public void InsertOestrusEvent(OestrusEvent message)
+        {
+            var a = message;
         }
     }
 }

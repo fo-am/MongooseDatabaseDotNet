@@ -2,6 +2,7 @@
 
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
+using DataReciever.Main.Model.Oestrus;
 
 using NLog;
 using NLog.Config;
@@ -46,6 +47,8 @@ namespace DataReciever.Main
             reciever.Recieve<InterGroupInteractionEvent>();
             reciever.Recieve<GroupAlarmEvent>();
             reciever.Recieve<GroupMoveEvent>();
+
+            reciever.Recieve<OestrusEvent>();
 
 
             Console.WriteLine("Waiting for values. Return to Exit.");

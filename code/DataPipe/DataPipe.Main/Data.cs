@@ -575,14 +575,42 @@ left join stream_value_int packWidth on packWidth.entity_id = se.entity_id and p
                 oestrusEvent.MaleAggressionList = GetOestrusMaleAggressions(oestrusEvent.maleaggr);
                 oestrusEvent.MateEventList = GetOestrusMateEvents(oestrusEvent.mate);
                 oestrusEvent.AggressionEventList = GetOestrusAggressions(oestrusEvent.aggr);
+                oestrusEvent.AffiliationEventList = GetOestrusAffiliations(oestrusEvent.affil);
             }
            
             return a;
         }
 
+        private static List<OestrusAffiliationEvent> GetOestrusAffiliations(string oestrusEventAffil)
+        {
+            var stringSql = $@"
+ select se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = withIndividual.value and svv.attribute_id = 'name' ) as 'withIndividualName'
+,withIndividual.value as 'withIndividualId'
+,initiate.value as 'initiate'
+,over.value as 'over'
+,time.value as 'time'
+,lat.value as 'latitude'
+,lon.value as 'longitude'
+from stream_entity se
+join stream_value_varchar withIndividual on withIndividual.entity_id = se.entity_id and withIndividual.attribute_id = 'id-with'
+join stream_value_varchar initiate on initiate.entity_id = se.entity_id and initiate.attribute_id = 'initiate'
+join stream_value_varchar over on over.entity_id = se.entity_id and over.attribute_id = 'over'
+join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+where se.entity_id in ({oestrusEventAffil});";
+
+            return RunSql<OestrusAffiliationEvent>(stringSql).ToList();
+        }
+
         private static List<OestrusAggressionEvent> GetOestrusAggressions(string oestrusEventAggr)
         {
-
             var stringSql = $@"
  select se.entity_id 
 ,se.sent

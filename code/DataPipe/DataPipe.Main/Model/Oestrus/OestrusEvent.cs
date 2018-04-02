@@ -30,5 +30,6 @@ namespace DataPipe.Main.Model.Oestrus
         public string aggr { get; set; }
         public List<OestrusAggressionEvent> AggressionEventList { get; set; }
         public string affil { get; set; }
+        public List<OestrusAffiliationEvent> AffiliationEventList { get; set; }
     }
 }

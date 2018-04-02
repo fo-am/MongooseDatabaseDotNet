@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="1596,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="1590,0" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -2407,7 +2407,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_male_aggression" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3281.54" y="409.231"/>
+	<position x="3523.08" y="375.385"/>
 	<column name="oestrus_male_aggression_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2512,6 +2512,64 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.oestrus_affiliation"
+	 src-required="false" dst-required="false"/>
+
+<table name="oestrus_aggression" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3513.85" y="647.692"/>
+	<column name="oestrus_aggression_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="initate">
+		<type name="text" length="0"/>
+	</column>
+	<column name="level">
+		<type name="text" length="0"/>
+	</column>
+	<column name="over">
+		<type name="text" length="0"/>
+	</column>
+	<column name="win">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="oestrus_aggression_pk" type="pk-constr" table="mongoose.oestrus_aggression">
+		<columns names="oestrus_aggression_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="oestrus_event_id" index="1"/>
+		<object name="with_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="oestrus_event_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="oestrus_event_has_many_oestrus_aggression" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.oestrus_event"
+	 dst-table="mongoose.oestrus_aggression"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="individual_has_many_oestrus_aggression" type="rel1n"
+	 src-col-pattern="with_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.oestrus_aggression"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

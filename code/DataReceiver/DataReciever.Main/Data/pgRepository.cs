@@ -907,7 +907,31 @@ namespace DataReciever.Main.Data
 
         private void InsertAggression(List<OestrusAggressionEvent> aggressionEventList, int oestrusEventId, IDbConnection conn)
         {
-            throw new NotImplementedException();
+            foreach (var oestrusAggressionEvent in aggressionEventList)
+            {
+                var loc = GetLocationString(oestrusAggressionEvent.latitude, oestrusAggressionEvent.longitude);
+
+                var withIndividualId = TryGetIndividualId(oestrusAggressionEvent.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusAggressionEvent.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.oestrus_aggression(
+	                 oestrus_event_id, with_individual_id, initate, level, over, win, time, location)
+	                VALUES (@oestrus_event_id, @with_individual_id, @initate, @level, @over, @win, @time, {loc});",
+                    new
+                    {
+                        oestrus_event_id=oestrusEventId,
+                        with_individual_id= withIndividualId,
+                        initate= oestrusAggressionEvent.initiate,
+                        level = oestrusAggressionEvent.level,
+                        over = oestrusAggressionEvent.over,
+                        win = oestrusAggressionEvent.win,
+                        time = oestrusAggressionEvent.time
+
+                    });
+            }
         }
 
         private int InsertOestrus(int packId, int individualId, int? depth, int? numberOfIndividuals, int? width, DateTime time, double latitude, double longitude, IDbConnection conn)

@@ -153,6 +153,12 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
+            foreach (var entity in Data.GetUnsynchedPregnancyFocals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
+
             logger.Info("DataPipe end");
             
             Environment.Exit(0);

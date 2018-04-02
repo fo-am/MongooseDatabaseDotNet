@@ -7,6 +7,7 @@ using Dapper;
 using DataPipe.Main.Model;
 using DataPipe.Main.Model.LifeHistory;
 using DataPipe.Main.Model.Oestrus;
+using DataPipe.Main.Model.PregnancyFocal;
 using DataPipe.Main.Model.PupFocal;
 
 using Microsoft.Data.Sqlite;
@@ -672,6 +673,157 @@ where se.entity_id in ({pupFocalPupAggression});";
             foreach (var pupNearest in list)
             {
                 pupNearest.CloseListNames = GetNamesFromIds(pupNearest.listClose);
+            }
+
+            return list;
+        }
+
+        public static List<PregnancyFocal> GetUnsynchedPregnancyFocals()
+        {
+            const string stringSql = @"
+ 
+  select
+ se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = subject.value and svv.attribute_id = 'name' ) as 'focalIndividualName'
+,subject.value as 'focalIndividualId'
+,time.value as 'time'
+,user.value as 'user'
+,lon.value as 'longitude'
+,lat.value as 'latitude'
+,packCount.value as 'visibleIndividuals'
+,packDepth.value as 'depth'
+,packWidth.value as 'width'
+,(select svv3.value as 'PackName'  from sync_entity se3
+join sync_value_varchar svv3 on svv3.entity_id = se3.entity_id
+where se3.unique_id = (
+select svv2.value from sync_entity se2
+join sync_value_varchar svv2 on svv2.entity_id = se2.entity_id
+where se2.unique_id = subject.value and svv2.attribute_id = 'pack-id') and svv3.attribute_id = 'name') as packName
+,(select svv2.value from sync_entity se2
+join sync_value_varchar svv2 on svv2.entity_id = se2.entity_id
+where se2.unique_id = subject.value and svv2.attribute_id = 'pack-id')as packUniqueId
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'pregnancy-focal-nearest') as pregnancyNearest
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'pregnancy-focal-affil') as pregnancyAffil
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'pregnancy-focal-aggr') as pregnancyAggression  
+  from stream_entity se 
+left join stream_value_varchar subject on subject.entity_id = se.entity_id and subject.attribute_id = 'id-focal-subject' 
+left join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+left join stream_value_varchar user on user.entity_id = se.entity_id and user.attribute_id = 'user' 
+left join stream_value_real lon on lon.entity_id = se.entity_id  and lon.attribute_id = 'lon' 
+left join stream_value_real lat on lat.entity_id = se.entity_id  and lat.attribute_id = 'lat' 
+left join stream_value_int packCount on packCount.entity_id = se.entity_id and packCount.attribute_id = 'pack-count'
+left join stream_value_int packDepth on packDepth.entity_id = se.entity_id and packDepth.attribute_id = 'pack-depth'
+left join stream_value_int packWidth on packWidth.entity_id = se.entity_id and packWidth.attribute_id = 'pack-width'
+ where se.entity_type = 'preg-focal' and se.sent = 0 
+ order by packCount.value is null and time.value;";
+
+            var pregnancyFocals = RunSql<PregnancyFocal>(stringSql).ToList();
+
+            foreach (var pregnancyFocal in pregnancyFocals)
+            {
+                pregnancyFocal.PregnancyNearestList = GetPregnancyNearest(pregnancyFocal.pregnancyNearest);
+                pregnancyFocal.PregnancyAggressionList = GetPregnancyAggression(pregnancyFocal.pregnancyAggression);
+                pregnancyFocal.PregnancyAffiliationList = GetPregnancyAffiliation(pregnancyFocal.pregnancyAffil);
+
+            }
+
+            return pregnancyFocals;
+        }
+
+        private static List<PregnancyAffiliation> GetPregnancyAffiliation(string pregnancyFocalPregnancyAffil)
+        {
+            var stringSql = $@"
+             select se.entity_id 
+            ,se.sent
+            ,se.entity_type
+            ,se.unique_id as 'UniqueId'
+            ,(select svv.value from sync_entity se
+            join sync_value_varchar svv on svv.entity_id = se.entity_id
+            where se.unique_id = withIndividual.value and svv.attribute_id = 'name' ) as 'withIndividualName'
+            ,withIndividual.value as 'withIndividualId'
+            ,initiate.value as 'initiate'
+            ,over.value as 'over'
+            ,time.value as 'time'
+            ,lat.value as 'latitude'
+            ,lon.value as 'longitude'
+            from stream_entity se
+            join stream_value_varchar withIndividual on withIndividual.entity_id = se.entity_id and withIndividual.attribute_id = 'id-with'
+            join stream_value_varchar initiate on initiate.entity_id = se.entity_id and initiate.attribute_id = 'initiate'
+            join stream_value_varchar over on over.entity_id = se.entity_id and over.attribute_id = 'over'
+            join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+            join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+            join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+            where se.entity_id in ({pregnancyFocalPregnancyAffil});";
+
+            return RunSql<PregnancyAffiliation>(stringSql).ToList();
+        }
+
+        private static List<PregnancyAggression> GetPregnancyAggression(string pregnancyFocalPregnancyAggression)
+        {
+            var stringSql = $@"
+                 select  se.entity_id 
+                ,se.sent
+                ,se.entity_type
+                ,se.unique_id as 'UniqueId'
+                ,(select svv.value from sync_entity se
+                join sync_value_varchar svv on svv.entity_id = se.entity_id
+                where se.unique_id = withIndividual.value and svv.attribute_id = 'name' ) as 'withIndividualName'
+                ,withIndividual.value as 'withIndividualId'
+                ,initiate.value as 'initiate'
+                ,level.value as 'level'
+                ,over.value as 'over'
+                ,win.value as 'win'
+                ,time.value as 'time'
+                ,lat.value as 'latitude'
+                ,lon.value as 'longitude'
+                from stream_entity se
+                join stream_value_varchar withIndividual on withIndividual.entity_id = se.entity_id and withIndividual.attribute_id = 'id-with'
+                join stream_value_varchar initiate on initiate.entity_id = se.entity_id and initiate.attribute_id = 'initiate'
+                join stream_value_varchar level on level.entity_id = se.entity_id and level.attribute_id = 'level'
+                join stream_value_varchar over on over.entity_id = se.entity_id and over.attribute_id = 'over'
+                join stream_value_varchar win on win.entity_id = se.entity_id and win.attribute_id = 'win'
+                join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+                join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+                join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+                where se.entity_id in ({pregnancyFocalPregnancyAggression});";
+
+            return RunSql<PregnancyAggression>(stringSql).ToList();
+        }
+
+        private static List<PregnancyNearest> GetPregnancyNearest(string pregnancyNearest)
+        {
+            var stringSql = $@"                      
+             select se.entity_id 
+            ,se.sent
+            ,se.entity_type
+            ,se.unique_id as 'UniqueId'
+            ,listClose.value as listClose
+            ,(select svv.value from sync_entity se
+            join sync_value_varchar svv on svv.entity_id = se.entity_id
+            where se.unique_id = idNearest.value and svv.attribute_id = 'name' ) as 'nearestIndividualName'
+            ,idNearest.value as 'nearestIndividualId'
+            ,time.value as 'scanTime'
+            from stream_entity se
+            join stream_value_varchar listClose on listClose.entity_id = se.entity_id and listClose.attribute_id = 'id-list-close'
+            join stream_value_varchar idNearest on idNearest.entity_id = se.entity_id and idNearest.attribute_id = 'id-nearest'
+            join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'scan-time'
+            where se.entity_id in ({pregnancyNearest});";
+
+            var list = RunSql<PregnancyNearest>(stringSql).ToList();
+            foreach (var nearest in list)
+            {
+                nearest.CloseListNames = GetNamesFromIds(nearest.listClose);
             }
 
             return list;

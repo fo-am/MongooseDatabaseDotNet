@@ -3,6 +3,7 @@
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
 using DataReciever.Main.Model.Oestrus;
+using DataReciever.Main.Model.PregnancyFocal;
 using DataReciever.Main.Model.PupFocal;
 
 using NLog;
@@ -51,6 +52,8 @@ namespace DataReciever.Main
 
             reciever.Recieve<OestrusEvent>();
             reciever.Recieve<PupFocal>();
+
+            reciever.Recieve<PregnancyFocal>();
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

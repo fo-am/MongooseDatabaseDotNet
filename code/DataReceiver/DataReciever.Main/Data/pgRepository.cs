@@ -8,6 +8,7 @@ using Dapper;
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
 using DataReciever.Main.Model.Oestrus;
+using DataReciever.Main.Model.PregnancyFocal;
 using DataReciever.Main.Model.PupFocal;
 
 using NLog;
@@ -1138,6 +1139,11 @@ namespace DataReciever.Main.Data
                 });
 
             return pupFocalId;
+        }
+
+        public void HandlePregnancyFocal(PregnancyFocal message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

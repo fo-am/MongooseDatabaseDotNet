@@ -8,6 +8,7 @@ using Dapper;
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
 using DataReciever.Main.Model.Oestrus;
+using DataReciever.Main.Model.PupFocal;
 
 using NLog;
 
@@ -754,11 +755,6 @@ namespace DataReciever.Main.Data
 
         public void InsertOestrusEvent(OestrusEvent message)
         {
-            // store the top level thing
-            // then store all the lists of things
-            // also remember lists of ids of individuals.
-
-            // move the individual to the new pack.
             logger.Info(
                 $@"Oestrus '{message.packName}' Individual '{message.focalIndividualName}'.");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
@@ -962,6 +958,63 @@ namespace DataReciever.Main.Data
 
             return oestrusEventId;
 
+        }
+
+        public void HandlePupFocal(PupFocal message)
+        {
+         logger.Info(
+                $@"Pup Focal Pack '{message.packName}' Individual '{message.focalIndividualName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.packName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Source Pack Name '{message.packName}' not found.");
+                    }
+
+                    var individualId = TryGetIndividualId(message.focalIndividualName, conn);
+                    if (!individualId.HasValue)
+                    {
+                        throw new Exception($"Individual Name '{message.focalIndividualName}' not found.");
+                    }
+
+                    //insert a event
+                    var oestrusEventId = InsertPackFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                        message.width, message.time, message.latitude, message.longitude, conn);
+           //         InsertAggression(message.AggressionEventList, oestrusEventId, conn);
+              //      InsertAffiliation(message.AffiliationEventList, oestrusEventId, conn);
+             //       InsertMaleAggresssion(message.MaleAggressionList, oestrusEventId, conn);
+            //        InsertMate(message.MateEventList, oestrusEventId, conn);
+            //        InsertNearest(message.NearestList, oestrusEventId, conn);
+
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private int InsertPackFocal(int packId, int individualId, string depth, string visibleIndividuals, string width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        {
+            var loc = GetLocationString(latitude, longitude);
+            var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
+
+            var oestrusEventId = conn.ExecuteScalar<int>(
+                $@"INSERT INTO mongoose.pack_focal(
+	             pack_history_id, depth_of_pack, number_of_individuals, width, time, location)
+	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_event_id;",
+                new
+                {
+                    pack_history_id = packHistoryId,
+                    depth_of_pack = depth,
+                    number_of_individuals = visibleIndividuals,
+                    width,
+                    time
+                });
+
+            return oestrusEventId;
         }
     }
 }

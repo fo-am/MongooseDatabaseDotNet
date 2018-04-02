@@ -3,6 +3,7 @@
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
 using DataReciever.Main.Model.Oestrus;
+using DataReciever.Main.Model.PupFocal;
 
 using NLog;
 using NLog.Config;
@@ -49,7 +50,7 @@ namespace DataReciever.Main
             reciever.Recieve<GroupMoveEvent>();
 
             reciever.Recieve<OestrusEvent>();
-
+            reciever.Recieve<PupFocal>();
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

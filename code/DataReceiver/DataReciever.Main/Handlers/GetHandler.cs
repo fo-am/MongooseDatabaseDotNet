@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DataReciever.Main.Model;
 using DataReciever.Main.Model.LifeHistory;
 using DataReciever.Main.Model.Oestrus;
+using DataReciever.Main.Model.PupFocal;
 
 namespace DataReciever.Main.Handlers
 {
@@ -43,6 +44,7 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(GroupAlarmEvent), new GroupAlarmEventHandler());
             handlers.Add(typeof(GroupMoveEvent), new GroupMoveEventHandler());
             handlers.Add(typeof(OestrusEvent), new OestrusEventHandler());
+            handlers.Add(typeof(PupFocal), new PupFocalHandler());
             
         }
 

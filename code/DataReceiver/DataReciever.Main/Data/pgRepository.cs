@@ -813,22 +813,50 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private void InsertMate(List<OestrusMateEvent> MateEventList, int oestrusEventId, IDbConnection conn)
+        private void InsertMate(List<OestrusMateEvent> mateEventList, int oestrusEventId, IDbConnection conn)
+        {    
+            // TODO: and make lists of options.
+            foreach (var oestrusMateEvent in mateEventList)
+            {
+
+                var loc = GetLocationString(oestrusMateEvent.latitude, oestrusMateEvent.longitude);
+
+                var withIndividualId = TryGetIndividualId(oestrusMateEvent.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{oestrusMateEvent.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.oestrus_mating(
+	                             oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, location)
+	                            VALUES ( oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, {loc});",
+                    new
+                    {
+                        oestrus_event_id = oestrusEventId,
+                        with_individual_id = withIndividualId,
+                        behaviour = oestrusMateEvent.behaviour,
+                        female_response = oestrusMateEvent.femaleResponse,
+                        male_response = oestrusMateEvent.maleResponse,
+                        success = oestrusMateEvent.success,
+                        time = oestrusMateEvent.time
+                    });
+            }
+        }
+
+        private void InsertMaleAggresssion(List<OestrusMaleAggression> maleAggressionList, int oestrusEventId, IDbConnection conn)
+        {
+            foreach (var oestrusMaleAggression in maleAggressionList)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void InsertAffiliation(List<OestrusAffiliationEvent> affiliationEventList, int oestrusEventId, IDbConnection conn)
         {
             throw new NotImplementedException();
         }
 
-        private void InsertMaleAggresssion(List<OestrusMaleAggression> MaleAggressionList, int oestrusEventId, IDbConnection conn)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void InsertAffiliation(List<OestrusAffiliationEvent> AffiliationEventList, int oestrusEventId, IDbConnection conn)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void InsertAggression(List<OestrusAggressionEvent> AggressionEventList, int oestrusEventId, IDbConnection conn)
+        private void InsertAggression(List<OestrusAggressionEvent> aggressionEventList, int oestrusEventId, IDbConnection conn)
         {
             throw new NotImplementedException();
         }

@@ -443,7 +443,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="individual" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1774.54" y="644.538"/>
+	<position x="2442.23" y="372.231"/>
 	<column name="individual_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -836,7 +836,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2854.54" y="264.538"/>
+	<position x="2573" y="164.538"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2345,6 +2345,64 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.oestrus_nearest"
 	 src-required="false" dst-required="false"/>
+
+<table name="oestrus_mating" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3152.31" y="226.154"/>
+	<column name="oestrus_mating_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="behaviour">
+		<type name="text" length="0"/>
+	</column>
+	<column name="female_response">
+		<type name="text" length="0"/>
+	</column>
+	<column name="male_response">
+		<type name="text" length="0"/>
+	</column>
+	<column name="success">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="oestrus_mating_pk" type="pk-constr" table="mongoose.oestrus_mating">
+		<columns names="oestrus_mating_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="oestrus_event_id" index="1"/>
+		<object name="with_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="oestrus_event_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="oestrus_event_has_many_oestrus_mating" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.oestrus_event"
+	 dst-table="mongoose.oestrus_mating"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_oestrus_mating" type="rel1n"
+	 src-col-pattern="with_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.oestrus_mating"
+	 src-required="true" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">

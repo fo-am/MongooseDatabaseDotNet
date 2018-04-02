@@ -6,6 +6,8 @@ using System.Linq;
 using Dapper;
 using DataPipe.Main.Model;
 using DataPipe.Main.Model.LifeHistory;
+using DataPipe.Main.Model.Oestrus;
+
 using Microsoft.Data.Sqlite;
 using NLog;
 using NLog.Config;
@@ -468,6 +470,237 @@ namespace DataPipe.Main
 
          var a = RunSql<GroupMoveEvent>(stringSql).ToList();
             return a;
+        }
+
+        public static IEnumerable<OestrusEvent> GetUnsynchedOesturus()
+        {
+            //get oestrus focal info
+            // use UniqueId to get
+            //"oestrus-focal-nearest" (list of)
+            //      list of close individual unique ids
+            //      unique id of closest
+            //      scan time.
+            //      lat long
+            //"oestrus-focal-maleaggr" (list of)
+            //  initiator
+            //  reciever
+            //  level
+            //  owner (initiatior or ??)
+            //  time
+            //  lat long
+            //"oestrus-focal-aggr" (list of)
+            //  ID with
+            //  iniate?
+            // level
+            // aggression over
+            // initator win?
+            // time, lat long
+            //"oestrus-focal"
+
+
+            //"oestrus-focal-mate"
+            //  behaviour
+            // femail response
+            // id of mate
+            // male response
+            // success?
+
+            //"oestrus-focal-affil"
+            // id with
+            // iniated
+            // over
+            // time lat long
+
+            const string stringSql = @"
+select 
+se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = subject.value and svv.attribute_id = 'name' ) as 'focalIndividualName'
+,subject.value as 'focalIndividualId'
+,time.value as 'time'
+,user.value as 'user'
+,lon.value as 'longitude'
+,lat.value as 'latitude'
+,packCount.value as 'visibleIndividuals'
+,packDepth.value as 'depth'
+,packWidth.value as 'width'
+,(select svv3.value as 'PackName'  from sync_entity se3
+join sync_value_varchar svv3 on svv3.entity_id = se3.entity_id
+where se3.unique_id = (
+select svv2.value from sync_entity se2
+join sync_value_varchar svv2 on svv2.entity_id = se2.entity_id
+where se2.unique_id = subject.value and svv2.attribute_id = 'pack-id') and svv3.attribute_id = 'name') as packName
+,(select svv2.value from sync_entity se2
+join sync_value_varchar svv2 on svv2.entity_id = se2.entity_id
+where se2.unique_id = subject.value and svv2.attribute_id = 'pack-id')as packUniqueId
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'oestrus-focal-nearest') as nearest
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'oestrus-focal-maleaggr') as maleaggr
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'oestrus-focal-mate') as mate
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'oestrus-focal-aggr') as aggr
+,(select group_concat(se2.entity_id) from stream_entity se2  
+left join stream_value_varchar svv2 on svv2.entity_id = se2.entity_id
+  where svv2.value = se.unique_id and se2.entity_type = 'oestrus-focal-affil') as affil
+
+  
+  from stream_entity se 
+left join stream_value_varchar subject on subject.entity_id = se.entity_id and subject.attribute_id = 'id-focal-subject' 
+left join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+left join stream_value_varchar user on user.entity_id = se.entity_id and user.attribute_id = 'user' 
+left join stream_value_real lon on lon.entity_id = se.entity_id  and lon.attribute_id = 'lon' 
+left join stream_value_real lat on lat.entity_id = se.entity_id  and lat.attribute_id = 'lat' 
+left join stream_value_int packCount on packCount.entity_id = se.entity_id and packCount.attribute_id = 'pack-count'
+left join stream_value_int packDepth on packDepth.entity_id = se.entity_id and packDepth.attribute_id = 'pack-depth'
+left join stream_value_int packWidth on packWidth.entity_id = se.entity_id and packWidth.attribute_id = 'pack-width'
+
+ where se.entity_type = 'oestrus-focal' and se.sent = 0 
+ order by packCount.value is null and time.value;";
+
+            var a = RunSql<OestrusEvent>(stringSql).ToList();
+
+            foreach (var oestrusEvent in a)
+            {
+                oestrusEvent.NearestList = GetOestrusNearest(oestrusEvent.nearest);
+                oestrusEvent.MaleAggressionList = GetOestrusMaleAggressions(oestrusEvent.maleaggr);
+                oestrusEvent.MateEventList = GetOestrusMateEvents(oestrusEvent.mate);
+                oestrusEvent.AggressionEventList = GetOestrusAggressions(oestrusEvent.aggr);
+            }
+           
+            return a;
+        }
+
+        private static List<OestrusAggressionEvent> GetOestrusAggressions(string oestrusEventAggr)
+        {
+
+            var stringSql = $@"
+ select se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = withIndividual.value and svv.attribute_id = 'name' ) as 'withIndividualName'
+,withIndividual.value as 'withIndividualId'
+,initiate.value as 'initiate'
+,level.value as 'level'
+,over.value as 'over'
+,win.value as 'win'
+,time.value as 'time'
+,lat.value as 'latitude'
+,lon.value as 'longitude'
+from stream_entity se
+join stream_value_varchar withIndividual on withIndividual.entity_id = se.entity_id and withIndividual.attribute_id = 'id-with'
+join stream_value_varchar initiate on initiate.entity_id = se.entity_id and initiate.attribute_id = 'initiate'
+join stream_value_varchar level on level.entity_id = se.entity_id and level.attribute_id = 'level'
+join stream_value_varchar over on over.entity_id = se.entity_id and over.attribute_id = 'over'
+join stream_value_varchar win on win.entity_id = se.entity_id and win.attribute_id = 'win'
+join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+where se.entity_id in ({oestrusEventAggr});";
+
+            return RunSql<OestrusAggressionEvent>(stringSql).ToList();
+        }
+
+        private static List<OestrusMateEvent> GetOestrusMateEvents(string oestrusEventMate)
+        {
+
+            var stringSql = $@"                      
+ select se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,behaviour.value as 'behaviour'
+,fResponse.value as 'femaleResponse'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = withIndividual.value and svv.attribute_id = 'name' ) as 'withIndividualName'
+,withIndividual.value as 'withIndividualId'
+,mResponse.value as 'maleResponse'
+,success.value as 'success'
+,time.value as 'time'
+,lat.value as 'latitude'
+,lon.value as 'longitude'
+from stream_entity se
+join stream_value_varchar behaviour on behaviour.entity_id = se.entity_id and behaviour.attribute_id = 'behaviour'
+join stream_value_varchar fResponse on fResponse.entity_id = se.entity_id and fResponse.attribute_id = 'female-response'
+join stream_value_varchar withIndividual on withIndividual.entity_id = se.entity_id and withIndividual.attribute_id = 'id-with'
+join stream_value_varchar mResponse on mResponse.entity_id = se.entity_id and mResponse.attribute_id = 'male-response'
+join stream_value_varchar success on success.entity_id = se.entity_id and success.attribute_id = 'success'
+join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+where se.entity_id in ({oestrusEventMate});";
+
+            return RunSql<OestrusMateEvent>(stringSql).ToList();
+        }
+
+        private static List<OestrusMaleAggression> GetOestrusMaleAggressions(string oestrusEventMaleaggr)
+        {
+            var stringSql = $@"                      
+ select se.entity_id 
+,se.sent
+,se.entity_type
+,se.unique_id as 'UniqueId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = initiator.value and svv.attribute_id = 'name' ) as 'initiatorIndividualName'
+,initiator.value as 'initiatorIndividualId'
+,(select svv.value from sync_entity se
+join sync_value_varchar svv on svv.entity_id = se.entity_id
+where se.unique_id = receiver.value and svv.attribute_id = 'name' ) as 'receiverIndividualName'
+,receiver.value as 'receiverIndividualId'
+,level.value as 'level'
+,winner.value as 'winner'
+,owner.value as 'owner'
+,time.value as 'time'
+,lat.value as 'latitude'
+,lon.value as 'longitude'
+from stream_entity se
+join stream_value_varchar initiator on initiator.entity_id = se.entity_id and initiator.attribute_id = 'id-initiator'
+join stream_value_varchar receiver on receiver.entity_id = se.entity_id and receiver.attribute_id = 'id-receiver'
+join stream_value_varchar level on level.entity_id = se.entity_id and level.attribute_id = 'level'
+join stream_value_varchar winner on winner.entity_id = se.entity_id and winner.attribute_id = 'winner'
+join stream_value_varchar owner on owner.entity_id = se.entity_id and owner.attribute_id = 'owner'
+join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'time'
+join stream_value_real lat on lat.entity_id = se.entity_id and lat.attribute_id = 'lat'
+join stream_value_real lon on lon.entity_id = se.entity_id and lon.attribute_id = 'lon'
+where se.entity_id in ({oestrusEventMaleaggr});";
+
+            return RunSql<OestrusMaleAggression>(stringSql).ToList();
+        }
+
+        private static List<OestrusNearest> GetOestrusNearest(string oestrusEventNearest)
+        {
+            var stringSql = $@"                      
+             select se.entity_id 
+            ,se.sent
+            ,se.entity_type
+            ,se.unique_id as 'UniqueId'
+            ,listClose.value as listClose
+            ,(select svv.value from sync_entity se
+            join sync_value_varchar svv on svv.entity_id = se.entity_id
+            where se.unique_id = idNearest.value and svv.attribute_id = 'name' ) as 'nearestIndividualName'
+            ,idNearest.value as 'nearestIndividualId'
+            ,time.value as 'scanTime'
+            from stream_entity se
+            join stream_value_varchar listClose on listClose.entity_id = se.entity_id and listClose.attribute_id = 'id-list-close'
+            join stream_value_varchar idNearest on idNearest.entity_id = se.entity_id and idNearest.attribute_id = 'id-nearest'
+            join stream_value_varchar time on time.entity_id = se.entity_id and time.attribute_id = 'scan-time'
+            where se.entity_id in ({oestrusEventNearest});";
+
+            return RunSql<OestrusNearest>(stringSql).ToList();
         }
     }
 

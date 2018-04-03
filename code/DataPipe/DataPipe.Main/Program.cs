@@ -77,12 +77,8 @@ namespace DataPipe.Main
             // list of objects
             // new pack
             // delete pack (!) 
-            // new individual
-            // renamed individual
             // update to an individual(eg adding sex)
 
-            // when we send a new object we need to mark in the database which parts have been sent (setting sent = 1 on each row)
-            // so we need to gather that information when we construct the object... not sure hwo to do this.
             logger.Info($"Number to send '{numberToSend}'");
             var send = new Sender();
 
@@ -104,11 +100,11 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
-            foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            }
+            //foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
+            //{
+            //    send.PublishEntity(entity);
+            //    logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            //}
 
             foreach (var lifeHistoryEvent in Data.GetLifeHistoryEvents().Take(numberToSend))
             {
@@ -154,6 +150,12 @@ namespace DataPipe.Main
             }
 
             foreach (var entity in Data.GetUnsynchedPregnancyFocals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
+
+            foreach (var entity in Data.GetUnsynchedGroupCompositions().Take(numberToSend))
             {
                 send.PublishEntity(entity);
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");

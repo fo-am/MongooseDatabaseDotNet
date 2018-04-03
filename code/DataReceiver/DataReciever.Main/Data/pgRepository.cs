@@ -143,13 +143,20 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    if (TryGetIndividualId(message.Name, conn).HasValue)
+                    {
+                        //todo: what if we are updateing something on this indiv?
+                        logger.Info($"Asked to add Individual '{message.Name}' but they already exist!");
+                    }
+
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
                     var litterId = InsertLitter(message.LitterCode, packId, conn);
                     var individualId = InsertIndividual(message, litterId, conn);
-                var packhistory =    InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
+                    var packhistory = InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
 
                     if (message.DateOfBirth.HasValue)
                     {
+                        //todo what if born or fseen already!?
                         CreateIndividualEvent(packhistory, message.DateOfBirth, "born", conn);
                         if (litterId.HasValue)
                         {
@@ -161,6 +168,7 @@ namespace DataReciever.Main.Data
                     }
                     else
                     {
+                        //todo: what if born already? (or fseen already?!)
                         CreateIndividualEvent(packhistory, DateTime.UtcNow, "fseen", conn);
                     }
 
@@ -209,7 +217,7 @@ namespace DataReciever.Main.Data
         {
             var individualId = TryGetIndividualId(message.Name, conn);
 
-            // if we have an individual then look at its data and see if we can add some more
+            // todo: if we have an individual then look at its data and see if we can add some more
 
             return individualId ?? AddIndividual(message.Name, message.Gender, message.ChipCode, message.UniqueId,
                        litterId, conn);

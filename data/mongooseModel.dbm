@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="1816,180" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="644,229" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -733,40 +733,10 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 dst-table="mongoose.individual_event"
 	 src-required="false" dst-required="false"/>
 
-<table name="pregnancy" hide-ext-attribs="true">
-	<schema name="mongoose"/>
-	<role name="postgres"/>
-	<position x="1454.54" y="516.769"/>
-	<column name="pregnancy_id" not-null="true">
-		<type name="serial" length="0"/>
-	</column>
-	<constraint name="pregnancy_pk" type="pk-constr" table="mongoose.pregnancy">
-		<columns names="pregnancy_id" ref-type="src-columns"/>
-	</constraint>
-</table>
-
-<relationship name="individual_has_many_pregnancies" type="rel1n"
-	 src-col-pattern="{sc}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.individual"
-	 dst-table="mongoose.pregnancy"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="litter_has_many_pregnancies" type="rel1n"
-	 src-col-pattern="{sc}"
-	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
-	 src-fk-pattern="{st}_fk"
-	 custom-color="#83af1f"
-	 src-table="mongoose.litter"
-	 dst-table="mongoose.pregnancy"
-	 src-required="false" dst-required="false"/>
-
 <table name="weight" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2794.54" y="776.769"/>
+	<position x="3813" y="1329.08"/>
 	<column name="weight_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -838,7 +808,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="radiocollar" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2573" y="176.769"/>
+	<position x="2409.92" y="272.154"/>
 	<column name="radiocollar_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -1261,7 +1231,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_association" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1734.54" y="456.769"/>
+	<position x="3829.92" y="1147.54"/>
 	<column name="pup_association_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -3057,6 +3027,56 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.pregnancy_nearest"
 	 src-required="false" dst-required="false"/>
+
+<table name="pack_composition" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="1507.69" y="1358.46"/>
+	<column name="pack_composition_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="pups">
+		<type name="text" length="0"/>
+	</column>
+	<column name="pups_count">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="pregnant_individuals">
+		<type name="text" length="0"/>
+	</column>
+	<column name="pregnant_count">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<column name="observer">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="pack_composition_pk" type="pk-constr" table="mongoose.pack_composition">
+		<columns names="pack_composition_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_has_many_pack_composition" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack"
+	 dst-table="mongoose.pack_composition"
+	 src-required="true" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">

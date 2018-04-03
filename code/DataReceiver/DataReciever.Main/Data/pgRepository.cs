@@ -1288,5 +1288,17 @@ namespace DataReciever.Main.Data
 
             return pupFocalId;
         }
+
+        public void HandleGroupComposition(GroupComposition message)
+        {
+            //handle these types, how to merge with existing data?
+   //       message.MateGuardsList
+     //         message.PupAssociationsList
+       //           message.WeightsList
+
+           // deal with thses?
+          //  message.PregnantNames
+           //     message.PupNames
+        }
     }
 }

@@ -54,6 +54,7 @@ namespace DataReciever.Main
             reciever.Recieve<PupFocal>();
 
             reciever.Recieve<PregnancyFocal>();
+            reciever.Recieve<GroupComposition>();
 
             Console.WriteLine("Waiting for values. Return to Exit.");
             Console.ReadLine();

@@ -47,7 +47,7 @@ namespace DataReciever.Main.Handlers
             handlers.Add(typeof(OestrusEvent), new OestrusEventHandler());
             handlers.Add(typeof(PupFocal), new PupFocalHandler());
             handlers.Add(typeof(PregnancyFocal), new PregnancyFocalHandler());
-
+            handlers.Add(typeof(GroupComposition), new GroupCompositionHandler());
             
 
         }

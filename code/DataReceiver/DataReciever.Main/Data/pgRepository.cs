@@ -1143,7 +1143,142 @@ namespace DataReciever.Main.Data
 
         public void HandlePregnancyFocal(PregnancyFocal message)
         {
-            throw new NotImplementedException();
+            logger.Info(
+                $@"Pregnancy Focal Pack '{message.packName}' Individual '{message.focalIndividualName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.packName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Source Pack Name '{message.packName}' not found.");
+                    }
+
+                    var individualId = TryGetIndividualId(message.focalIndividualName, conn);
+                    if (!individualId.HasValue)
+                    {
+                        throw new Exception($"Individual Name '{message.focalIndividualName}' not found.");
+                    }
+
+                    //insert a event
+                    var pregnancyFocalId = InsertPregnancyFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                        message.width, message.time, message.latitude, message.longitude, conn);
+
+                    InsertPregnancyAffilliation(message.PregnancyAffiliationList, pregnancyFocalId, conn);
+                    InsertPregnancyAggression(message.PregnancyAggressionList, pregnancyFocalId, conn);
+                    InsertPregnancyNearest(message.PregnancyNearestList, pregnancyFocalId, conn);
+
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void InsertPregnancyNearest(List<PregnancyNearest> pregnancyNearestList, int pregnancyFocalId, IDbConnection conn)
+        {
+            foreach (var pregnancyNearest in pregnancyNearestList)
+            {
+                // var loc = GetLocationString(pregnancyNearest.latitude, pregnancyNearest.longitude);
+
+                var nearestIndividualId = TryGetIndividualId(pregnancyNearest.nearestIndividualName, conn);
+                if (!nearestIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pregnancyNearest.nearestIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pregnancy_nearest(
+	                     pregnancy_focal_id, nearest_individual_id, list_of_closest_individuals, scan_time)
+	                    VALUES (  @pregnancy_focal_id, @nearest_individual_id, @list_of_closest_individuals, @scan_time);",
+                    new
+                    {
+                        pregnancy_focal_id = pregnancyFocalId,
+
+                        nearest_individual_id = nearestIndividualId,
+                        list_of_closest_individuals = string.Join(",", pregnancyNearest.CloseListNames),
+                        scan_time = pregnancyNearest.scanTime
+                    });
+            }
+        }
+
+        private void InsertPregnancyAggression(List<PregnancyAggression> pregnancyAggressionList, int pregnancyFocalId,
+            IDbConnection conn)
+        {
+            foreach (var pregnancyAggression in pregnancyAggressionList)
+            {
+                var loc = GetLocationString(pregnancyAggression.latitude, pregnancyAggression.longitude);
+
+                var withIndividualId = TryGetIndividualId(pregnancyAggression.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pregnancyAggression.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pregnancy_aggression(
+                    pregnancy_focal_id, with_individual_id, initiate, level, over, win, time, location)
+                    VALUES (@pregnancy_focal_id, @with_individual_id, @initiate, @level, @over, @win, @time, {loc});",
+                    new
+                    {
+                        pregnancy_focal_id = pregnancyFocalId,
+                        with_individual_id = withIndividualId,
+                        initiate = pregnancyAggression.initiate,
+                        level = pregnancyAggression.level,
+                        over = pregnancyAggression.over,
+                        win = pregnancyAggression.win,
+                        time = pregnancyAggression.time
+                    });
+            }
+        }
+
+
+        private void InsertPregnancyAffilliation(List<PregnancyAffiliation> pregnancyAffiliationList, int pregnancyFocalId, IDbConnection conn)
+        {
+            foreach (var pregnancyAffiliation in pregnancyAffiliationList)
+            {
+                var loc = GetLocationString(pregnancyAffiliation.latitude, pregnancyAffiliation.longitude);
+
+                var withIndividualId = TryGetIndividualId(pregnancyAffiliation.withIndividualName, conn);
+                if (!withIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pregnancyAffiliation.withIndividualName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pregnancy_affiliation(
+	                         pregnancy_focal_id, with_individual_id, initiate, over, time, location)
+	                        VALUES (@pregnancy_focal_id, @with_individual_id, @initiate, @over, @time, {loc});",
+                    new
+                    {
+                        pregnancy_focal_id = pregnancyFocalId,
+                        with_individual_id = withIndividualId,
+                        initiate = pregnancyAffiliation.initiate,
+                        over = pregnancyAffiliation.over,
+                        time = pregnancyAffiliation.time
+
+                    });
+            }
+        }
+
+        private int InsertPregnancyFocal(int packId, int individualId, int? depth, int? visibleIndividuals,
+            int? width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        {
+            var loc = GetLocationString(latitude, longitude);
+            var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
+
+            var pupFocalId = conn.ExecuteScalar<int>(
+                $@"INSERT INTO mongoose.pregnancy_focal(
+	             pack_history_id, depth, individuals, width, time, location)
+	            VALUES (@pack_history_id, @depth, @individuals, @width, @time, {loc}) RETURNING pregnancy_focal_id;",
+                new
+                {
+                    pack_history_id = packHistoryId,
+                    depth = depth,
+                    individuals = visibleIndividuals,
+                    width,
+                    time
+                });
+
+            return pupFocalId;
         }
     }
 }

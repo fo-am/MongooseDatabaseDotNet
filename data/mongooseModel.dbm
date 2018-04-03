@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="1725,180" last-zoom="0.65"
+<dbmodel pgmodeler-ver="0.9.0" last-position="1816,180" last-zoom="0.65"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -2621,7 +2621,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_care" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3126.15" y="730.692"/>
+	<position x="3832.31" y="607.615"/>
 	<column name="pup_care_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2670,7 +2670,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_aggression" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3221.54" y="884.538"/>
+	<position x="3809.23" y="444.538"/>
 	<column name="pup_aggression_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2728,7 +2728,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_feed" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3430.77" y="699.923"/>
+	<position x="3546.15" y="663"/>
 	<column name="pup_feed_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2815,7 +2815,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="pup_nearest" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="3712.31" y="903.077"/>
+	<position x="3780" y="803.077"/>
 	<column name="pup_nearest_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -2856,6 +2856,206 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.pup_nearest"
+	 src-required="false" dst-required="false"/>
+
+<table name="pregnancy_focal" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3212.31" y="752.308"/>
+	<column name="pregnancy_focal_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="depth">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="width">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="individuals">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pregnancy_focal_pk" type="pk-constr" table="mongoose.pregnancy_focal">
+		<columns names="pregnancy_focal_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pack_history_has_many_pregnancy_focal" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack_history"
+	 dst-table="mongoose.pregnancy_focal"
+	 src-required="false" dst-required="false"/>
+
+<table name="pregnancy_affiliation" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3746.15" y="976.923"/>
+	<column name="pregnancy_affiliation_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="initiate">
+		<type name="text" length="0"/>
+	</column>
+	<column name="over">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pregnancy_affiliation_pk" type="pk-constr" table="mongoose.pregnancy_affiliation">
+		<columns names="pregnancy_affiliation_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pregnancy_focal_id" index="1"/>
+		<object name="with_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="pregnancy_focal_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pregnancy_focal_has_many_pregnancy_affiliation" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pregnancy_focal"
+	 dst-table="mongoose.pregnancy_affiliation"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_pregnancy_affiliation" type="rel1n"
+	 src-col-pattern="with_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pregnancy_affiliation"
+	 src-required="false" dst-required="false"/>
+
+<table name="pregnancy_aggression" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3520" y="869.231"/>
+	<column name="pregnancy_aggression_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="initiate">
+		<type name="text" length="0"/>
+	</column>
+	<column name="level">
+		<type name="text" length="0"/>
+	</column>
+	<column name="over">
+		<type name="text" length="0"/>
+	</column>
+	<column name="win">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<constraint name="pregnancy_aggression_pk" type="pk-constr" table="mongoose.pregnancy_aggression">
+		<columns names="pregnancy_aggression_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pregnancy_focal_id" index="1"/>
+		<object name="with_individual_id" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="pregnancy_focal_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pregnancy_focal_has_many_pregnancy_aggression" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pregnancy_focal"
+	 dst-table="mongoose.pregnancy_aggression"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="individual_has_many_pregnancy_aggression" type="rel1n"
+	 src-col-pattern="with_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pregnancy_aggression"
+	 src-required="false" dst-required="false"/>
+
+<table name="pregnancy_nearest" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="3226.15" y="1012.31"/>
+	<column name="pregnancy_nearest_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="list_of_closest_individuals">
+		<type name="text" length="0"/>
+	</column>
+	<column name="scan_time">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="pregnancy_nearest_pk" type="pk-constr" table="mongoose.pregnancy_nearest">
+		<columns names="pregnancy_nearest_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="nearest_individual_id" index="2"/>
+		<object name="pregnancy_focal_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="individual_fk" index="2"/>
+		<object name="pregnancy_focal_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="pregnancy_focal_has_many_pregnancy_nearest" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pregnancy_focal"
+	 dst-table="mongoose.pregnancy_nearest"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="individual_has_many_pregnancy_nearest" type="rel1n"
+	 src-col-pattern="nearest_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.individual"
+	 dst-table="mongoose.pregnancy_nearest"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

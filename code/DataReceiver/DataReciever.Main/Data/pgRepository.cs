@@ -598,7 +598,8 @@ namespace DataReciever.Main.Data
                     var outcomeId = GetOutcomeId(message.outcome, conn);
 
                     //insert a packo evento
-                    RecordInterGroupInteraction(focalPackId, secondPackId, leaderId,outcomeId, message.time,message.latitude, message.longitude, conn);
+                    RecordInterGroupInteraction(focalPackId, secondPackId, leaderId, outcomeId, message.time, message.latitude,
+                        message.longitude, conn);
 
                     tr.Commit();
                 }
@@ -608,7 +609,7 @@ namespace DataReciever.Main.Data
         private int GetOutcomeId(string outcome, IDbConnection conn)
         {
             var outcomeId = conn.ExecuteScalar<int?>(
-                  @"Select interaction_outcome_id 
+                @"Select interaction_outcome_id 
                     from mongoose.interaction_outcome 
                     where outcome = @outcome;",
                 new
@@ -656,7 +657,8 @@ namespace DataReciever.Main.Data
 
                     var causeId = GetCauseId(message.cause, conn);
 
-                    RecordGroupAlarm(packId, causeId, callerId, message.time,message.othersJoin, message.Latitude, message.Longitude, conn);
+                    RecordGroupAlarm(packId, causeId, callerId, message.time, message.othersJoin, message.Latitude,
+                        message.Longitude, conn);
 
                     tr.Commit();
                 }
@@ -826,7 +828,7 @@ namespace DataReciever.Main.Data
         }
 
         private void InsertMate(List<OestrusMateEvent> mateEventList, int oestrusEventId, IDbConnection conn)
-        {    
+        {
             // TODO: and make lists of options.
             foreach (var oestrusMateEvent in mateEventList)
             {
@@ -841,7 +843,9 @@ namespace DataReciever.Main.Data
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_mating(
 	                             oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, location)
-	                            VALUES ( @oestrus_event_id, @with_individual_id, @behaviour, @female_response, @male_response, @success, @time, {loc});",
+	                            VALUES ( @oestrus_event_id, @with_individual_id, @behaviour, @female_response, @male_response, @success, @time, {
+                            loc
+                        });",
                     new
                     {
                         oestrus_event_id = oestrusEventId,
@@ -875,7 +879,9 @@ namespace DataReciever.Main.Data
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_male_aggression(
 	                oestrus_event_id, initiator_individual_id, reciever_individual_id, level, winner, owner, time, location)
-	                VALUES (@oestrus_event_id, @initiator_individual_id, @reciever_individual_id, @level, @winner, @owner, @time, {loc});",
+	                VALUES (@oestrus_event_id, @initiator_individual_id, @reciever_individual_id, @level, @winner, @owner, @time, {
+                            loc
+                        });",
                     new
                     {
                         oestrus_event_id = oestrusEventId,
@@ -907,11 +913,11 @@ namespace DataReciever.Main.Data
 	VALUES (@oestrus_event_id, @with_individual_id, @initiate, @over, @time, {loc});",
                     new
                     {
-                        oestrus_event_id= oestrusEventId,
-                        with_individual_id= withIndividualId,
-                        initiate= oestrusAffiliationEvent.initiate,
-                        over= oestrusAffiliationEvent.over,
-                        time= oestrusAffiliationEvent.time
+                        oestrus_event_id = oestrusEventId,
+                        with_individual_id = withIndividualId,
+                        initiate = oestrusAffiliationEvent.initiate,
+                        over = oestrusAffiliationEvent.over,
+                        time = oestrusAffiliationEvent.time
 
                     });
             }
@@ -934,9 +940,9 @@ namespace DataReciever.Main.Data
 	                VALUES (@oestrus_event_id, @with_individual_id, @initate, @level, @over, @win, @time, {loc});",
                     new
                     {
-                        oestrus_event_id=oestrusEventId,
-                        with_individual_id= withIndividualId,
-                        initate= oestrusAggressionEvent.initiate,
+                        oestrus_event_id = oestrusEventId,
+                        with_individual_id = withIndividualId,
+                        initate = oestrusAggressionEvent.initiate,
                         level = oestrusAggressionEvent.level,
                         over = oestrusAggressionEvent.over,
                         win = oestrusAggressionEvent.win,
@@ -946,21 +952,22 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private int InsertOestrus(int packId, int individualId, int? depth, int? numberOfIndividuals, int? width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        private int InsertOestrus(int packId, int individualId, int? depth, int? numberOfIndividuals, int? width, DateTime time,
+            double latitude, double longitude, IDbConnection conn)
         {
 
             var loc = GetLocationString(latitude, longitude);
             var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
 
             var oestrusEventId = conn.ExecuteScalar<int>(
-               $@"INSERT INTO mongoose.oestrus_event(
+                $@"INSERT INTO mongoose.oestrus_event(
 	             pack_history_id, depth_of_pack, number_of_individuals, width, time, location)
 	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_event_id;",
                 new
                 {
                     pack_history_id = packHistoryId,
-                    depth_of_pack= depth,
-                    number_of_individuals= numberOfIndividuals,
+                    depth_of_pack = depth,
+                    number_of_individuals = numberOfIndividuals,
                     width,
                     time
                 });
@@ -971,7 +978,7 @@ namespace DataReciever.Main.Data
 
         public void HandlePupFocal(PupFocal message)
         {
-         logger.Info(
+            logger.Info(
                 $@"Pup Focal Pack '{message.packName}' Individual '{message.focalIndividualName}'.");
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
@@ -1009,7 +1016,7 @@ namespace DataReciever.Main.Data
         {
             foreach (var pupNearest in pupNearestList)
             {
-               // var loc = GetLocationString(pupNearest.latitude, pupNearest.longitude);
+                // var loc = GetLocationString(pupNearest.latitude, pupNearest.longitude);
 
                 var nearestIndividualId = TryGetIndividualId(pupNearest.nearestIndividualName, conn);
                 if (!nearestIndividualId.HasValue)
@@ -1128,7 +1135,8 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private int InsertPupFocal(int packId, int individualId, int? depth, int? visibleIndividuals, int? width, DateTime time, double latitude, double longitude, IDbConnection conn)
+        private int InsertPupFocal(int packId, int individualId, int? depth, int? visibleIndividuals, int? width, DateTime time,
+            double latitude, double longitude, IDbConnection conn)
         {
             var loc = GetLocationString(latitude, longitude);
             var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
@@ -1171,7 +1179,8 @@ namespace DataReciever.Main.Data
                     }
 
                     //insert a event
-                    var pregnancyFocalId = InsertPregnancyFocal(packId.Value, individualId.Value, message.depth, message.visibleIndividuals,
+                    var pregnancyFocalId = InsertPregnancyFocal(packId.Value, individualId.Value, message.depth,
+                        message.visibleIndividuals,
                         message.width, message.time, message.latitude, message.longitude, conn);
 
                     InsertPregnancyAffilliation(message.PregnancyAffiliationList, pregnancyFocalId, conn);
@@ -1240,7 +1249,8 @@ namespace DataReciever.Main.Data
         }
 
 
-        private void InsertPregnancyAffilliation(List<PregnancyAffiliation> pregnancyAffiliationList, int pregnancyFocalId, IDbConnection conn)
+        private void InsertPregnancyAffilliation(List<PregnancyAffiliation> pregnancyAffiliationList, int pregnancyFocalId,
+            IDbConnection conn)
         {
             foreach (var pregnancyAffiliation in pregnancyAffiliationList)
             {
@@ -1292,13 +1302,191 @@ namespace DataReciever.Main.Data
         public void HandleGroupComposition(GroupComposition message)
         {
             //handle these types, how to merge with existing data?
-   //       message.MateGuardsList
-     //         message.PupAssociationsList
-       //           message.WeightsList
+            //       message.MateGuardsList
+            //         message.PupAssociationsList
+            //           message.WeightsList
 
-           // deal with thses?
-          //  message.PregnantNames
-           //     message.PupNames
+            // deal with thses?
+            //  message.PregnantNames <- put em in a table
+            //     message.PupNames   <- put em in a list!
+
+            logger.Info($@"Group composition pack:'{message.packName}'.");
+            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            {
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
+                {
+                    var packId = TryGetPackId(message.packName, conn);
+                    if (!packId.HasValue)
+                    {
+                        throw new Exception($"Pack Name '{message.packName}' not found.");
+                    }
+
+                    // Yeh we call it pack comp now, becase there is historic data in the group composition
+                    // table and I did not know what to do so created a pack_composition table for this
+                    // new data.
+                    var packCompositionId = InsertGroupComposition(packId.Value, message.observer, message.PupNames, message.time,
+                        message.Latitude, message.Longitude, conn);
+
+                    InsertMateGuards(message.MateGuardsList, packCompositionId, conn);
+                    InsertPregnancies(message.PregnantNames, packCompositionId, conn);
+                    InsertWeights(message.WeightsList, packId.Value, packCompositionId, conn);
+                    InsertPupAssociations(message.PupAssociationsList, packId.Value, packCompositionId, conn);
+
+
+                    tr.Commit();
+                }
+            }
+        }
+
+        private void InsertPupAssociations(List<PupAssociation> pupAssociationsList, int packId, int packCompositionId,
+            IDbConnection conn)
+        {
+            //todo: is accurate confidence?
+            foreach (var pupAssociation in pupAssociationsList)
+            {
+                var loc = GetLocationString(pupAssociation.latitude, pupAssociation.longitude);
+
+                var pupIndividualId = TryGetIndividualId(pupAssociation.pupName, conn);
+                if (!pupIndividualId.HasValue)
+                {
+                    throw new Exception($"Pup Name '{pupAssociation.pupName}' not found.");
+                }
+
+                var pupPackHistoryId = InsertPackHistory(packId, pupIndividualId.Value, pupAssociation.time, conn);
+
+                var escortIndividualId = TryGetIndividualId(pupAssociation.escortName, conn);
+                if (!escortIndividualId.HasValue)
+                {
+                    throw new Exception($"Escort Name '{pupAssociation.escortName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pup_association(
+	  pack_composition_id, pup_pack_history_id, escort_id, date, strength, confidence, location)
+	VALUES (@pack_composition_id, @pup_pack_history_id, @escort_id, @date, @strength, @confidence, {loc});",
+                    new
+                    {
+                        pack_composition_id = packCompositionId,
+                        pup_pack_history_id = pupPackHistoryId,
+                        escort_id = escortIndividualId,
+                        date = pupAssociation.time,
+                        strength = pupAssociation.strength,
+                        confidence = pupAssociation.accurate
+                    });
+
+
+            }
+        }
+
+        private void InsertWeights(List<GroupWeightMeasure> weightsList, int packId, int packCompositionId, IDbConnection conn)
+        {
+            // todo: what about present but not weieghed?
+            foreach (var weight in weightsList)
+            {
+                var loc = GetLocationString(weight.latitude, weight.longitude);
+
+                var individualId = TryGetIndividualId(weight.individualName, conn);
+                if (!individualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{weight.individualName}' not found.");
+                }
+
+                var packHistoryId = InsertPackHistory(packId, individualId.Value, weight.time, conn);
+
+                conn.Execute($@"INSERT INTO mongoose.weight(
+	  pack_history_id, pack_composition_id, weight,  accuracy,  collar_weight,time, location)
+	VALUES ( @pack_history_id, @pack_composition_id, @weight,  @accuracy,  @collar_weight, @time, {loc});",
+                    new
+                    {
+                        pack_history_id = packHistoryId,
+                        pack_composition_id = packCompositionId,
+                        weight = weight.weight,
+                        accuracy = weight.accurate,
+                        collar_weight = weight.collarWeight,
+                        time = weight.time
+                    });
+            }
+        }
+
+        private void InsertPregnancies(List<string> pregnantNames, int packCompositionId, IDbConnection conn)
+        {
+            foreach (var pregnantName in pregnantNames)
+            {
+                var pregnantIndividualId = TryGetIndividualId(pregnantName, conn);
+                if (!pregnantIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{pregnantName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.pregnancy(
+	                             pack_composition_id, pregnant_individual_id)
+	                            VALUES (@pack_composition_id, @pregnant_individual_id);",
+                    new
+                    {
+                        pack_composition_id = packCompositionId,
+                        pregnant_individual_id = pregnantIndividualId
+
+                    });
+            }
+        }
+
+        private void InsertMateGuards(List<GroupCompositionMateGuard> messageMateGuardsList, int packCompositionId,
+            IDbConnection conn)
+        {
+            foreach (var groupCompositionMateGuard in messageMateGuardsList)
+            {
+                var loc = GetLocationString(groupCompositionMateGuard.latitude, groupCompositionMateGuard.longitude);
+
+                var femaleIndividualId = TryGetIndividualId(groupCompositionMateGuard.femaleName, conn);
+                if (!femaleIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{groupCompositionMateGuard.femaleName}' not found.");
+                }
+
+                var guardIndividualId = TryGetIndividualId(groupCompositionMateGuard.guardName, conn);
+                if (!guardIndividualId.HasValue)
+                {
+                    throw new Exception($"individual Name '{groupCompositionMateGuard.guardName}' not found.");
+                }
+
+                conn.Execute($@"INSERT INTO mongoose.mate_guard(
+	                        pack_composition_id, female_individual_id, guard_individual_id, strength, pester, time, location)
+	                    VALUES (@pack_composition_id, @female_individual_id, @guard_individual_id, @strength, @pester, @time, {
+                            loc
+                        });",
+                    new
+                    {
+                        pack_composition_id = packCompositionId,
+                        female_individual_id = femaleIndividualId,
+                        guard_individual_id = guardIndividualId,
+                        strength = groupCompositionMateGuard.strength,
+                        pester = groupCompositionMateGuard.pester,
+                        time = groupCompositionMateGuard.time
+
+                    });
+            }
+        }
+
+        private int InsertGroupComposition(int packId, string observer, List<string> PupNames, DateTime time, double latitude,
+            double longitude, IDbConnection conn)
+        {
+            var loc = GetLocationString(latitude, longitude);
+
+            var packCompositionId = conn.ExecuteScalar<int>(
+                $@"INSERT INTO mongoose.pack_composition(
+                    pack_id, pups, pups_count, observer, time, location)
+                   VALUES ( @pack_id, @pups, @pups_count, @observer, @time, {loc})
+                    RETURNING pack_composition_id;",
+                new
+                {
+                    pack_id = packId,
+                    pups = string.Join(", ", PupNames),
+                    pups_count = PupNames.Count,
+                    time,
+                    observer
+                });
+
+            return packCompositionId;
         }
     }
 }

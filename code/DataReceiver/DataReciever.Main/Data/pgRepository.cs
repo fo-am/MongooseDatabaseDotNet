@@ -189,6 +189,8 @@ namespace DataReciever.Main.Data
                     // if not there try by name
                     // if there and name is differnet update name
                     // if either are there don't carry on with the add.
+                    GiveDatabaseUniqueId(message.UniqueId, message.Name);
+
                     var current = GetIndividualNameByUniqueId(message.UniqueId,conn);
                     if (current != null)
                     {
@@ -246,7 +248,6 @@ namespace DataReciever.Main.Data
 
                     if (message.DateOfBirth.HasValue)
                     {
-                        //todo what if born or fseen already!?
                         CreateIndividualEvent(packhistory, message.DateOfBirth, "born", conn);
                         if (litterId.HasValue)
                         {
@@ -264,6 +265,26 @@ namespace DataReciever.Main.Data
 
                     tr.Commit();
                 }
+            }
+        }
+
+        private void GiveDatabaseUniqueId(string messageUniqueId, string messageName, IDbConnection conn)
+        {
+            // if there is a memeber with this unique then good times
+            // if thee is a member with this name but no unique then good times
+            // if there are two different entries then wtf??
+
+            var individualByUniqueId = GetIndividualNameByUniqueId(messageUniqueId, conn);
+            var individualId = TryGetIndividualId(messageName, conn);
+            if (individualByUniqueId == null && individualId.HasValue)
+            {
+                conn.ExecuteScalar(
+                    "Update mongoose.individual set unique_id = @uniqueId where individual_id = @id",
+                    new
+                    {
+                        uniqueId = messageUniqueId,
+                        id = individualId
+                    });
             }
         }
 

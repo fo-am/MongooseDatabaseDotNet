@@ -88,9 +88,10 @@ namespace DataPipe.Main
 
                         var properties = channel.CreateBasicProperties();
                         properties.Persistent = true;
+                        var messageId = Guid.NewGuid().ToString();
                         properties.Headers = new Dictionary<string, object>
                         {
-                            { "Id", Guid.NewGuid().ToString() }
+                            { "Id", messageId }
 
                         };
 
@@ -100,6 +101,8 @@ namespace DataPipe.Main
                             body);
                         Data.MarkAsSent(message);
                         channel.TxCommit();
+
+                        logger.Info($"Sent message with id '{messageId}' to 'mongoose_{typeof(T).Name}'.");
                     }
                 }
             }

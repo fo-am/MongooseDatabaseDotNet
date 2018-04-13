@@ -103,9 +103,26 @@ namespace pgDataImporter.Core
             foreach (var lifeHistory in lifeHistories)
             {
                 var duplicateCount = 0;
+
+               
+
                 if (lifeHistory.Litter == null && lifeHistory.Pack == null && lifeHistory.Indiv == null)
                 {
                     Logger.Warn("No valid litter, pack or individual for life history event.");
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(lifeHistory.Code))
+                {
+                    Logger.Warn("No Code given. nothing we can do!");
+                    continue;
+                }
+
+                if (lifeHistory.Code.Equals("igi", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Logger.Info("event is IGI");
+                    // we have an intergroup interaction! CODE RED!
+                    pg.AddIGI(lifeHistory);
                     continue;
                 }
 
@@ -132,6 +149,7 @@ namespace pgDataImporter.Core
                     var litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
                     // link litter event to litter.
                     pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
+                    continue;
                 }
 
                 if (LifeHistoryIsPackEvent(lifeHistory))
@@ -148,13 +166,6 @@ namespace pgDataImporter.Core
                     var packEventCodeId = pg.GetPackEventCodeId(lifeHistory.Code);
 
                     // link packs to codes.
-                    if (lifeHistory.Code == "IGI")
-                    {
-                        Logger.Info("event is IGI");
-                        // we have an intergroup interaction! CODE RED!
-                        pg.AddIGI(lifeHistory);
-                        continue;
-                    }
 
                     pg.LinkPackEvents(packId,
                         packEventCodeId,
@@ -163,14 +174,26 @@ namespace pgDataImporter.Core
                         lifeHistory.Comment, lifeHistory.Latitude, lifeHistory.Longitude);
 
                     // record pack event
+                    continue;
                 }
 
                 if (LifeHistoryIsIndividualEvent(lifeHistory))
                 {
                     Logger.Info("Individual Event");
                     duplicateCount++;
-
-                    pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
+                    if (lifeHistory.Code.Equals("born", StringComparison.OrdinalIgnoreCase))
+                    {
+                        pg.InsertIndividual(new Individual
+                        {
+                            Name = lifeHistory.Indiv,
+                            Sex = lifeHistory.Sex,
+                            DateOfBirth = lifeHistory.Date
+                        });
+                    }
+                    else
+                    {
+                        pg.InsertIndividual(new Individual {Name = lifeHistory.Indiv, Sex = lifeHistory.Sex});
+                    }
 
                     pg.InsertSinglePack(lifeHistory.Pack);
                     //add individual event code
@@ -209,6 +232,7 @@ namespace pgDataImporter.Core
                 {
                     Logger.Error($"LifeEvent was of multiple types:{lifeHistory}");
                     Console.WriteLine("Too many types");
+                    throw new Exception("too many event types for some reason");
                 }
             }
 
@@ -224,8 +248,11 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsPackEvent(NewLifeHistory lifeHistory)
         {
+            // if pack is there
+            // and indiv is null or matches pack
+            // and there is ac ode
             return !string.IsNullOrEmpty(lifeHistory.Pack) &&
-                   string.IsNullOrEmpty(lifeHistory.Indiv) &&
+                   (string.IsNullOrEmpty(lifeHistory.Indiv) || lifeHistory.Indiv=="ALL" ||lifeHistory.Pack == lifeHistory.Indiv) &&
                    !string.IsNullOrEmpty(lifeHistory.Code);
         }
 

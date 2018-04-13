@@ -1,4 +1,6 @@
-﻿namespace psDataImporter.Contracts.Postgres
+﻿using System;
+
+namespace psDataImporter.Contracts.Postgres
 {
     public class Individual
     {
@@ -18,5 +20,6 @@
         public string Name { get; set; }
         public string Sex { get; set; }
         public int? LitterId { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }

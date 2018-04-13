@@ -69,11 +69,53 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    // check if pack exists using unique id
+                    // if it does then check if the name is diffent
+                    // if so update the name and make an entry in history
+
+                    // if it does match then we are done.
+                    var current = GetPackNameByUniqueId(message.UniqueId, conn);
+                    if (current != null && message.Name != null && message.Name != current.Name)
+                    {
+                        logger.Info($"Updating pack '{current.Name}' to {message.Name}!");
+                        UpdatePackName(current.PackId, message.Name, current.Name, conn);
+                        tr.Commit();
+                        return;
+                    }
+
+                    if (TryGetPackId(message.Name, conn).HasValue)
+                    {
+                        //todo: what if we are updateing something on this indiv?
+                        logger.Info($"Asked to add pack '{message.Name}' but they already exist!");
+                        return;
+                    }
+
                     var packId = InsertPack(message.Name, message.UniqueId, conn, message.CreatedDate);
                     CreatePackEvent(packId, message.CreatedDate, "ngrp", conn);
                     tr.Commit();
                 }
             }
+        }
+
+        private void UpdatePackName(object packId, string newName, string oldName, IDbConnection conn)
+        {
+            // insert oldName into the database history table
+            conn.ExecuteScalar(
+                "Insert into mongoose.pack_name_history (pack_id, name, date_changed) values(@packId, @name, @date)",
+                new { packId = packId, name = oldName, date = DateTime.UtcNow });
+            // update the pack with new name.
+            conn.ExecuteScalar("Update mongoose.pack set name = @newName where pack_id = @id", new
+            {
+                newName = newName,
+                id = packId
+            });
+        }
+
+        private dynamic GetPackNameByUniqueId(string uniqueId, IDbConnection conn)
+        {
+            return conn.Query<dynamic>(
+                @"select name as ""Name"", pack_id as ""PackId"" from mongoose.pack where unique_id = @uniqueId",
+                new { uniqueId }).FirstOrDefault();
         }
 
         public void InsertNewWeight(WeightMeasure message)
@@ -143,10 +185,58 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    // get name by unique id
+                    // if not there try by name
+                    // if there and name is differnet update name
+                    // if either are there don't carry on with the add.
+                    var current = GetIndividualNameByUniqueId(message.UniqueId,conn);
+                    if (current != null)
+                    {
+                        if ( message.Name != null && message.Name != current.Name)
+                        {
+                            logger.Info($"Updating Individual name '{current.Name}' to '{message.Name}'!");
+                            UpdateIndividualName(current.IndividualId, message.Name, current.Name, conn);
+                           
+                        }
+
+                        if (message.CollarWeight.HasValue && !current.CollarWeight.Equals(message.CollarWeight))
+                        {
+                            // update collerweight
+                            logger.Info($"Updating Individual collar weight '{current.CollarWeight}' to {message.CollarWeight}!");
+                            UpdateCollarWeight(current.IndividualId, message.CollarWeight, current.CollarWeight, conn);
+
+                        }
+
+                        if (!string.IsNullOrEmpty(message.Gender) && current.Sex != message.Gender)
+                        {
+                            logger.Info($"Updating individual gender '{current.Sex}' to {message.Gender}!");
+                            UpdateGender(current.IndividualId, message.Gender, current.Sex, conn);
+                        }
+
+                        if (!string.IsNullOrEmpty(message.ChipCode) && current.TransponderId!= message.ChipCode)
+                        {
+                            // update transponder
+                            logger.Info($"Updating individual transponder code '{current.TransponderId}' to {message.ChipCode}!");
+                            UpdateTransponder(current.IndividualId, message.ChipCode, current.TransponderId, conn);
+                        }
+
+                        if (message.DateOfBirth != null && current.DateOfBirth == message.DateOfBirth)
+                        {
+                            //date of birth
+                            logger.Info($"Updating individual date of birth '{current.DateOfBirth}' to {message.DateOfBirth}!");
+                            UpdateDateOfBirth(current.IndividualId, message.DateOfBirth, current.DateOfBirth, conn);
+                        }
+
+                        tr.Commit();
+                        return;
+                    }
+                   
+
                     if (TryGetIndividualId(message.Name, conn).HasValue)
                     {
                         //todo: what if we are updateing something on this indiv?
                         logger.Info($"Asked to add Individual '{message.Name}' but they already exist!");
+                        return;
                     }
 
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
@@ -175,6 +265,88 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
+        }
+
+        private void UpdateDateOfBirth(int individualId, DateTime? newDateOfBirth, DateTime? currentDateOfBirth,
+            IDbConnection conn)
+        {
+            //Update date of birth in individual table
+            conn.ExecuteScalar(
+                "Update mongoose.individual set date_of_birth = @newDateOfBirth where individual_id = @id",
+                new
+                {
+                    newDateOfBirth = newDateOfBirth,
+                    id = individualId
+                });
+
+            // update / add born event for this individual.
+
+
+        }
+
+        private void UpdateTransponder(int individualId, string newChipCode, string currentTransponderId, IDbConnection conn)
+        {
+            conn.ExecuteScalar(
+                "Update mongoose.individual set transponder_id = @newChipCode where individual_id = @id",
+                new
+                {
+                    newChipCode = newChipCode,
+                    id = individualId
+                });
+        }
+
+        private void UpdateGender(int individualId, string newGender, string currentSex, IDbConnection conn)
+        {
+            conn.ExecuteScalar(
+                "Update mongoose.individual set sex = @newGender where individual_id = @id",
+                new
+                {
+                    newGender = newGender,
+                    id = individualId
+                });
+        }
+
+        private void UpdateCollarWeight(int individualId, double? newCollarWeight, double? currentCollarWeight, IDbConnection conn)
+        {
+            conn.ExecuteScalar(
+                "Update mongoose.individual set collar_weight = @newCollarWeight where individual_id = @id",
+                new
+                {
+                    newCollarWeight = newCollarWeight,
+                    id = individualId
+                });
+        }
+
+        private void UpdateIndividualName(int individualId, string newName,string oldName, IDbConnection conn)
+        {
+            // insert oldName into the database history table
+            conn.ExecuteScalar(
+                "Insert into mongoose.individual_name_history (individual_id, name, date_changed) values(@individualId, @name, @date)",
+                new {individualId = individualId, name = oldName, date = DateTime.UtcNow});
+            // update the individual with new name.
+            conn.ExecuteScalar("Update mongoose.individual set name = @newName where individual_id = @id", new
+            {
+                newName = newName,
+                id = individualId
+            });
+        }
+
+        private DatabaseIndividual GetIndividualNameByUniqueId(string uniqueId, IDbConnection conn)
+        {
+           
+          return  conn.Query<DatabaseIndividual>(
+                @"SELECT 
+                    individual_id as 'IndividualId', 
+                    litter_id as 'LitterId',
+                    name as 'Name',
+                    sex as 'Sex',
+                    transponder_id as 'TransponderId',
+                    unique_id as 'UniqueId', 
+                    collar_weight as 'CollarWeight',
+                    date_of_birth as 'DateOfBirth',
+                    is_mongoose as 'IsMongoose'
+	            FROM mongoose.individual where unique_id = @uniqueId;",
+                new { uniqueId }).FirstOrDefault();
         }
 
         private bool LitterIsNotBorn(int litterId, IDbConnection conn)
@@ -220,20 +392,23 @@ namespace DataReciever.Main.Data
             // todo: if we have an individual then look at its data and see if we can add some more
 
             return individualId ?? AddIndividual(message.Name, message.Gender, message.ChipCode, message.UniqueId,
-                       litterId, conn);
+                       litterId, message.DateOfBirth, conn);
         }
 
-        private static int AddIndividual(string name, string gender, string chipcode, string uniqueId, int? litterId,
-            IDbConnection conn)
+        private static int AddIndividual(string name, string gender, string chipcode, string uniqueId, int? litterId, DateTime? dateOfBirth, IDbConnection conn)
         {
             return conn.ExecuteScalar<int>(
-                "Insert into mongoose.individual (name, sex, litter_id, transponder_id, unique_id) values (@name, @sex, @litter_id, @transponder_id, @unique_id) RETURNING individual_id",
+                @"Insert into mongoose.individual
+                 (name, sex, litter_id, transponder_id, date_of_birth, unique_id) 
+                 values 
+                 (@name, @sex, @litter_id, @transponder_id, @dateOfBirth, @unique_id) RETURNING individual_id",
                 new
                 {
                     name,
                     sex = gender,
                     litter_id = litterId,
                     transponder_id = chipcode,
+                    dateOfBirth = dateOfBirth,
                     unique_id = uniqueId
                 });
         }
@@ -349,7 +524,7 @@ namespace DataReciever.Main.Data
 
                     if (!individiualId.HasValue)
                     {
-                        individiualId = AddIndividual(message.entity_name, null, null, message.UniqueId, null, conn);
+                        individiualId = AddIndividual(message.entity_name, null, null, message.UniqueId, null, null, conn);
                     }
 
                     int packHistoryId = GetPackHistoryId(individiualId.Value, conn);
@@ -1488,5 +1663,18 @@ namespace DataReciever.Main.Data
 
             return packCompositionId;
         }
+    }
+
+    public class DatabaseIndividual
+    {
+        public string Name { get; set; }
+        public int IndividualId { get; set; }
+        public string LitterId { get; set; }
+        public string Sex { get; set; }
+        public string TransponderId { get; set; }
+        public string UniqueId { get; set; }
+        public double? CollarWeight { get; set; }
+        public bool IsMongoose { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }

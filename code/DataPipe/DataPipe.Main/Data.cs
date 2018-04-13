@@ -153,6 +153,7 @@ namespace DataPipe.Main
                                     where se.entity_type = 'mongoose' and se.sent = 0";
             var newIndividuals = RunSql<IndividualCreated>(newIndividualsSql).ToList();
 
+            // date of birth can be unknown or null. if it can be turned into a date then do so.
             foreach (var individualCreated in newIndividuals)
             {
                 if (DateTime.TryParse(individualCreated.DateOfBirthString, out var dateOfBirth))
@@ -160,7 +161,6 @@ namespace DataPipe.Main
                     individualCreated.DateOfBirth = dateOfBirth;
                 }
             }
-
 
             return newIndividuals;
         }

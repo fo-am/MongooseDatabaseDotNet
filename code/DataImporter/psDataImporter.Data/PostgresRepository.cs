@@ -225,12 +225,16 @@ namespace psDataImporter.Data
                     }
 
                     conn.ExecuteScalar<int>(
-                        "Insert into mongoose.individual (name, sex, litter_id, is_mongoose) values (@name, @sex, @litterId, @is_mongoose) ON CONFLICT DO NOTHING",
+                        @"Insert into mongoose.individual 
+                            (name, sex, litter_id, date_of_birth, is_mongoose)
+                            values 
+                            (@name, @sex, @litterId, @dateOfBirth, @is_mongoose) ON CONFLICT DO NOTHING",
                         new
                         {
                             newIndividual.Name,
                             newIndividual.Sex,
                             litterId = newIndividual.LitterId,
+                            dateOfBirth = newIndividual.DateOfBirth,
                             is_mongoose = isMongoose
                         });
                     Logger.Info($"created indivual : {newIndividual.Name}");
@@ -616,7 +620,10 @@ namespace psDataImporter.Data
 
             Logger.Info($"Inserting an IGI");
 
-            // , / or 
+            // makes sure first pack is in the db
+            InsertSinglePack(lifeHistory.Pack);
+           
+
             var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
 
             foreach (var secondpack in secondpacks)

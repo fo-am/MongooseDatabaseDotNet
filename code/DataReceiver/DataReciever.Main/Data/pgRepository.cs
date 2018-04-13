@@ -69,11 +69,53 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    // check if pack exists using unique id
+                    // if it does then check if the name is diffent
+                    // if so update the name and make an entry in history
+
+                    // if it does match then we are done.
+                    var current = GetPackNameByUniqueId(message.UniqueId, conn);
+                    if (current != null && message.Name != null && message.Name != current.Name)
+                    {
+                        logger.Info($"Updating pack '{current.Name}' to {message.Name}!");
+                        UpdatePackName(current.PackId, message.Name, current.Name, conn);
+                        tr.Commit();
+                        return;
+                    }
+
+                    if (TryGetPackId(message.Name, conn).HasValue)
+                    {
+                        //todo: what if we are updateing something on this indiv?
+                        logger.Info($"Asked to add pack '{message.Name}' but they already exist!");
+                        return;
+                    }
+
                     var packId = InsertPack(message.Name, message.UniqueId, conn, message.CreatedDate);
                     CreatePackEvent(packId, message.CreatedDate, "ngrp", conn);
                     tr.Commit();
                 }
             }
+        }
+
+        private void UpdatePackName(object packId, string newName, string oldName, IDbConnection conn)
+        {
+            // insert oldName into the database history table
+            conn.ExecuteScalar(
+                "Insert into mongoose.pack_name_history (pack_id, name, date_changed) values(@packId, @name, @date)",
+                new { packId = packId, name = oldName, date = DateTime.UtcNow });
+            // update the pack with new name.
+            conn.ExecuteScalar("Update mongoose.pack set name = @newName where pack_id = @id", new
+            {
+                newName = newName,
+                id = packId
+            });
+        }
+
+        private dynamic GetPackNameByUniqueId(string uniqueId, IDbConnection conn)
+        {
+            return conn.Query<dynamic>(
+                @"select name as ""Name"", pack_id as ""PackId"" from mongoose.pack where unique_id = @uniqueId",
+                new { uniqueId }).FirstOrDefault();
         }
 
         public void InsertNewWeight(WeightMeasure message)
@@ -143,10 +185,24 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    // get name by unique id
+                    // if not there try by name
+                    // if there and name is differnet update name
+                    // if either are there don't carry on with the add.
+                    var current = GetIndividualNameByUniqueId(message.UniqueId,conn);
+                    if (current!=null && message.Name != null && message.Name != current.Name)
+                    {
+                        logger.Info($"Updating Individual '{current.Name}' to{message.Name}!");
+                        UpdateIndividualName(current.IndividualId, message.Name, current.Name, conn);
+                        tr.Commit();
+                        return;
+                    }
+
                     if (TryGetIndividualId(message.Name, conn).HasValue)
                     {
                         //todo: what if we are updateing something on this indiv?
                         logger.Info($"Asked to add Individual '{message.Name}' but they already exist!");
+                        return;
                     }
 
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
@@ -175,6 +231,28 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
+        }
+
+        private void UpdateIndividualName(int individualId, string newName,string oldName, IDbConnection conn)
+        {
+            // insert oldName into the database history table
+            conn.ExecuteScalar(
+                "Insert into mongoose.individual_name_history (individual_id, name, date_changed) values(@individualId, @name, @date)",
+                new {individualId = individualId, name = oldName, date = DateTime.UtcNow});
+            // update the individual with new name.
+            conn.ExecuteScalar("Update mongoose.individual set name = @newName where individual_id = @id", new
+            {
+                newName = newName,
+                id = individualId
+            });
+        }
+
+        private DatabaseIndividual GetIndividualNameByUniqueId(string uniqueId, IDbConnection conn)
+        {
+           
+          return  conn.Query<DatabaseIndividual>(
+                @"select name as ""Name"", individual_id as ""IndividualId"" from mongoose.individual where unique_id = @uniqueId",
+                new { uniqueId }).FirstOrDefault();
         }
 
         private bool LitterIsNotBorn(int litterId, IDbConnection conn)
@@ -1488,5 +1566,11 @@ namespace DataReciever.Main.Data
 
             return packCompositionId;
         }
+    }
+
+    public class DatabaseIndividual
+    {
+        public string Name { get; set; }
+        public int IndividualId { get; set; }
     }
 }

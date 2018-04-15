@@ -22,6 +22,12 @@ namespace psDataImporter.Console
 
             postgresData.AddStaticData();
 
+            var lifeHistories = accessdata.GetLifeHistorys();
+            postgresData.ProcessLifeHistories(lifeHistories);
+
+            var weights = accessdata.GetWeights();
+            postgresData.ProcessWeights(weights);
+
             var conditionFemales = accessdata.GetMaternalConditionFemales();
             postgresData.ProcessConditionFemales(conditionFemales);
 
@@ -57,12 +63,6 @@ namespace psDataImporter.Console
 
             var radioCollarData = accessdata.GetRadioCollars();
             postgresData.ProcessRadioCollarData(radioCollarData);
-
-            var lifeHistories = accessdata.GetLifeHistorys();
-            postgresData.ProcessLifeHistories(lifeHistories);
-
-            var weights = accessdata.GetWeights();
-            postgresData.ProcessWeights(weights);
 
             var captures = accessdata.GetCaptures();
             postgresData.ProcessCaptures(captures);

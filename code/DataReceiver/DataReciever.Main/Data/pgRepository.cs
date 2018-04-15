@@ -74,6 +74,9 @@ namespace DataReciever.Main.Data
                     // if so update the name and make an entry in history
 
                     // if it does match then we are done.
+
+                    UpdatePackWithUniqueId(message.UniqueId, message.Name, conn);
+
                     var current = GetPackNameByUniqueId(message.UniqueId, conn);
                     if (current != null && message.Name != null && message.Name != current.Name)
                     {
@@ -94,6 +97,22 @@ namespace DataReciever.Main.Data
                     CreatePackEvent(packId, message.CreatedDate, "ngrp", conn);
                     tr.Commit();
                 }
+            }
+        }
+
+        private void UpdatePackWithUniqueId(string uniqueId, string name, IDbConnection conn)
+        {
+            var pack = GetPackNameByUniqueId(uniqueId,conn);
+            var packId = TryGetPackId(name, conn);
+            if (pack == null && packId.HasValue)
+            {
+                conn.ExecuteScalar(
+                    "Update mongoose.pack set unique_id = @uniqueId where pack_id = @id and unique_id is null;",
+                    new
+                    {
+                        uniqueId = uniqueId,
+                        id = packId
+                    });
             }
         }
 
@@ -189,7 +208,7 @@ namespace DataReciever.Main.Data
                     // if not there try by name
                     // if there and name is differnet update name
                     // if either are there don't carry on with the add.
-                    GiveDatabaseUniqueId(message.UniqueId, message.Name);
+                    UpdateIndividualWithUniqueId(message.UniqueId, message.Name, conn);
 
                     var current = GetIndividualNameByUniqueId(message.UniqueId,conn);
                     if (current != null)
@@ -242,7 +261,17 @@ namespace DataReciever.Main.Data
                     }
 
                     var packId = InsertPack(message.PackCode, message.PackUniqueId, conn);
-                    var litterId = InsertLitter(message.LitterCode, packId, conn);
+                    // need to get the litter from the pack? what if we have not recieved the litter update yet??
+                    int? litterId = null;
+                    if (string.IsNullOrEmpty(message.LitterCode))
+                    {
+                        litterId = GetCurrentLitterForPack(packId, conn);
+                    }
+                    else
+                    {
+                         litterId = InsertLitter(message.LitterCode, packId, conn);
+                    }
+                   
                     var individualId = InsertIndividual(message, litterId, conn);
                     var packhistory = InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
 
@@ -268,7 +297,17 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private void GiveDatabaseUniqueId(string messageUniqueId, string messageName, IDbConnection conn)
+        private int? GetCurrentLitterForPack(int packId, IDbConnection conn)
+        {
+            return conn.ExecuteScalar<int?>(
+                "select litter_id from mongoose.litter where pack_id = @id order by date_formed desc limit 1",
+                new
+                {
+                    id = packId
+                });
+        }
+
+        private void UpdateIndividualWithUniqueId(string messageUniqueId, string messageName, IDbConnection conn)
         {
             // if there is a memeber with this unique then good times
             // if thee is a member with this name but no unique then good times
@@ -279,7 +318,7 @@ namespace DataReciever.Main.Data
             if (individualByUniqueId == null && individualId.HasValue)
             {
                 conn.ExecuteScalar(
-                    "Update mongoose.individual set unique_id = @uniqueId where individual_id = @id",
+                    "Update mongoose.individual set unique_id = @uniqueId where individual_id = @id and unique_id is null;",
                     new
                     {
                         uniqueId = messageUniqueId,
@@ -357,15 +396,15 @@ namespace DataReciever.Main.Data
            
           return  conn.Query<DatabaseIndividual>(
                 @"SELECT 
-                    individual_id as 'IndividualId', 
-                    litter_id as 'LitterId',
-                    name as 'Name',
-                    sex as 'Sex',
-                    transponder_id as 'TransponderId',
-                    unique_id as 'UniqueId', 
-                    collar_weight as 'CollarWeight',
-                    date_of_birth as 'DateOfBirth',
-                    is_mongoose as 'IsMongoose'
+                    individual_id as IndividualId, 
+                    litter_id as LitterId,
+                    name as Name,
+                    sex as Sex,
+                    transponder_id as TransponderId,
+                    unique_id as UniqueId, 
+                    collar_weight as CollarWeight,
+                    date_of_birth as DateOfBirth,
+                    is_mongoose as IsMongoose
 	            FROM mongoose.individual where unique_id = @uniqueId;",
                 new { uniqueId }).FirstOrDefault();
         }
@@ -709,7 +748,7 @@ namespace DataReciever.Main.Data
         {
 
             conn.Execute(@"INSERT INTO mongoose.litter
-                            (pack_id, name, dateformed) 
+                            (pack_id, name, date_formed) 
                             VALUES 
                             (@pack_id, @name, @dateformed);",
                 new

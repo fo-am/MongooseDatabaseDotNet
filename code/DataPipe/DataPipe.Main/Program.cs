@@ -88,11 +88,7 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
-            foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
-            {
-                send.PublishEntity(entity);
-                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
-            }
+          
 
             foreach (var entity in Data.GetUnsynchedLitters().Take(numberToSend))
             {
@@ -100,6 +96,11 @@ namespace DataPipe.Main
                 logger.Info($"{entity} UniqueId: {entity.UniqueId}");
             }
 
+            foreach (var entity in Data.GetUnsyncedIndividuals().Take(numberToSend))
+            {
+                send.PublishEntity(entity);
+                logger.Info($"{entity} UniqueId: {entity.UniqueId}");
+            }
             //foreach (var entity in Data.GetUnsyncedWeights().Take(numberToSend))
             //{
             //    send.PublishEntity(entity);

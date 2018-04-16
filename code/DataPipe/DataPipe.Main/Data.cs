@@ -126,21 +126,21 @@ namespace DataPipe.Main
                                     se.unique_id as 'UniqueId',
                                     se.sent,
                                     se.entity_type,
-                                    svvName.value as 'Name',
-                                    svvChip.value as 'ChipCode'	,
-                                    svvDob.value as 'DateOfBirthString',
-                                    svvLitter.value as 'litter_code',
-                                    svvGender.value as 'Gender',
-                                    svvPack.value as 'PackUniqueId',
+                                    NULLIF(svvName.value,'NULL') as 'Name',
+                                    NULLIF(svvChip.value,'NULL') as 'ChipCode'	,
+                                    NULLIF(svvDob.value,'NULL') as 'DateOfBirthString',
+                                    NULLIF(svvLitter.value,'NULL') as 'litter_code',
+                                    NULLIF(svvGender.value,'NULL') as 'Gender',
+                                    NULLIF(svvPack.value,'NULL') as 'PackUniqueId',
                                     (select svv.value as PackCode
                                     from sync_entity se
                                     join sync_value_varchar svv on se.entity_id = svv.entity_id and svv.attribute_id = 'name'
                                     where se.unique_id = svvPack.value ) as 'PackCode',
                                     svrColler.value as CollerWeight,
-                                    svrLat.value as Latitude,
-                                    svrLon.value as Longitude
+                                    NULLIF(svrLat.value,'NULL') as Latitude,
+                                    NULLIF(svrLon.value,'NULL') as Longitude
                                     from sync_entity se 
-                                    left join sync_value_varchar svvName on svvName.entity_id = se.entity_id and svvName.attribute_id = 'name'
+                                    join sync_value_varchar svvName on svvName.entity_id = se.entity_id and svvName.attribute_id = 'name'
                                     left join sync_value_varchar svvChip on svvchip.entity_id = se.entity_id and svvchip.attribute_id = 'chip-code'
                                     left join sync_value_varchar svvDob on svvDob.entity_id = se.entity_id and svvDob.attribute_id = 'dob'
                                     left join sync_value_varchar svvGender on svvGender.entity_id = se.entity_id and svvGender.attribute_id = 'gender'
@@ -148,9 +148,8 @@ namespace DataPipe.Main
                                     left join sync_value_varchar svvPack on svvPack.entity_id = se.entity_id and svvPack.attribute_id = 'pack-id'
                                     left join sync_value_real svrColler on svrColler.entity_id = se.entity_id and svrColler.attribute_id = 'collar_weight'
                                     left join sync_value_real svrLat on svrLat.entity_id = se.entity_id and svrLat.attribute_id = 'lat'
-                                    left join sync_value_real svrLon on svrLon.entity_id = se.entity_id and svrLon.attribute_id = 'lon'
-                                    
-                                    where se.entity_type = 'mongoose' and se.sent = 0";
+                                    left join sync_value_real svrLon on svrLon.entity_id = se.entity_id and svrLon.attribute_id = 'lon'                                    
+                                    where se.entity_type = 'mongoose' and se.sent = 0 ORDER BY NULLIF(svrLat.value,'NULL') IS NULL, se.entity_id;";
             var newIndividuals = RunSql<IndividualCreated>(newIndividualsSql).ToList();
 
             // date of birth can be unknown or null. if it can be turned into a date then do so.
@@ -177,40 +176,26 @@ namespace DataPipe.Main
 
         public static IEnumerable<PackCreated> GetNewPacks()
         {
-            var newPacks = new List<PackCreated>();
-            var stringsSql = @"
-                        select se.entity_id, se.unique_id as unique_id,se.entity_type, svv.attribute_id as attribute_id ,svv.value
-                        from sync_entity se
-                        join sync_value_varchar svv on se.entity_id = svv.entity_id
-                        where se.entity_type = ""pack"" and se.sent = 0
-                        group by se.unique_id , svv.attribute_id ,svv.value;";
-            var strings = RunSql<DatabaseRow<string>>(stringsSql).ToList();
-
-            foreach (var uniqueId in strings.Select(s => s.unique_id).Distinct())
-            {
-                var pack = new PackCreated
-                {
-                    Name = strings.SingleOrDefault(s => s.unique_id == uniqueId && s.attribute_id == "name")?.value,
-                    UniqueId = uniqueId,
-                    entity_id = strings.SingleOrDefault(s => s.unique_id == uniqueId && s.attribute_id == "name")
-                        .entity_id,
-                    entity_type = strings.SingleOrDefault(s => s.unique_id == uniqueId && s.attribute_id == "name")
-                        ?.entity_type
-                };
-                if (DateTime.TryParse(
-                    strings.SingleOrDefault(s => s.unique_id == uniqueId && s.attribute_id == "time")?.value,
-                    out var dateCreated))
-                {
-                    pack.CreatedDate = dateCreated;
-                }
-
-                if (!string.IsNullOrEmpty(pack.Name) && pack.CreatedDate != null)
-                {
-                    newPacks.Add(pack);
-                }
-            }
-
-            return newPacks;
+            var sql = @"select se.entity_id, 
+                        se.unique_id as 'UniqueId',                                    
+                        se.entity_type,
+                        svvName.value as 'Name',   
+                        NULLIF(svvTime.value,'NULL') as 'CreatedDate',
+						NULLIF(svvUser.value,'NULL') as 'User',
+                        NULLIF(svrLat.value,'NULL') as Latitude,
+                        NULLIF(svrLon.value,'NULL') as Longitude,
+						se.sent
+                        from sync_entity se 
+                        join sync_value_varchar svvName on svvName.entity_id = se.entity_id and svvName.attribute_id = 'name'
+                        left join sync_value_varchar svvTime on svvTime.entity_id = se.entity_id and svvTime.attribute_id = 'time'
+                        left join sync_value_varchar svvUser on svvUser.entity_id = se.entity_id and svvUser.attribute_id = 'user'
+                        left join sync_value_real svrLat on svrLat.entity_id = se.entity_id and svrLat.attribute_id = 'lat'
+                        left join sync_value_real svrLon on svrLon.entity_id = se.entity_id and svrLon.attribute_id = 'lon'
+                        
+                        where se.entity_type = 'pack'  and se.sent = 0
+						order by NULLIF(svvTime.value,'NULL') is null, se.entity_id;";
+            var packs = RunSql<PackCreated>(sql).ToList();
+            return packs;
         }
 
         public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()

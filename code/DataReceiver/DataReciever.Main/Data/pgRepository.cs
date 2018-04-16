@@ -307,21 +307,22 @@ namespace DataReciever.Main.Data
                 });
         }
 
-        private void UpdateIndividualWithUniqueId(string messageUniqueId, string messageName, IDbConnection conn)
+        private void UpdateIndividualWithUniqueId(string uniqueId, string name, IDbConnection conn)
         {
             // if there is a memeber with this unique then good times
             // if thee is a member with this name but no unique then good times
-            // if there are two different entries then wtf??
+            
 
-            var individualByUniqueId = GetIndividualNameByUniqueId(messageUniqueId, conn);
-            var individualId = TryGetIndividualId(messageName, conn);
+            var individualByUniqueId = GetIndividualNameByUniqueId(uniqueId, conn);
+            var individualId = TryGetIndividualId(name, conn);
             if (individualByUniqueId == null && individualId.HasValue)
             {
+                logger.Info($@"updating '{name}' to unique Id '{uniqueId}'.");
                 conn.ExecuteScalar(
                     "Update mongoose.individual set unique_id = @uniqueId where individual_id = @id and unique_id is null;",
                     new
                     {
-                        uniqueId = messageUniqueId,
+                        uniqueId = uniqueId,
                         id = individualId
                     });
             }
@@ -549,7 +550,7 @@ namespace DataReciever.Main.Data
             }
         }
 
-        private void CreatePackEvent(int packId, DateTime messageDate, string code, IDbConnection conn)
+        private void CreatePackEvent(int packId, DateTime? messageDate, string code, IDbConnection conn)
         {
             logger.Info($"Adding '{code}' event for pack '{packId}'");
 
@@ -722,6 +723,11 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    if (string.IsNullOrEmpty(message.PackName))
+                    {
+                        message.PackName = "Unknown";
+                    }
+
                     var packId = TryGetPackId(message.PackName, conn);
                     if (!packId.HasValue)
                     {
@@ -1551,6 +1557,11 @@ namespace DataReciever.Main.Data
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
+                    if (string.IsNullOrEmpty(message.packName))
+                    {
+                        message.packName = "Unknown";
+                    }
+
                     var packId = TryGetPackId(message.packName, conn);
                     if (!packId.HasValue)
                     {

@@ -4,7 +4,6 @@ using System.Threading;
 
 using AutoMapper;
 
-using DataPipe.Main.Model;
 using DataPipe.Main.Model.LifeHistory;
 
 using NLog;
@@ -20,7 +19,7 @@ namespace DataPipe.Main
         {
             LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
             logger = LogManager.GetLogger("console");
-            logger.Info("DataPipe trying to start v1.91");
+            logger.Info("DataPipe trying to start v1.93");
 
             const string mutexId = @"Global\{{7588B7D1-9AC3-4CEF-A199-339EBA4D2571}}";
 
@@ -51,7 +50,7 @@ namespace DataPipe.Main
                     }
                     catch (Exception e)
                     {
-                        logger.Error(e, "Exception trying to publish data");
+                        logger.Error(e, $"Exception trying to publish data:{e.ToString()}");
                         throw;
                     }
                 }

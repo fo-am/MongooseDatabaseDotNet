@@ -78,7 +78,11 @@ namespace DataReciever.Main.Data
                     UpdatePackWithUniqueId(message.UniqueId, message.Name, conn);
 
                     var current = GetPackNameByUniqueId(message.UniqueId, conn);
-                    if (current != null && message.Name != null && message.Name != current.Name)
+
+
+
+
+                    if (current != null && !string.IsNullOrEmpty(message.Name) && message.Name != current.Name)
                     {
                         logger.Info($"Updating pack '{current.Name}' to {message.Name}!");
                         UpdatePackName(current.PackId, message.Name, current.Name, conn);
@@ -90,6 +94,7 @@ namespace DataReciever.Main.Data
                     {
                         //todo: what if we are updateing something on this indiv?
                         logger.Info($"Asked to add pack '{message.Name}' but they already exist!");
+                        tr.Commit();
                         return;
                     }
 
@@ -201,6 +206,8 @@ namespace DataReciever.Main.Data
 
             using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
             {
+                message.Gender = NormaliseGender(message.Gender);
+
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
                 {
@@ -295,6 +302,30 @@ namespace DataReciever.Main.Data
                     tr.Commit();
                 }
             }
+        }
+
+        private string NormaliseGender(string gender)
+        {
+            var male = new List<string> { "M", "m", "Male", "male" };
+            var female = new List<string> { "F", "f", "Female", "female" };
+            var pup = new List<string> { "p" };
+
+            if (male.Contains(gender))
+            {
+                return "M";
+            }
+
+            if (female.Contains(gender))
+            {
+                return "F";
+            }
+
+            if (pup.Contains(gender))
+            {
+                return "P";
+            }
+
+            return null;
         }
 
         private int? GetCurrentLitterForPack(int packId, IDbConnection conn)
@@ -424,9 +455,13 @@ namespace DataReciever.Main.Data
             return string.IsNullOrEmpty(litterName.FirstOrDefault());
         }
 
-        private int InsertPack(string packName, string packUniqueId, IDbConnection conn,
-            DateTime? packCreatedDate = null)
+        private int InsertPack(string packName, string packUniqueId, IDbConnection conn, DateTime? packCreatedDate = null)
         {
+            if (packName == null)
+            {
+                packName = "Unknown";
+            }
+
             var packId = TryGetPackId(packName, conn);
 
             if (packCreatedDate.HasValue && packCreatedDate.Value == DateTime.MinValue)

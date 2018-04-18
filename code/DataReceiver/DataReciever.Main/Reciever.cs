@@ -33,7 +33,7 @@ namespace DataReciever.Main
             };
 
             var connection = factory.CreateConnection();
-
+            factory.RequestedHeartbeat = 30;
             Console.WriteLine($"Setting up reciever for: {typeof(T).Name}");
             var channel = connection.CreateModel();
 

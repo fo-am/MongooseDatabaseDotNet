@@ -179,7 +179,7 @@ namespace DataPipe.Main
             var sql = @"select se.entity_id, 
                         se.unique_id as 'UniqueId',                                    
                         se.entity_type,
-                        svvName.value as 'Name',   
+                        NULLIF(svvName.value,'NULL') as 'Name',   
                         NULLIF(svvTime.value,'NULL') as 'CreatedDate',
 						NULLIF(svvUser.value,'NULL') as 'User',
                         NULLIF(svrLat.value,'NULL') as Latitude,
@@ -192,7 +192,7 @@ namespace DataPipe.Main
                         left join sync_value_real svrLat on svrLat.entity_id = se.entity_id and svrLat.attribute_id = 'lat'
                         left join sync_value_real svrLon on svrLon.entity_id = se.entity_id and svrLon.attribute_id = 'lon'
                         
-                        where se.entity_type = 'pack'  and se.sent = 0
+                        where se.entity_type = 'pack' and NULLIF(svvName.value,'NULL') is not null and se.sent = 0
 						order by NULLIF(svvTime.value,'NULL') is null, se.entity_id;";
             var packs = RunSql<PackCreated>(sql).ToList();
             return packs;

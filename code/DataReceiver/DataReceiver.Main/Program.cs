@@ -17,7 +17,7 @@ namespace DataReceiver.Main
 
         private static void Main(string[] args)
         {
-            LogManager.Configuration = new XmlLoggingConfiguration("NLog.config");
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
 
             const string mutexId = @"Global\{{183C889E-F9EF-4E47-A452-D3EB5C4D58B1}}";
 

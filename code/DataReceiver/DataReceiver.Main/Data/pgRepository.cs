@@ -797,9 +797,14 @@ namespace DataReceiver.Main.Data
 
         private void UpdateCreationDateIfAltered(int litterId, DateTime newDate, IDbConnection conn)
         {
+            if (newDate == DateTime.MinValue)
+            {
+                return;
+            }
+
             var date = conn.ExecuteScalar<DateTime?>("select date_formed from mongoose.litter where litter_id = @id",
                 new { id = litterId });
-          
+
             if (date == null || DateTime.Compare(newDate.Date, date.Value.Date) < 0)
             {
                 conn.Execute("UPDATE mongoose.litter SET date_formed = @date WHERE litter_id = @litterId",

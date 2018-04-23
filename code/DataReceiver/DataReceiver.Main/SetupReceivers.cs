@@ -30,7 +30,7 @@ namespace DataReceiver.Main
 
         public void DoWork()
         {
-            var receiver = new Receiver(logger,connection,data,handler);
+            var receiver = new Receiver(logger, connection, data, handler);
 
             receiver.Receive<PackCreated>();
             receiver.Receive<IndividualCreated>();

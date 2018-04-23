@@ -30,7 +30,7 @@ namespace DataReceiver.Main
 
         public void Receive<T>()
         {
-            Console.WriteLine($"Setting up receiver for: {typeof(T).Name}");
+            _logger.Info($"Setting up receiver for: {typeof(T).Name}");
             var channel = _connection.CreateModel();
 
             channel.ExchangeDeclare("mongoose.Dead.Letter", "direct", true);
@@ -84,7 +84,7 @@ namespace DataReceiver.Main
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception);
+                    _logger.Error(exception.Message);
                     throw;
                 }
                
@@ -108,7 +108,7 @@ namespace DataReceiver.Main
                     return;
                 }
 
-                Console.WriteLine($"Received {typeof(T).Name}");
+                _logger.Info($"Received {typeof(T).Name}");
 
                 channel.BasicAck(ea.DeliveryTag, false);
             };

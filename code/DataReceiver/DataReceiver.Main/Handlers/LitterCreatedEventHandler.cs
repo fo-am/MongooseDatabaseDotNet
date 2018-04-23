@@ -1,12 +1,11 @@
-﻿using DataReceiver.Main.Data;
-using DataReceiver.Main.Interfaces;
+﻿using DataReceiver.Main.Interfaces;
 using DataReceiver.Main.Model;
 
 namespace DataReceiver.Main.Handlers
 {
     internal class LitterCreatedEventHandler : IHandle<LitterCreated>
     {
-        private IPgRepository data;
+        private readonly IPgRepository data;
 
         public LitterCreatedEventHandler(IPgRepository data)
         {
@@ -16,7 +15,6 @@ namespace DataReceiver.Main.Handlers
         public void HandleMessage(LitterCreated message)
         {
             {
-                
                 data.InsertNewLitter(message);
             }
         }

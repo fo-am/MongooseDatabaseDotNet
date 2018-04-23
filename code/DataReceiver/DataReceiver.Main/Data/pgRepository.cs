@@ -781,7 +781,9 @@ namespace DataReceiver.Main.Data
 
                     if (litterId.HasValue)
                     {
+                        UpdateCreationDateIfAltered(litterId.Value, message.Date,conn);
                         _logger.Info($"Litter already in database!  {message.LitterName}");
+                        tr.Commit();
                         return;
                     }
 
@@ -790,6 +792,19 @@ namespace DataReceiver.Main.Data
 
                     tr.Commit();
                 }
+            }
+        }
+
+        private void UpdateCreationDateIfAltered(int litterId, DateTime newDate, IDbConnection conn)
+        {
+            var date = conn.ExecuteScalar<DateTime?>("select date_formed from mongoose.litter where litter_id = @id",
+                new { id = litterId });
+          
+            if (date == null || date.Value.Date != newDate.Date)
+            {
+                conn.Execute("UPDATE mongoose.litter SET date_formed = @date WHERE litter_id = @litterId",
+                    new { date = newDate, litterId = litterId });
+                _logger.Info($"Updated litter id '{litterId}' from '{date}' to '{newDate}'");
             }
         }
 

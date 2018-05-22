@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="556,828" last-zoom="0.6"
+<dbmodel pgmodeler-ver="0.9.0" last-position="270,305" last-zoom="0.6"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -326,8 +326,23 @@ CREATE OR REPLACE VIEW MONGOOSE."Pack Move" AS
 ALTER TABLE MONGOOSE."Pack Move"
   OWNER TO postgres;
 
+CREATE OR REPLACE VIEW MONGOOSE."OESTRUS" AS
+SELECT o.date as "DATE", p.name as "GROUP", o.oestrus_code as "OESTRUS CODE", i.name as "FEMALE ID",  guard.name as "GUARD"
+, pest1.name as "PESTERER ID", pest2.name  as "PESTERER ID 2", pest3.name  as "PESTERER ID 3", pest4.name as "PESTERER ID 4"
+, o.strength as "STRENGTH", o.confidence as "CONFIDENCE", o.copulation as "COPULATION", o.comment as "COMMENT"
+	FROM mongoose.oestrus o
+	left join mongoose.pack_history ph on ph.pack_history_id = o.pack_history_id
+	left join mongoose.pack p on p.pack_id = ph.pack_id
+	left join mongoose.individual i on i.individual_id = ph.individual_id
+	left join mongoose.individual guard on guard.individual_id = o.guard_id
+	left join mongoose.individual pest1 on pest1.individual_id = o.pesterer_id_1
+	left join mongoose.individual pest2 on pest2.individual_id = o.pesterer_id_2
+	left join mongoose.individual pest3 on pest3.individual_id = o.pesterer_id_3
+    left join mongoose.individual pest4 on pest4.individual_id = o.pesterer_id_4
+	order by o.date asc;
 
-
+ALTER TABLE MONGOOSE."OESTRUS"
+  OWNER TO postgres;
 
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
@@ -897,9 +912,12 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2900" y="1645"/>
+	<position x="2900" y="1663.33"/>
 	<column name="oestrus_id" not-null="true">
 		<type name="serial" length="0"/>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
 	</column>
 	<column name="oestrus_code">
 		<type name="text" length="0"/>

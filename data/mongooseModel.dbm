@@ -344,6 +344,16 @@ SELECT o.date as "DATE", p.name as "GROUP", o.oestrus_code as "OESTRUS CODE", i.
 ALTER TABLE MONGOOSE."OESTRUS"
   OWNER TO postgres;
 
+CREATE OR REPLACE VIEW MONGOOSE."CAPTURES NEW 2013" AS
+SELECT date, i.name as "INDIV",i.transponder_id, p.name as "PACK",  trap_time, process_time, trap_location, bleed_time, release_time, examiner, age, drugs, reproductive_status, teats_ext, ultrasound, foetuses, foetus_size, weight, head_width, head_length, body_length, hind_foot_length, tail_length, tail_circumference, ticks, fleas, wounds_and_scars, plasma_sample_id, plasma_freeze_time, blood_sample_id, blood_sample_freeze_time, bucket, white_blood_count, white_blood_freeze_time, white_blood_cell_bucket, whisker_sample_id, ear_clip, tail_tip, "2d4d_photo", agd_photo, blood_sugar, red_cell_percentage, fat_neck_1, fat_neck_2, fat_armpit, fat_thigh, testes_length, testes_width, testes_depth, tooth_wear, comment
+	FROM mongoose.capture c
+	join mongoose.pack_history ph on c.pack_history_id = ph.pack_history_id
+	join mongoose.pack p on p.pack_id = ph.pack_id
+	join mongoose.individual i on i.individual_id = ph.individual_id
+	order by date asc;
+	
+ALTER TABLE MONGOOSE."CAPTURES NEW 2013"
+  OWNER TO postgres;
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('died');

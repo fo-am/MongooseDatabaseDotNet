@@ -128,8 +128,7 @@ namespace pgDataImporter.Core
 
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
-                    // these are ignored as they are probably bad data.
-                    Logger.Info("Litter Event");
+                   Logger.Info("Litter Event");
                     duplicateCount++;
                     if (lifeHistory.Litter == "ESG0903")
                     {

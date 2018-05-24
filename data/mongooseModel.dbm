@@ -1009,6 +1009,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
 	<column name="cause">
 		<type name="text" length="0"/>
 	</column>
@@ -1017,6 +1020,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</column>
 	<column name="last_seen">
 		<type name="date" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
 	</column>
 	<column name="comment">
 		<type name="text" length="0"/>

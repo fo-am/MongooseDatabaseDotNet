@@ -218,7 +218,7 @@ namespace psDataImporter.Data
                 {
                     var isMongoose = true;
                     var notMongooses = new[]
-                        { "NONE", "ALL", "UNK", "ALLBS", "MOST", "INF", "NEXT LITTER", "Unknown", "SUB" };
+                        { "NONE", "NA", "ALL", "UNK", "ALLBS", "MOST", "INF", "NEXT LITTER", "Unknown", "SUB" };
                     if (notMongooses.Contains(newIndividual.Name))
                     {
                         isMongoose = false;
@@ -592,18 +592,24 @@ namespace psDataImporter.Data
 
         public void LinkLitterEvent(int litterId, int litterEventCodeId, NewLifeHistory lifeHistory)
         {
-            Logger.Info($"Linking litter with event");
+            Logger.Info("Linking litter with event");
+            var locationString = LocationString(lifeHistory.Latitude, lifeHistory.Longitude);
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
                 conn.Execute(
-                    "Insert into mongoose.litter_event (litter_id, litter_event_code_id, cause, exact, last_seen, comment) values (@litterId, @litterEventCodeId, @cause, @exact, @lastSeen, @comment) ON CONFLICT DO NOTHING",
+                    $@"Insert into mongoose.litter_event 
+                      (litter_id, litter_event_code_id, date, cause, exact, last_seen, location, comment)
+                       values
+                      (@litterId, @litterEventCodeId, @date, @cause, @exact, @lastSeen, {locationString}, @comment)
+                      ON CONFLICT DO NOTHING",
                     new
                     {
                         litterId = litterId,
                         litterEventCodeId = litterEventCodeId,
+                        date = lifeHistory.Date,
                         cause = lifeHistory.Cause,
                         exact = lifeHistory.Exact,
                         lastSeen = lifeHistory.Lseen,

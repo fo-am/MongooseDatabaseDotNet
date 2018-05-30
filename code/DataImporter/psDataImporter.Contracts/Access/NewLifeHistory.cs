@@ -16,7 +16,7 @@ namespace psDataImporter.Contracts.Access
         public string Litter;
         public string Latitude;
         public string Longitude;
-        public DateTime Lseen;
+        public DateTime? Lseen;
         public string Pack;
         public string PrevName;
         public string Sex;

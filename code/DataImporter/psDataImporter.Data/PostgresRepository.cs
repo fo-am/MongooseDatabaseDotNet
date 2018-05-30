@@ -632,23 +632,17 @@ namespace psDataImporter.Data
            
 
             var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
-
+            List<int?> secondPackIds = new List<int?>();
             foreach (var secondpack in secondpacks)
             {
-                if (secondpack.Contains("UNK"))
+                var packname = secondpack;
+                if (packname.Contains("UNK")|| packname.Contains("NA"))
                 {
-                    continue;
+                    packname = "Unknown";
                 }
 
-                InsertSinglePack(secondpack);
-            }
-
-            var secondPackIds = secondpacks.Select(GetPackId).Select(packId => (int?)packId).ToList();
-
-            if (lifeHistory.Cause.Contains("UNK"))
-            {
-                secondPackIds.Clear();
-                secondPackIds.Add(null);
+                InsertSinglePack(packname);
+                secondPackIds.Add(GetPackId(packname));
             }
 
             foreach (var secondpack in secondPackIds)

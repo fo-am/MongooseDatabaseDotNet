@@ -133,7 +133,7 @@ namespace pgDataImporter.Core
                     if (lifeHistory.Litter == "ESG0903")
                     {
                         Logger.Warn("No pack id for litter name ESG0903");
-                        return;
+                        continue;
                     }
 
                     // Add pack info

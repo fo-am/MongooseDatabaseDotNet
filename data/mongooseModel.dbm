@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.0" last-position="270,305" last-zoom="0.6"
+<dbmodel pgmodeler-ver="0.9.0" last-position="0,239" last-zoom="0.6"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" append-at-eod="true">
 	<appended-sql><![CDATA[-- View: mongoose."WeightView"
@@ -79,7 +79,7 @@ ALTER TABLE mongoose."Radiocollar records"
 
 
 
-CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS
+CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS	
  SELECT p.name AS "pack name",
     i.name AS "individual name",
     i.sex,
@@ -93,12 +93,13 @@ CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS
  ST_Y(ie.location::geometry) as longitude,
     ie.comment
    FROM mongoose.pack_history ph
-     JOIN mongoose.individual_event ie ON ie.pack_history_id = ph.pack_history_id
-     JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
-     JOIN mongoose.individual i ON ph.individual_id = i.individual_id
-     JOIN mongoose.litter l ON l.litter_id = i.litter_id
-     JOIN mongoose.pack p ON p.pack_id = ph.pack_id
-  ORDER BY ie.date DESC;
+    left JOIN mongoose.individual_event ie ON ie.pack_history_id = ph.pack_history_id
+    left JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
+    left JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+    left JOIN mongoose.litter l ON l.litter_id = i.litter_id
+    left JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+  ORDER BY ie.date;
+	
 
 ALTER TABLE mongoose."Indvidual Events"
     OWNER TO postgres;
@@ -287,9 +288,10 @@ ALTER TABLE MONGOOSE."Ox Shielding Experiment - female treatment groups"
   OWNER TO postgres;
   
  CREATE OR REPLACE VIEW MONGOOSE."Inter Group Interactions" AS
-select focal.name as "focal pack", second.name as "second pack", leader.name as leader, outcome.outcome as outcome, igi.time
+select focal.name as "focal pack", second.name as "second pack"
+    ,leader.name as leader, outcome.outcome as outcome, igi.time as date,igi.comment
 	,ST_X(igi.location::geometry) as latitude
-    ,ST_Y(igi.location::geometry) as longitude
+    ,ST_Y(igi.location::geometry) as longitude	
 	from mongoose.inter_group_interaction igi
 	join mongoose.pack focal on focal.pack_id = igi.focalpack_id
 	join mongoose.pack second on second.pack_id = igi.secondpack_id
@@ -353,6 +355,46 @@ SELECT date, i.name as "INDIV",i.transponder_id, p.name as "PACK",  trap_time, p
 	order by date asc;
 	
 ALTER TABLE MONGOOSE."CAPTURES NEW 2013"
+  OWNER TO postgres;
+
+CREATE OR REPLACE VIEW MONGOOSE."Litter Events" AS
+SELECT  date, p.name as pack,l.name as litter, lec.code, exact, last_seen, cause, 
+    ST_X(le.location::geometry) as latitude,
+    ST_Y(le.location::geometry) as longitude,
+	comment
+	FROM mongoose.litter_event le
+	join mongoose.litter_event_code lec on lec.litter_event_code_id = le.litter_event_code_id
+	join mongoose.litter l on l.litter_id = le.litter_id
+	join mongoose.pack p on p.pack_id = l.pack_id	
+	order by date asc;
+
+ALTER TABLE MONGOOSE."Litter Events"
+  OWNER TO postgres;
+
+
+CREATE OR REPLACE VIEW MONGOOSE."NEW LIFE HISTORY" AS
+SELECT  date as "DATE", "pack name" as "PACK", null as "INDIV" ,null as "SEX", null as "AGE CAT",
+status as "STATUS" , code as "CODE",exact as "EXACT",null as "LSEEN", cause as "CAUSE",null as "LITTER", comment as "COMMENT", 
+latitude as "Latitude", longitude as "Longitude"
+	FROM mongoose."Pack events"
+UNION	
+	SELECT  date as "DATE", pack as "PACK", null as "INDIV" ,null as "SEX", null as "AGE CAT",
+null as "STATUS" , code as "CODE",exact as "EXACT",last_seen as "LSEEN", cause as "CAUSE",litter as "LITTER", comment as "COMMENT", 
+latitude as "Latitude", longitude as "Longitude"
+	FROM mongoose."Litter Events"
+UNION	
+	SELECT  CAST (date AS date) as "DATE", "focal pack" as "PACK", leader as "INDIV" ,null as "SEX", null as "AGE CAT",
+null as "STATUS" , 'igi' as "CODE",null as "EXACT",null as "LSEEN", "second pack" as "CAUSE",null as "LITTER", comment as "COMMENT", 
+latitude as "Latitude", longitude as "Longitude"
+	FROM mongoose."Inter Group Interactions"
+UNION
+	SELECT  date as "DATE", "pack name" as "PACK", "individual name" as "INDIV" ,sex as "SEX", null as "AGE CAT",
+status as "STATUS" , code as "CODE",exact as "EXACT",null as "LSEEN", cause as "CAUSE", "Litter name" as "LITTER", comment as "COMMENT", 
+latitude as "Latitude", longitude as "Longitude"
+	FROM mongoose."Indvidual Events"
+	order by "DATE";
+
+ALTER TABLE MONGOOSE."NEW LIFE HISTORY"
   OWNER TO postgres;
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
@@ -1005,7 +1047,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="litter_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="1740" y="1600"/>
+	<position x="1741.67" y="1528.33"/>
 	<column name="litter_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>

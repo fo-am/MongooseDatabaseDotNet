@@ -104,7 +104,7 @@ namespace pgDataImporter.Core
             {
                 var duplicateCount = 0;
 
-               
+
 
                 if (lifeHistory.Litter == null && lifeHistory.Pack == null && lifeHistory.Indiv == null)
                 {
@@ -128,7 +128,7 @@ namespace pgDataImporter.Core
 
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
-                   Logger.Info("Litter Event");
+                    Logger.Info("Litter Event");
                     duplicateCount++;
                     if (lifeHistory.Litter == "ESG0903")
                     {
@@ -191,7 +191,7 @@ namespace pgDataImporter.Core
                     }
                     else
                     {
-                        pg.InsertIndividual(new Individual {Name = lifeHistory.Indiv, Sex = lifeHistory.Sex});
+                        pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
                     }
 
                     pg.InsertSinglePack(lifeHistory.Pack);
@@ -218,21 +218,14 @@ namespace pgDataImporter.Core
 
                     pg.LinkIndividualEvents(pack_history_id,
                         individual_event_code_id,
-                        lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.Status,
+                        lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.StartEnd, lifeHistory.Status,
                         lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment);
+                    continue;
                 }
 
-                if (duplicateCount == 0)
-                {
-                    Logger.Error($"LifeHistory type not determined:{lifeHistory}");
-                }
+                // we should never be here! all rows should be identified as one of the four types.
+                throw new Exception($"No type found for this life history {lifeHistory}");
 
-                if (duplicateCount > 1)
-                {
-                    Logger.Error($"LifeEvent was of multiple types:{lifeHistory}");
-                    Console.WriteLine("Too many types");
-                    throw new Exception("too many event types for some reason");
-                }
             }
 
             Logger.Info("Done adding life history data.");

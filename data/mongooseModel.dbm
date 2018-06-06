@@ -76,9 +76,6 @@ ALTER TABLE mongoose."Radiocollar records"
     OWNER TO postgres;
 
 	-- View: mongoose."Indvidual Events"
-
-
-
 CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS	
  SELECT p.name AS "pack name",
     i.name AS "individual name",
@@ -88,18 +85,17 @@ CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS
     ie.date,
     ie.exact,
     ie.status,
-	ie.cause,
- ST_X(ie.location::geometry) as latitude,
- ST_Y(ie.location::geometry) as longitude,
+    ie.cause,
+    st_x(ie.location::geometry) AS latitude,
+    st_y(ie.location::geometry) AS longitude,
     ie.comment
-   FROM mongoose.pack_history ph
-    left JOIN mongoose.individual_event ie ON ie.pack_history_id = ph.pack_history_id
-    left JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
-    left JOIN mongoose.individual i ON ph.individual_id = i.individual_id
-    left JOIN mongoose.litter l ON l.litter_id = i.litter_id
-    left JOIN mongoose.pack p ON p.pack_id = ph.pack_id
-  ORDER BY ie.date;
-	
+FROM mongoose.individual_event ie
+     JOIN mongoose.pack_history ph ON ie.pack_history_id = ph.pack_history_id
+     LEFT JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
+     LEFT JOIN mongoose.individual i ON ph.individual_id = i.individual_id
+     LEFT JOIN mongoose.litter l ON l.litter_id = i.litter_id
+     LEFT JOIN mongoose.pack p ON p.pack_id = ph.pack_id
+ORDER BY ie.date;
 
 ALTER TABLE mongoose."Indvidual Events"
     OWNER TO postgres;
@@ -751,6 +747,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 		<type name="date" length="0"/>
 	</column>
 	<column name="exact">
+		<type name="text" length="0"/>
+	</column>
+	<column name="start_end">
 		<type name="text" length="0"/>
 	</column>
 	<column name="status">

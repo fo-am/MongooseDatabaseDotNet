@@ -114,12 +114,10 @@ CREATE OR REPLACE VIEW mongoose."Pack events" AS
     ST_X(pe.location::geometry) as latitude,
     ST_Y(pe.location::geometry) as longitude,
     pe.cause,
-    pe.comment,
-    l.name AS "Litter name"
-   FROM mongoose.pack p
-     JOIN mongoose.pack_event pe ON p.pack_id = pe.pack_id
-     JOIN mongoose.pack_event_code pec ON pe.pack_event_code_id = pec.pack_event_code_id
-     JOIN mongoose.litter l ON p.pack_id = l.pack_id
+    pe.comment   
+     FROM mongoose.pack_event pe
+     JOIN mongoose.pack p ON p.pack_id = pe.pack_id
+     JOIN mongoose.pack_event_code pec ON pe.pack_event_code_id = pec.pack_event_code_id    
   ORDER BY pe.date;
 
 ALTER TABLE mongoose."Pack events"

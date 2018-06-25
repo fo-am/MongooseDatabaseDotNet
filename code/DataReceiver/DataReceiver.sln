@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataReceiver.Main", "DataReceiver.Main\DataReceiver.Main.csproj", "{434C3A11-3EE0-46B3-99C6-CDBB69995CAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataReceiver.Main", "DataReceiver.Main\DataReceiver.Main.csproj", "{434C3A11-3EE0-46B3-99C6-CDBB69995CAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataReceiver.Test", "DataReceiver.Test\DataReceiver.Test.csproj", "{80899A2B-76D4-4129-A6EA-8A5255B06B3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{434C3A11-3EE0-46B3-99C6-CDBB69995CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{434C3A11-3EE0-46B3-99C6-CDBB69995CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434C3A11-3EE0-46B3-99C6-CDBB69995CAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80899A2B-76D4-4129-A6EA-8A5255B06B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80899A2B-76D4-4129-A6EA-8A5255B06B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80899A2B-76D4-4129-A6EA-8A5255B06B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80899A2B-76D4-4129-A6EA-8A5255B06B3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

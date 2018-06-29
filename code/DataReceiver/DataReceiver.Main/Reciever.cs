@@ -13,7 +13,7 @@ using RabbitMQ.Client.Events;
 
 namespace DataReceiver.Main
 {
-    internal class Receiver : IReceiver
+    public class Receiver : IReceiver
     {
         private ILogger _logger;
         private IConnection _connection;

@@ -22,6 +22,7 @@ namespace DataReceiver.Main.Scaffold
             builder.RegisterType<Receiver>().As<IReceiver>();
             builder.RegisterType<PgRepository>().As<IPgRepository>();
             builder.RegisterType<GetHandler>().As<IGetHandler>();
+            builder.RegisterType<ConnectionManager>().As<IConnectionManager>();
             builder.Register<IConnection>(
                 (ctx) =>
                 {

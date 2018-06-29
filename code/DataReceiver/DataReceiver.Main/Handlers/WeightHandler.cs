@@ -4,7 +4,7 @@ using DataReceiver.Main.Model;
 
 namespace DataReceiver.Main.Handlers
 {
-    internal class WeightHandler : IHandle<WeightMeasure>
+    public class WeightHandler : IHandle<WeightMeasure>
     {
         private IPgRepository data;
 

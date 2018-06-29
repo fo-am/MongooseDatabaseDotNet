@@ -22,17 +22,19 @@ namespace DataReceiver.Main.Data
 
     {
         private ILogger _logger;
+        private readonly IConnectionManager _connectionManager;
 
-        public PgRepository( ILogger logger)
+        public PgRepository( ILogger logger, IConnectionManager connectionManager)
         {
             _logger = logger;
+            _connectionManager = connectionManager;
         }
        
 
         public int StoreMessage(string fullName, string message, string messageId)
         {
             _logger.Info($"Stored message type '{fullName}' with Id '{messageId}'");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 return conn.ExecuteScalar<int>(
                     @"Insert into mongoose.event_log (type, message_id, object)
@@ -51,7 +53,7 @@ namespace DataReceiver.Main.Data
         public  void MessageHandledOk(int entityId)
         {
             _logger.Info($"Message handled ok.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Execute("update mongoose.event_log set success = true where event_log_id = @entityId",
                     new { entityId });
@@ -61,7 +63,7 @@ namespace DataReceiver.Main.Data
         public  int FailedToHandleMessage(int entityId, Exception ex)
         {
             _logger.Error(ex, "Failed to handle message.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 return conn.ExecuteScalar<int>(
                     "update mongoose.event_log set success = false, error = @error where event_log_id = @entityId returning delivered_count",
@@ -72,7 +74,7 @@ namespace DataReceiver.Main.Data
         public void InsertNewPack(PackCreated message)
         {
             _logger.Info($@"Add new pack: ""{message.Name}"".");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -160,7 +162,7 @@ namespace DataReceiver.Main.Data
 
             // add the weight info
 
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -212,7 +214,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info($"Add new individual '{message.Name}'.");
 
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 message.Gender = NormaliseGender(message.Gender);
 
@@ -573,7 +575,7 @@ namespace DataReceiver.Main.Data
         public void PackEvent(LifeHistoryEvent message)
         {
             _logger.Info($@"{message.GetType().Name} Event for pack: ""{message.entity_name}"".");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -619,7 +621,7 @@ namespace DataReceiver.Main.Data
         public void NewIndividualEvent(LifeHistoryEvent message)
         {
             _logger.Info($@"{message.GetType().Name} Event for Individual: ""{message.entity_name}"".");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -706,7 +708,7 @@ namespace DataReceiver.Main.Data
         public void InsertNewLitterEvent(LifeHistoryEvent message)
         {
             _logger.Info($@"{message.GetType().Name} Event for litter: ""{message.entity_name}"".");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -761,7 +763,7 @@ namespace DataReceiver.Main.Data
             // see if litter exists. if so log it and move on
             // if not then add it.
             _logger.Info($@"Adding New Litter : ""{message.LitterName}"".");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -837,7 +839,7 @@ namespace DataReceiver.Main.Data
             // move the individual to the new pack.
             _logger.Info(
                 $@"Moving '{message.MongooseName}' from Pack '{message.PackSourceName}' to Pack '{message.PackDestintionName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -880,7 +882,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info(
                 $@"Inter Group Event between '{message.packName}' and '{message.otherPackName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -946,7 +948,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info(
                 $@"Group Alarm pack:'{message.packName}' type: '{message.cause}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -1008,7 +1010,7 @@ namespace DataReceiver.Main.Data
             _logger.Info(
                 $@"Group move pack:'{message.pack}' '{message.Direction}' '{message.Destination}'.");
 
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -1072,7 +1074,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info(
                 $@"Oestrus '{message.packName}' Individual '{message.focalIndividualName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -1284,7 +1286,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info(
                 $@"Pup Focal Pack '{message.packName}' Individual '{message.focalIndividualName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -1465,7 +1467,7 @@ namespace DataReceiver.Main.Data
         {
             _logger.Info(
                 $@"Pregnancy Focal Pack '{message.packName}' Individual '{message.focalIndividualName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())
@@ -1615,7 +1617,7 @@ namespace DataReceiver.Main.Data
             //     message.PupNames   <- put em in a list!
 
             _logger.Info($@"Group composition pack:'{message.packName}'.");
-            using (IDbConnection conn = new NpgsqlConnection(GetAppSettings.Get().PostgresConnection))
+            using (IDbConnection conn = _connectionManager.GetConn())
             {
                 conn.Open();
                 using (var tr = conn.BeginTransaction())

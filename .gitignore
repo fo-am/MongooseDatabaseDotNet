@@ -288,3 +288,5 @@ __pycache__/
 
 # user defined
 linuxDeploy
+code/DataPipe/linuxbackup/
+.vscode/

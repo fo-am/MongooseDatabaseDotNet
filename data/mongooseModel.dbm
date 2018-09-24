@@ -75,8 +75,8 @@ CREATE OR REPLACE VIEW mongoose."Radiocollar records" AS
 ALTER TABLE mongoose."Radiocollar records"
     OWNER TO postgres;
 
-	-- View: mongoose."Indvidual Events"
-CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS	
+	-- View: mongoose."Individual Events"
+CREATE OR REPLACE VIEW mongoose."Individual Events" AS	
  SELECT p.name AS "pack name",
     i.name AS "individual name",
     i.sex,
@@ -85,6 +85,7 @@ CREATE OR REPLACE VIEW mongoose."Indvidual Events" AS
     ie.date,
     ie.exact,
     ie.status,
+    ie.start_end,
     ie.cause,
     st_x(ie.location::geometry) AS latitude,
     st_y(ie.location::geometry) AS longitude,
@@ -97,7 +98,7 @@ FROM mongoose.individual_event ie
      LEFT JOIN mongoose.pack p ON p.pack_id = ph.pack_id
 ORDER BY ie.date;
 
-ALTER TABLE mongoose."Indvidual Events"
+ALTER TABLE mongoose."Individual Events"
     OWNER TO postgres;
 
 
@@ -367,26 +368,74 @@ ALTER TABLE MONGOOSE."Litter Events"
 
 
 CREATE OR REPLACE VIEW MONGOOSE."NEW LIFE HISTORY" AS
-SELECT  date as "DATE", "pack name" as "PACK", null as "INDIV" ,null as "SEX", null as "AGE CAT",
-status as "STATUS" , code as "CODE",exact as "EXACT",null as "LSEEN", cause as "CAUSE",null as "LITTER", comment as "COMMENT", 
-latitude as "Latitude", longitude as "Longitude"
-	FROM mongoose."Pack events"
-UNION	
-	SELECT  date as "DATE", pack as "PACK", null as "INDIV" ,null as "SEX", null as "AGE CAT",
-null as "STATUS" , code as "CODE",exact as "EXACT",last_seen as "LSEEN", cause as "CAUSE",litter as "LITTER", comment as "COMMENT", 
-latitude as "Latitude", longitude as "Longitude"
-	FROM mongoose."Litter Events"
-UNION	
-	SELECT  CAST (date AS date) as "DATE", "focal pack" as "PACK", leader as "INDIV" ,null as "SEX", null as "AGE CAT",
-null as "STATUS" , 'igi' as "CODE",null as "EXACT",null as "LSEEN", "second pack" as "CAUSE",null as "LITTER", comment as "COMMENT", 
-latitude as "Latitude", longitude as "Longitude"
-	FROM mongoose."Inter Group Interactions"
+SELECT "Pack events".date AS "DATE",
+    "Pack events"."pack name" AS "PACK",
+    NULL::text AS "INDIV",
+    NULL::text AS "SEX",
+    NULL::text AS "AGE CAT",
+    "Pack events".status AS "STATUS",
+	NULL::text AS "Start/End",
+    "Pack events".code AS "CODE",
+    "Pack events".exact AS "EXACT",
+    NULL::date AS "LSEEN",
+    "Pack events".cause AS "CAUSE",
+    NULL::text AS "LITTER",
+    "Pack events".comment AS "COMMENT",
+    "Pack events".latitude AS "Latitude",
+    "Pack events".longitude AS "Longitude"
+   FROM mongoose."Pack events"
 UNION
-	SELECT  date as "DATE", "pack name" as "PACK", "individual name" as "INDIV" ,sex as "SEX", null as "AGE CAT",
-status as "STATUS" , code as "CODE",exact as "EXACT",null as "LSEEN", cause as "CAUSE", "Litter name" as "LITTER", comment as "COMMENT", 
-latitude as "Latitude", longitude as "Longitude"
-	FROM mongoose."Indvidual Events"
-	order by "DATE";
+ SELECT "Litter Events".date AS "DATE",
+    "Litter Events".pack AS "PACK",
+    NULL::text AS "INDIV",
+    NULL::text AS "SEX",
+    NULL::text AS "AGE CAT",
+    NULL::text AS "STATUS",
+	NULL::text AS "Start/End",
+    "Litter Events".code AS "CODE",
+    "Litter Events".exact AS "EXACT",
+    "Litter Events".last_seen AS "LSEEN",
+    "Litter Events".cause AS "CAUSE",
+    "Litter Events".litter AS "LITTER",
+    "Litter Events".comment AS "COMMENT",
+    "Litter Events".latitude AS "Latitude",
+    "Litter Events".longitude AS "Longitude"
+   FROM mongoose."Litter Events"
+UNION
+ SELECT "Inter Group Interactions".date::date AS "DATE",
+    "Inter Group Interactions"."focal pack" AS "PACK",
+    "Inter Group Interactions".leader AS "INDIV",
+    NULL::text AS "SEX",
+    NULL::text AS "AGE CAT",
+    NULL::text AS "STATUS",
+	NULL::text AS "Start/End",
+    'igi'::text AS "CODE",
+    NULL::text AS "EXACT",
+    NULL::date AS "LSEEN",
+    "Inter Group Interactions"."second pack" AS "CAUSE",
+    NULL::text AS "LITTER",
+    "Inter Group Interactions".comment AS "COMMENT",
+    "Inter Group Interactions".latitude AS "Latitude",
+    "Inter Group Interactions".longitude AS "Longitude"
+   FROM mongoose."Inter Group Interactions"
+UNION
+ SELECT "Individual Events".date AS "DATE",
+    "Individual Events"."pack name" AS "PACK",
+    "Individual Events"."individual name" AS "INDIV",
+    "Individual Events".sex AS "SEX",
+    NULL::text AS "AGE CAT",
+    "Individual Events".status AS "STATUS",
+	"Individual Events".start_end AS "Start/End",
+    "Individual Events".code AS "CODE",
+    "Individual Events".exact AS "EXACT",
+    NULL::date AS "LSEEN",
+    "Individual Events".cause AS "CAUSE",
+    "Individual Events"."Litter name" AS "LITTER",
+    "Individual Events".comment AS "COMMENT",
+    "Individual Events".latitude AS "Latitude",
+    "Individual Events".longitude AS "Longitude"
+   FROM mongoose."Individual Events"
+  ORDER BY 1;
 
 ALTER TABLE MONGOOSE."NEW LIFE HISTORY"
   OWNER TO postgres;

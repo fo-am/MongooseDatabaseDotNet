@@ -244,7 +244,7 @@ ALTER TABLE MONGOOSE."Antiparasite experiment"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."METEROLOGICAL DATA" AS
-SELECT date as "DATE", rain as "RAIN_MWEY", temp_max as "MAX TEMP", temp_min as "MIN TEMP",
+SELECT date as "DATE", rain as "RAIN_MWEYA", temp_max as "MAX TEMP", temp_min as "MIN TEMP",
 temp as "TEMP", humidity_max as "Max humidity", humidity_min as "Min humidity", observer as "OBSERVER"
 	FROM mongoose.meterology
     order by date asc;

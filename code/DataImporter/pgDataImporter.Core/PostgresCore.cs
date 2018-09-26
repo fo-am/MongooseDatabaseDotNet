@@ -1,11 +1,11 @@
-﻿using NLog;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NLog;
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
 using psDataImporter.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace pgDataImporter.Core
 {
@@ -214,7 +214,7 @@ namespace pgDataImporter.Core
                         {
                             pg.AddPreviousNameForIndividual(individualId, prevName);
                         }
-                       
+
                     }
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
@@ -674,6 +674,7 @@ namespace pgDataImporter.Core
             // 12  => 12:00
             // 13.4 => 13:40
             // 3.32 => 3:32
+            // 16.05 => 16:05
             // there are some special numbers that are picked out individualy.
             // -1 and empty strings are nulls in the database.
 
@@ -685,22 +686,23 @@ namespace pgDataImporter.Core
             }
             else
             {
-                var tims = Array.ConvertAll(timeString.Split('.'), s => int.Parse(s));
-                if (tims.Length == 2)
+                var timePartString = timeString.Split('.');
+                var timePartInt = Array.ConvertAll(timePartString, s => int.Parse(s));
+                if (timePartInt.Length == 2)
                 {
-                    timestart = timestart.Value.AddHours(tims[0]);
-                    var minutes = tims[1];
-                    if (minutes < 10)
+                    timestart = timestart.Value.AddHours(timePartInt[0]);
+                    var minutes = timePartInt[1];
+                    if (minutes < 10 && timePartString[1].Length < 2)
                     {
-                        minutes = minutes * 10;
+                        minutes *= 10;
                     }
 
                     timestart = timestart.Value.AddMinutes(minutes);
                 }
 
-                if (tims.Length == 1)
+                if (timePartInt.Length == 1)
                 {
-                    timestart = timestart.Value.AddHours(tims[0]);
+                    timestart = timestart.Value.AddHours(timePartInt[0]);
                 }
             }
 
@@ -718,6 +720,11 @@ namespace pgDataImporter.Core
             if (timeString == "1705")
             {
                 timestart = new DateTime().AddHours(17).AddMinutes(5);
+            }
+
+            if (timestart == DateTime.MinValue)
+            {
+                throw new Exception($"time not found = '{timeString}'");
             }
 
             return timestart;

@@ -491,7 +491,7 @@ namespace psDataImporter.Data
         {
             //get pack history id (femailid and pack id)
             var packHistoryId = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
-         
+
             //guardId
 
             var guardid = GetPossibleNullIndividualId(oestrus.GUARD_ID);
@@ -516,7 +516,7 @@ namespace psDataImporter.Data
                 conn.Execute(sql, new
                 {
                     pack_history_id = packHistoryId,
-                    date=oestrus.DATE,
+                    date = oestrus.DATE,
                     oestrus_code = oestrus.OESTRUS_CODE,
                     guard_id = guardid,
                     pesterer_id_1 = pesterer1Id,
@@ -642,14 +642,14 @@ namespace psDataImporter.Data
 
             // makes sure first pack is in the db
             InsertSinglePack(lifeHistory.Pack);
-           
+
 
             var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
             List<int?> secondPackIds = new List<int?>();
             foreach (var secondpack in secondpacks)
             {
                 var packname = secondpack;
-                if (packname.Contains("UNK")|| packname.Contains("NA"))
+                if (packname.Contains("UNK") || packname.Contains("NA"))
                 {
                     packname = "Unknown";
                 }
@@ -1172,7 +1172,7 @@ namespace psDataImporter.Data
                     {
                         pack_history_id = packHistoryId,
                         date = feedingRecord.Date,
-                        time_of_day = feedingRecord.AMPM,
+                        time_of_day = feedingRecord.AMPM.ToUpper(),
                         ammount_of_egg = feedingRecord.Amount_of_egg,
                         comments = feedingRecord.Comments
                     }
@@ -1268,7 +1268,7 @@ namespace psDataImporter.Data
                     @"SELECT name  
                       FROM mongoose.individual_name_history
                       WHERE individual_id = @individual_id",
-                    new {individual_id = individualId}).ToList();
+                    new { individual_id = individualId }).ToList();
             }
         }
 
@@ -1282,7 +1282,7 @@ namespace psDataImporter.Data
                 conn.Execute(
                     @"INSERT INTO mongoose.individual_name_history(individual_id, name)
 	                  VALUES (@IndividualId, @name); ",
-                    new {IndividualId = individualId, name = oldName});
+                    new { IndividualId = individualId, name = oldName });
 
             }
         }

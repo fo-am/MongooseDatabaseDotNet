@@ -1267,7 +1267,7 @@ namespace psDataImporter.Data
                 return conn.Query<string>(
                     @"SELECT name  
                       FROM mongoose.individual_name_history
-                      WHERE individual_id = = @individual_id",
+                      WHERE individual_id = @individual_id",
                     new {individual_id = individualId}).ToList();
             }
         }

@@ -210,8 +210,11 @@ namespace pgDataImporter.Core
                         {
                             continue;
                         }
-
-                        pg.AddPreviousNameForIndividual(individualId, prevName);
+                        if (prevName != lifeHistory.Indiv)
+                        {
+                            pg.AddPreviousNameForIndividual(individualId, prevName);
+                        }
+                       
                     }
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
@@ -256,7 +259,7 @@ namespace pgDataImporter.Core
             // and indiv is null or matches pack
             // and there is ac ode
             return !string.IsNullOrEmpty(lifeHistory.Pack) &&
-                   (string.IsNullOrEmpty(lifeHistory.Indiv) || lifeHistory.Indiv=="ALL" ||lifeHistory.Pack == lifeHistory.Indiv) &&
+                   (string.IsNullOrEmpty(lifeHistory.Indiv) || lifeHistory.Indiv == "ALL" || lifeHistory.Pack == lifeHistory.Indiv) &&
                    !string.IsNullOrEmpty(lifeHistory.Code);
         }
 

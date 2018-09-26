@@ -1,8 +1,8 @@
 ﻿
+using System.Diagnostics;
 using NLog;
 using pgDataImporter.Core;
 using psDataImporter.Data;
-using System.Diagnostics;
 
 namespace psDataImporter.Console
 {

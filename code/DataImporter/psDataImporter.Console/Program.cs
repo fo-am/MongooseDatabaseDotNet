@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-
+﻿
 using NLog;
 using pgDataImporter.Core;
-
-using psDataImporter.Contracts.Access;
 using psDataImporter.Data;
+using System.Diagnostics;
 
 namespace psDataImporter.Console
 {

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using NLog;
-
+﻿using NLog;
 using psDataImporter.Contracts.Access;
 using psDataImporter.Contracts.dtos;
 using psDataImporter.Contracts.Postgres;
 using psDataImporter.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace pgDataImporter.Core
 {
@@ -201,6 +199,20 @@ namespace pgDataImporter.Core
                     var packId = pg.GetPackId(lifeHistory.Pack);
 
                     var individualId = pg.GetIndividualId(lifeHistory.Indiv);
+
+                    var prevName = lifeHistory.PrevName;
+                    if (prevName != null)
+                    {
+                        //add prev individual record
+
+                        var prevNames = pg.GetPreviousNamesForIndividual(individualId);
+                        if (prevNames.Contains(prevName))
+                        {
+                            continue;
+                        }
+
+                        pg.AddPreviousNameForIndividual(individualId, prevName);
+                    }
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
 

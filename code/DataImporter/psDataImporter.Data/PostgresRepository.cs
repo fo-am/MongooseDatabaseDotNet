@@ -1257,5 +1257,34 @@ namespace psDataImporter.Data
                     new { individual_id = individualId }).ToList();
             }
         }
+
+        public List<string> GetPreviousNamesForIndividual(int individualId)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                return conn.Query<string>(
+                    @"SELECT name  
+                      FROM mongoose.individual_name_history
+                      WHERE individual_id = = @individual_id",
+                    new {individual_id = individualId}).ToList();
+            }
+        }
+
+        public void AddPreviousNameForIndividual(int individualId, string oldName)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+
+            {
+                conn.Execute(
+                    @"INSERT INTO mongoose.individual_name_history(individual_id, name)
+	                  VALUES (@IndividualId, @name); ",
+                    new {IndividualId = individualId, name = oldName});
+
+            }
+        }
     }
 }

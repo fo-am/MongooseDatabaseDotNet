@@ -502,6 +502,8 @@ namespace psDataImporter.Data
             var pesterer3Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_3);
             var pesterer4Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_4);
 
+            var copulationWithId = GetPossibleNullIndividualId(oestrus.COPULATION);
+
             var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
             var sql = $@"INSERT INTO mongoose.oestrus(
@@ -526,7 +528,7 @@ namespace psDataImporter.Data
                     pesterer_id_4 = pesterer4Id,
                     strength = oestrus.STRENGTH,
                     confidence = oestrus.CONFIDENCE,
-                    copulation = oestrus.CONFIDENCE,
+                    copulation = copulationWithId,
                     comment = oestrus.COMMENT
                 });
             }

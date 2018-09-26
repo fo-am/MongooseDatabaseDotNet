@@ -505,8 +505,8 @@ namespace psDataImporter.Data
             var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
             var sql = $@"INSERT INTO mongoose.oestrus(
-                      pack_history_id, date, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)
-                      VALUES( @pack_history_id, @date, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
+                      pack_history_id, date, time, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)
+                      VALUES( @pack_history_id, @date, @time, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -517,6 +517,7 @@ namespace psDataImporter.Data
                 {
                     pack_history_id = packHistoryId,
                     date = oestrus.DATE,
+                    time = oestrus.TIME,
                     oestrus_code = oestrus.OESTRUS_CODE,
                     guard_id = guardid,
                     pesterer_id_1 = pesterer1Id,

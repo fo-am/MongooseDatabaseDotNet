@@ -324,7 +324,7 @@ ALTER TABLE MONGOOSE."Pack Move"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."OESTRUS" AS
-SELECT o.date as "DATE", p.name as "GROUP", o.oestrus_code as "OESTRUS CODE", i.name as "FEMALE ID",  guard.name as "GUARD"
+SELECT o.date as "DATE", o.time as "TIME", p.name as "GROUP", o.oestrus_code as "OESTRUS CODE", i.name as "FEMALE ID",  guard.name as "GUARD"
 , pest1.name as "PESTERER ID", pest2.name  as "PESTERER ID 2", pest3.name  as "PESTERER ID 3", pest4.name as "PESTERER ID 4"
 , o.strength as "STRENGTH", o.confidence as "CONFIDENCE", o.copulation as "COPULATION", o.comment as "COMMENT"
 	FROM mongoose.oestrus o
@@ -1016,6 +1016,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</column>
 	<column name="date" not-null="true">
 		<type name="date" length="0"/>
+	</column>
+	<column name="time">
+		<type name="text" length="0"/>
 	</column>
 	<column name="oestrus_code">
 		<type name="text" length="0"/>

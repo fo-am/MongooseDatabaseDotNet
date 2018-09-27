@@ -6,10 +6,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <dbmodel pgmodeler-ver="0.9.1" last-position="0,1520" last-zoom="0.6"
 	 default-schema="public" default-owner="postgres">
 <database name="Foam_auto" is-template="false" allow-conns="true" append-at-eod="true">
-	<appended-sql><![CDATA[-- View: mongoose."WeightView"
+	<appended-sql><![CDATA[-- View: mongoose."WEIGHTS"
 
 
-CREATE OR REPLACE VIEW mongoose."WeightView" AS
+CREATE OR REPLACE VIEW mongoose."WEIGHTS" AS
  SELECT p.name AS "pack name",
     w."time",
     i.name AS "individual name",
@@ -24,7 +24,7 @@ CREATE OR REPLACE VIEW mongoose."WeightView" AS
      JOIN mongoose.pack p ON p.pack_id = ph.pack_id
   ORDER BY w."time";
 
-ALTER TABLE mongoose."WeightView"
+ALTER TABLE mongoose."WEIGHTS"
     OWNER TO postgres;
 
 

@@ -19,7 +19,9 @@ CREATE OR REPLACE VIEW mongoose."WEIGHTS" AS
     w.accuracy as "ACCURACY",
     w.session as "SESSION",
     w.collar_weight as "COLLAR",
-    w.comment as "COMMENT"
+    w.comment as "COMMENT",    
+    st_x(w.location::geometry) AS latitude,
+    st_y(w.location::geometry) AS longitude
    FROM mongoose.pack_history ph
      JOIN mongoose.weight w ON w.pack_history_id = ph.pack_history_id
      JOIN mongoose.individual i ON ph.individual_id = i.individual_id

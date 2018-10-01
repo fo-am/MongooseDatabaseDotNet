@@ -172,7 +172,7 @@ CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: Litters" AS
 SELECT experiment_number as "Experiment Number", p.name as "Pack", l.name as "Litter", 
 pregnancy_check_date as "Preg check trap date", date_started as "Date started",
  experiment_type as "Type of experiment", foetus_age as "Type of experiment",
-  "number_T_females" as "No of T females", "number_C_females" as "No of C females", notes as "Notes"
+  "number_T_females" as "No of T females", "number_C_females" as "No of C females", l.date_formed as "Litter birth date", notes as "Notes"
 	FROM mongoose.maternal_conditioning_litter mcl
     join mongoose.litter l on l.litter_id = mcl.litter_id
     join mongoose.pack p on p.pack_id = l.pack_id;

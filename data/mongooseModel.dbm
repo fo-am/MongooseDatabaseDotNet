@@ -169,7 +169,10 @@ ALTER TABLE mongoose."POO DATABASE"
     OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: Litters" AS
-SELECT experiment_number, p.name as "pack id", l.name as "litter id", pregnancy_check_date, date_started, experiment_type, foetus_age, "number_T_females", "number_C_females", notes
+SELECT experiment_number as "Experiment Number", p.name as "Pack", l.name as "Litter", 
+pregnancy_check_date as "Preg check trap date", date_started as "Date started",
+ experiment_type as "Type of experiment", foetus_age as "Type of experiment",
+  "number_T_females" as "No of T females", "number_C_females" as "No of C females", notes as "Notes"
 	FROM mongoose.maternal_conditioning_litter mcl
     join mongoose.litter l on l.litter_id = mcl.litter_id
     join mongoose.pack p on p.pack_id = l.pack_id;
@@ -178,7 +181,8 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Litters"
     OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: Females" AS
-SELECT  p.name as pack,l.name as litter,  experiment_type as "Experiment type",focus.name as "Female Id", catagory as "Catagory",i.name as "paired female", notes
+SELECT  p.name as "Pack" ,l.name as "Litter",  experiment_type as "Experiment type",
+focus.name as "Female ID", catagory as "Category", i.name as "Paired female ID", notes as "Notes"
 	FROM mongoose.maternel_conditioning_females mcf
    left join mongoose.individual i on i.individual_id = mcf.paired_female_id
     join mongoose.pack_history ph on ph.pack_history_id = mcf.pack_history_id
@@ -190,7 +194,8 @@ ALTER TABLE MONGOOSE."Maternal Condition Experiment: Females"
     OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."Maternal Condition Experiment: provisioning data" AS
-SELECT date,  visit_time, p.name as Pack ,l.name as Litter,i.name as "Female ID",   egg_weight as "Ammount of egg", comments
+SELECT date as "Date",  visit_time as "Visit time", p.name as "Pack" ,l.name as "Litter",
+i.name as "Female ID",   egg_weight as "Amount of egg", comments as "Comments"
 	FROM mongoose.provisioning_data pd
     join mongoose.pack_history ph on ph.pack_history_id = pd.pack_history_id
     join mongoose.individual i on i.individual_id = ph.individual_id 

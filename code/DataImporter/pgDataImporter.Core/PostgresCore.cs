@@ -102,8 +102,6 @@ namespace pgDataImporter.Core
             {
                 var duplicateCount = 0;
 
-
-
                 if (lifeHistory.Litter == null && lifeHistory.Pack == null && lifeHistory.Indiv == null)
                 {
                     Logger.Warn("No valid litter, pack or individual for life history event.");
@@ -122,6 +120,11 @@ namespace pgDataImporter.Core
                     // we have an intergroup interaction! CODE RED!
                     pg.AddIGI(lifeHistory);
                     continue;
+                }
+
+                if (string.IsNullOrEmpty(lifeHistory.PrevName))
+                {
+                    lifeHistory.Comment += $" PrevName = {lifeHistory.PrevName}";
                 }
 
                 if (LifeHistoryIsLitterEvent(lifeHistory))
@@ -200,22 +203,7 @@ namespace pgDataImporter.Core
 
                     var individualId = pg.GetIndividualId(lifeHistory.Indiv);
 
-                    var prevName = lifeHistory.PrevName;
-                    if (prevName != null)
-                    {
-                        //add prev individual record
-
-                        var prevNames = pg.GetPreviousNamesForIndividual(individualId);
-                        if (prevNames.Contains(prevName))
-                        {
-                            continue;
-                        }
-                        if (prevName != lifeHistory.Indiv)
-                        {
-                            pg.AddPreviousNameForIndividual(individualId, prevName);
-                        }
-
-                    }
+                 
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
 

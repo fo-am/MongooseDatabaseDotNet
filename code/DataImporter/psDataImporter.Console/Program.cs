@@ -61,9 +61,6 @@ namespace psDataImporter.Console
             var radioCollarData = accessdata.GetRadioCollars();
             postgresData.ProcessRadioCollarData(radioCollarData);
 
-            var captures = accessdata.GetCaptures();
-            postgresData.ProcessCaptures(captures);
-
             var pups = accessdata.GetPups();
             postgresData.ProcessPups(pups);
 
@@ -82,6 +79,8 @@ namespace psDataImporter.Console
             var conditionLitter = accessdata.GetMaternalConditionLitters();
             postgresData.ProcessConditionLitters(conditionLitter);
 
+            var captures = accessdata.GetCaptures();
+            postgresData.ProcessCaptures(captures);
 
             stopwatch.Stop();
 

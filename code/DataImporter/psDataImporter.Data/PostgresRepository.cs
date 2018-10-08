@@ -534,6 +534,31 @@ namespace psDataImporter.Data
             }
         }
 
+        public Individual GetIndivdualById(int individualId)
+        {
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+               .ConnectionStrings["postgresConnectionString"]
+               .ConnectionString))
+
+            {
+                return conn.Query<Individual>(@"select 
+                                                individual_id as IndividualId,
+                                                litter_id as LitterId,
+                                                name as Name,
+                                                sex as Sex,
+                                                date_of_birth as DateOfBirth,
+                                                transponder_id,
+                                                unique_id,
+                                                collar_weight,
+                                                is_mongoose
+                                                from mongoose.individual 
+                                                where individual_id = @individual_id",
+                     new { individual_id = individualId }).Single();
+
+             
+            }
+        }
+
         public int? GetPossibleNullIndividualId(string individualName)
         {
             return string.IsNullOrEmpty(individualName) ? (int?)null : GetIndividualId(individualName);

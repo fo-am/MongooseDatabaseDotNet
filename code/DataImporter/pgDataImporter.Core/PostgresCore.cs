@@ -511,6 +511,12 @@ namespace pgDataImporter.Core
 
                 pg.AddTransponder(capture.TRANSPONDER, individualId);
 
+
+                if (capture.Capture_DATE is null)
+                {
+                    capture.Capture_DATE = pg.GetIndivdualById(individualId).DateOfBirth;
+                }
+
                 if (capture.Capture_DATE != null)
                 {
                     pg.AddCaptureData(capture, packHistoryId);

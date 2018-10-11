@@ -650,6 +650,13 @@ namespace pgDataImporter.Core
                 var startTime = GetTimeFromString(babysitting.TIME_START);
                 var endTime = GetTimeFromString(babysitting.TIME_END);
 
+                if (endTime < startTime)
+                {
+                    var tempTime = endTime;
+                    endTime = startTime;
+                    startTime = tempTime;
+                }
+
                 var denDistance = GetDenDistance(babysitting.DEN_DIST);
 
                 pg.InsertBabysittingRecord(packHistoryId, watchedLitter, startTime, endTime, denDistance, babysitting);

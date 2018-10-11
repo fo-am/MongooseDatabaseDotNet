@@ -130,7 +130,7 @@ ALTER TABLE mongoose."Pack events"
 
 CREATE OR REPLACE VIEW mongoose."pup association" AS
 SELECT date, pup_pack.name as "Group",pup_litter.name as "litter" ,pup.name as "Pup", pup.sex as "Pup Sex", escort.name as "Escort",
-escort.sex as "Escort Sex", strength, confidence, comment, ST_X(location::geometry) as latitude, ST_Y(location::geometry) as longitude
+escort.sex as "Escort Sex", strength, confidence, comment, pa.comment_editing as "Editing comments",ST_X(location::geometry) as latitude, ST_Y(location::geometry) as longitude
 	FROM mongoose.pup_association pa
     join mongoose.pack_history ph on ph.pack_history_id = pa.pup_pack_history_id
     join mongoose.individual as pup on pup.individual_id = ph.individual_id

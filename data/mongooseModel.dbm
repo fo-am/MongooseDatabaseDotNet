@@ -338,7 +338,7 @@ CREATE OR REPLACE VIEW MONGOOSE."OESTRUS" AS
 SELECT o.date as "DATE", o.time as "TIME", p.name as "GROUP", o.oestrus_code as "OESTRUS CODE", i.name as "FEMALE ID",  guard.name as "GUARD"
 , pest1.name as "PESTERER ID", pest2.name  as "PESTERER ID 2", pest3.name  as "PESTERER ID 3", pest4.name as "PESTERER ID 4"
 , o.strength as "STRENGTH", o.confidence as "CONFIDENCE",
-select string_agg(i.name, ', ')
+(select string_agg(i.name, ', ')
 from mongoose.oestrus_copulation_male  ocm
 join mongoose.individual i on i.individual_id = ocm.individual_id
 where oestrus_id = o.oestrus_id) as "COPULATION",

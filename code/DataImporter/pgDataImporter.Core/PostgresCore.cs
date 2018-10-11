@@ -470,10 +470,26 @@ namespace pgDataImporter.Core
                 pg.InsertIndividual(new Individual { Name = oestrus.PESTERER_ID_4 });
 
                 // add individual from copulation
-                pg.InsertIndividual(new Individual { Name = oestrus.COPULATION });
+                //  pg.InsertIndividual(new Individual { Name = oestrus.COPULATION });
+                var males = new List<string>();
+                if (!string.IsNullOrEmpty(oestrus.COPULATION))
+                {
+                    males = oestrus.COPULATION.Split(new string[] { ",", " ,", "/", " ", "&", "'" }, StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(m => m.Replace("?", ""))
+                                          .Select(m => m.Replace("MALE", ""))
+                                          .Select(m => m.Replace(".", ""))
+                                          .ToList();
 
-                pg.AddOestrusEvent(oestrus);
-                // add oestrus record, add pesterers (many-many)
+                    if (oestrus.COPULATION == "CASUAL MG.NO ATTENTIONON 10,19,33,35,37.10=PREG")
+                    {
+                        males = new List<string>();
+                        oestrus.COMMENT += oestrus.COPULATION;
+                    }
+
+                    males.ForEach(male => pg.InsertIndividual(new Individual { Name = male }));
+                }
+                // add oestrus record, add pesterers 
+                pg.AddOestrusEvent(oestrus, males);
             }
         }
 

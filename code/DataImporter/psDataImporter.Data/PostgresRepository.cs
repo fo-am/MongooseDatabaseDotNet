@@ -487,7 +487,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddOestrusEvent(Oestrus oestrus)
+        public void AddOestrusEvent(Oestrus oestrus, List<string> males)
         {
             //get pack history id (femailid and pack id)
             var packHistoryId = GetPackHistoryId(oestrus.GROUP, oestrus.FEMALE_ID);
@@ -502,20 +502,24 @@ namespace psDataImporter.Data
             var pesterer3Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_3);
             var pesterer4Id = GetPossibleNullIndividualId(oestrus.PESTERER_ID_4);
 
-            var copulationWithId = GetPossibleNullIndividualId(oestrus.COPULATION);
+            //    var copulationWithId = GetPossibleNullIndividualId(oestrus.COPULATION);
+
+            var maleIds = males.Select(GetPossibleNullIndividualId);
+
+
 
             var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
             var sql = $@"INSERT INTO mongoose.oestrus(
-                      pack_history_id, date, time, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence, copulation, location, comment)
-                      VALUES( @pack_history_id, @date, @time, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, @copulation, {locationString}, @comment)";
+                      pack_history_id, date, time, oestrus_code, guard_id, pesterer_id_1, pesterer_id_2, pesterer_id_3, pesterer_id_4, strength, confidence,  location, comment)
+                      VALUES( @pack_history_id, @date, @time, @oestrus_code, @guard_id, @pesterer_id_1, @pesterer_id_2, @pesterer_id_3, @pesterer_id_4, @strength, @confidence, {locationString}, @comment) RETURNING oestrus_id;";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
                 Logger.Info($"Adding Oestrus event. {oestrus.OESTRUS_CODE} ");
-                conn.Execute(sql, new
+                var oestrusId = conn.ExecuteScalar(sql, new
                 {
                     pack_history_id = packHistoryId,
                     date = oestrus.DATE,
@@ -528,9 +532,24 @@ namespace psDataImporter.Data
                     pesterer_id_4 = pesterer4Id,
                     strength = oestrus.STRENGTH,
                     confidence = oestrus.CONFIDENCE,
-                    copulation = copulationWithId,
                     comment = oestrus.COMMENT
                 });
+
+                foreach (var maleId in maleIds)
+                {
+                    if (maleId.HasValue)
+                    {
+                        sql = @"INSERT INTO mongoose.oestrus_copulation_male(
+                                    oestrus_id, individual_id)
+	                                VALUES(@oestrus_id, @individual_id);";
+                        conn.Execute(sql, new
+                        {
+                            oestrus_id = oestrusId,
+                            individual_id = maleId
+
+                        });
+                    }
+                }
             }
         }
 

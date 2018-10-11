@@ -61,8 +61,8 @@ namespace psDataImporter.Console
             var radioCollarData = accessdata.GetRadioCollars();
             postgresData.ProcessRadioCollarData(radioCollarData);
 
-            var pups = accessdata.GetPups();
-            postgresData.ProcessPups(pups);
+            var pupAssocs = accessdata.GetPupAssocs();
+            postgresData.ProcessPupAssocs(pupAssocs);
 
             var babysittingRecords = accessdata.GetBabysittingRecords();
             postgresData.ProcessBabysittingRecords(babysittingRecords);

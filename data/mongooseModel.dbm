@@ -1348,13 +1348,16 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<column name="comment">
 		<type name="text" length="0"/>
 	</column>
+	<column name="comment_editing">
+		<type name="text" length="0"/>
+	</column>
 	<constraint name="pup_association_pk" type="pk-constr" table="mongoose.pup_association">
 		<columns names="pup_association_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
 		<object name="escort_id" index="2"/>
-		<object name="pack_composition_id" index="8"/>
+		<object name="pack_composition_id" index="3"/>
 		<object name="pup_pack_history_id" index="1"/>
 	</customidxs>
 

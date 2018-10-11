@@ -830,8 +830,8 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.Execute($@"INSERT INTO mongoose.pup_association(
-                           pup_pack_history_id, escort_id, date, strength, confidence, location, comment )
-                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment)"
+                           pup_pack_history_id, escort_id, date, strength, confidence, location, comment, comment_editing)
+                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment. @comment_editing)"
                     ,
                     new
                     {
@@ -840,7 +840,8 @@ namespace psDataImporter.Data
                         date = pupAssociation.DATE,
                         strength = pupAssociation.STRENGTH,
                         confidence = pupAssociation.CONFIDENCE,
-                        comment = pupAssociation.COMMENT + " " + pupAssociation.Editing_comments
+                        comment = pupAssociation.COMMENT,
+                        comment_editing = pupAssociation.Editing_comments
                     }
                 );
             }

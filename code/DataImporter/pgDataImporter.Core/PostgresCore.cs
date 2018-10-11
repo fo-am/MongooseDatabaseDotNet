@@ -532,7 +532,7 @@ namespace pgDataImporter.Core
             // add unknown (other things)
         }
 
-        public void ProcessPups(List<PupAssociation> pups)
+        public void ProcessPupAssocs(List<PupAssociation> pups)
         {
             var pg = new PostgresRepository();
             foreach (var pupAssociation in pups)

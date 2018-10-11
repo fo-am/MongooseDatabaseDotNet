@@ -246,7 +246,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public List<PupAssociation> GetPups()
+        public List<PupAssociation> GetPupAssocs()
         {
             using (var conn = new OleDbConnection(ConfigurationManager
                 .ConnectionStrings["accessConnectionString"]

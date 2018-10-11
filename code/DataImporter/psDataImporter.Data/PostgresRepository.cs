@@ -831,7 +831,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute($@"INSERT INTO mongoose.pup_association(
                            pup_pack_history_id, escort_id, date, strength, confidence, location, comment, comment_editing)
-                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment. @comment_editing)"
+                            VALUES (@pup_pack_history_id, @escort_id, @date, @strength, @confidence, {locationString}, @comment, @comment_editing)"
                     ,
                     new
                     {

@@ -117,7 +117,7 @@ namespace pgDataImporter.Core
                 if (lifeHistory.Code.Equals("igi", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Logger.Info("event is IGI");
-                    // we have an intergroup interaction! CODE RED!
+                  
                     pg.AddIGI(lifeHistory);
                     continue;
                 }
@@ -226,39 +226,79 @@ namespace pgDataImporter.Core
                     continue;
                 }
 
-                // we should never be here! all rows should be identified as one of the four types.
-                throw new Exception($"No type found for this life history {lifeHistory}");
+                if (LifeHistoryIsOestrus(lifeHistory))
+                {
+                    Logger.Info("Oestrus Event");
+                    if (!string.IsNullOrEmpty(lifeHistory.Litter))
+                    {
+                        var oestrusEventId = pg.GetOestrusCodeId(lifeHistory.Code);
+
+                        pg.InsertOestrusEvent(lifeHistory, oestrusEventId);
+
+                    }
+                    continue;
+                }
+
+                Logger.Error($"We failed to process this event {lifeHistory}");
+                //throw new Exception($"No type found for this life history {lifeHistory}");
 
             }
 
             Logger.Info("Done adding life history data.");
         }
 
+        private bool LifeHistoryIsOestrus(NewLifeHistory lifeHistory)
+        {
+            var oestrusEvents = new[] { "SOES", "EOES" };
+
+            return oestrusEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase);
+        }
+
         private static bool LifeHistoryIsIndividualEvent(NewLifeHistory lifeHistory)
         {
-            return !string.IsNullOrEmpty(lifeHistory.Indiv) &&
-                   !string.IsNullOrEmpty(lifeHistory.Code) &&
-                   !string.IsNullOrEmpty(lifeHistory.Pack);
+            if (lifeHistory.Code.Equals("ENDEDV", StringComparison.OrdinalIgnoreCase))
+            {
+                lifeHistory.Code = "ENDEV";
+            }
+
+            var individualEvents = new[] { "1STFO", "1STMO", "2ND MO", "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
+                "EMERGE", "ENDEV", "FPREG", "FSEEN", "IMM", "KIDNAP", "LEAVE", "LSEEN", "NUMARK", "RESCUE", "RETURN", "STEV" };
+
+
+            if (individualEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Indiv))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code == "BORN" && !string.IsNullOrEmpty(lifeHistory.StartEnd) && !string.IsNullOrEmpty(lifeHistory.Indiv))
+            {
+                return true;
+            }
+            return false;
         }
 
         private static bool LifeHistoryIsPackEvent(NewLifeHistory lifeHistory)
         {
-            // if pack is there
-            // and indiv is null or matches pack
-            // and there is ac ode
-            return !string.IsNullOrEmpty(lifeHistory.Pack) &&
-                   (string.IsNullOrEmpty(lifeHistory.Indiv) || lifeHistory.Indiv == "ALL" || lifeHistory.Pack == lifeHistory.Indiv) &&
-                   !string.IsNullOrEmpty(lifeHistory.Code);
+            var groupEvents = new[] { "ENDGRP", "FGRP", "IGI", "LGRP", "NGRP" };
+
+            return groupEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase);
         }
 
         private static bool LifeHistoryIsLitterEvent(NewLifeHistory lifeHistory)
         {
-            // if pack and indiv are null but litter and code are filled
-            // also if indiv matches litter and has a value and code is filled.
+            var isLitterEvent = false;
 
-            return (string.IsNullOrEmpty(lifeHistory.Pack) && string.IsNullOrEmpty(lifeHistory.Indiv)) ||
-                   (lifeHistory.Indiv == lifeHistory.Litter && !string.IsNullOrEmpty(lifeHistory.Indiv)) &&
-                   !string.IsNullOrEmpty(lifeHistory.Code);
+            // if we have the right codes (lost and born) but not if we have a start/end code (means we are an individual) 
+            // and if we don't have a litter we cannot do anything (and we lose the row)
+
+            if (lifeHistory.Code.Equals("LOST", StringComparison.OrdinalIgnoreCase) ||
+                (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd)) &&
+                !string.IsNullOrEmpty(lifeHistory.Litter))
+            {
+                isLitterEvent = true;
+            }
+
+            return isLitterEvent;
         }
 
         private static DateTime GetMinimumDateFromRadioCollar(RadioCollar ph)

@@ -1014,9 +1014,6 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<column name="confidence">
 		<type name="smallint" length="0"/>
 	</column>
-	<column name="copulation">
-		<type name="integer" length="0"/>
-	</column>
 	<column name="location">
 		<type name="geography" length="0"/>
 	</column>
@@ -2359,11 +2356,11 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 dst-table="mongoose.pack_move"
 	 src-required="true" dst-required="false"/>
 
-<table name="oestrus_event" hide-ext-attribs="true">
+<table name="oestrus_focal" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
 	<position x="3380" y="1280"/>
-	<column name="oestrus_event_id" not-null="true">
+	<column name="oestrus_focal_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
 	<column name="depth_of_pack">
@@ -2381,8 +2378,8 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<column name="location">
 		<type name="geography" length="0"/>
 	</column>
-	<constraint name="oestrus_event_pk" type="pk-constr" table="mongoose.oestrus_event">
-		<columns names="oestrus_event_id" ref-type="src-columns"/>
+	<constraint name="oestrus_focal_pk" type="pk-constr" table="mongoose.oestrus_focal">
+		<columns names="oestrus_focal_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
@@ -2400,7 +2397,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.pack_history"
-	 dst-table="mongoose.oestrus_event"
+	 dst-table="mongoose.oestrus_focal"
 	 src-required="true" dst-required="false"/>
 
 <table name="oestrus_nearest" hide-ext-attribs="true">
@@ -2425,12 +2422,12 @@ INSERT INTO mongoose.pack_move_destination(destination)
 
 	<customidxs object-type="column">
 		<object name="nearest_individual_id" index="2"/>
-		<object name="oestrus_event_id" index="1"/>
+		<object name="oestrus_focal_id" index="5"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="oestrus_event_fk" index="1"/>
+		<object name="oestrus_focal_fk" index="1"/>
 	</customidxs>
 </table>
 
@@ -2439,7 +2436,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
-	 src-table="mongoose.oestrus_event"
+	 src-table="mongoose.oestrus_focal"
 	 dst-table="mongoose.oestrus_nearest"
 	 src-required="true" dst-required="false"/>
 
@@ -2482,13 +2479,13 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="oestrus_event_id" index="1"/>
+		<object name="oestrus_focal_id" index="8"/>
 		<object name="with_individual_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="oestrus_event_fk" index="1"/>
+		<object name="oestrus_focal_fk" index="1"/>
 	</customidxs>
 </table>
 
@@ -2497,7 +2494,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
-	 src-table="mongoose.oestrus_event"
+	 src-table="mongoose.oestrus_focal"
 	 dst-table="mongoose.oestrus_mating"
 	 src-required="true" dst-required="false"/>
 
@@ -2541,12 +2538,12 @@ INSERT INTO mongoose.pack_move_destination(destination)
 
 	<customidxs object-type="column">
 		<object name="initiator_individual_id" index="2"/>
-		<object name="oestrus_event_id" index="1"/>
+		<object name="oestrus_focal_id" index="8"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="oestrus_event_fk" index="1"/>
+		<object name="oestrus_focal_fk" index="1"/>
 	</customidxs>
 </table>
 
@@ -2555,7 +2552,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
-	 src-table="mongoose.oestrus_event"
+	 src-table="mongoose.oestrus_focal"
 	 dst-table="mongoose.oestrus_male_aggression"
 	 src-required="true" dst-required="false"/>
 
@@ -2592,13 +2589,13 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="oestrus_event_id" index="1"/>
+		<object name="oestrus_focal_id" index="6"/>
 		<object name="with_individual_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="oestrus_event_fk" index="1"/>
+		<object name="oestrus_focal_fk" index="1"/>
 	</customidxs>
 </table>
 
@@ -2607,7 +2604,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
-	 src-table="mongoose.oestrus_event"
+	 src-table="mongoose.oestrus_focal"
 	 dst-table="mongoose.oestrus_affiliation"
 	 src-required="true" dst-required="false"/>
 
@@ -2650,13 +2647,13 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="oestrus_event_id" index="1"/>
+		<object name="oestrus_focal_id" index="8"/>
 		<object name="with_individual_id" index="2"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="individual_fk" index="2"/>
-		<object name="oestrus_event_fk" index="1"/>
+		<object name="oestrus_focal_fk" index="1"/>
 	</customidxs>
 </table>
 
@@ -2665,7 +2662,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
-	 src-table="mongoose.oestrus_event"
+	 src-table="mongoose.oestrus_focal"
 	 dst-table="mongoose.oestrus_aggression"
 	 src-required="false" dst-required="false"/>
 
@@ -3435,6 +3432,59 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 custom-color="#83af1f"
 	 src-table="mongoose.individual"
 	 dst-table="mongoose.oestrus_copulation_male"
+	 src-required="false" dst-required="false"/>
+
+<table name="oestrus_event" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="2500" y="1620"/>
+	<column name="oestrus_event_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="oestrus_code">
+		<type name="text" length="0"/>
+	</column>
+	<column name="date">
+		<type name="date" length="0"/>
+	</column>
+	<constraint name="oestrus_event_pk" type="pk-constr" table="mongoose.oestrus_event">
+		<columns names="oestrus_event_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="oestrus_event_code_id" index="1"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="oestrus_event_code_fk" index="1"/>
+	</customidxs>
+</table>
+
+<table name="oestrus_event_code" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="2340" y="1780"/>
+	<column name="oestrus_event_code_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="code" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="oestrus_event_code_pk" type="pk-constr" table="mongoose.oestrus_event_code">
+		<columns names="oestrus_event_code_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="unique_oestrus_event_code" type="uq-constr" table="mongoose.oestrus_event_code">
+		<columns names="code" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="oestrus_event_code_has_many_oestrus_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.oestrus_event_code"
+	 dst-table="mongoose.oestrus_event"
 	 src-required="false" dst-required="false"/>
 
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"

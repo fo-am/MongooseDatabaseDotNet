@@ -1121,11 +1121,11 @@ namespace DataReceiver.Main.Data
                 }
 
                 conn.Execute(@"INSERT INTO mongoose.oestrus_nearest(
-	                            oestrus_event_id, nearest_individual_id, close_individuals, time)
-	                            VALUES (@oestrus_event_id, @nearest_individual_id, @close_individuals, @time);",
+	                            oestrus_focal_id, nearest_individual_id, close_individuals, time)
+	                            VALUES (@oestrus_focal_id, @nearest_individual_id, @close_individuals, @time);",
                     new
                     {
-                        oestrus_event_id = oestrusEventId,
+                        oestrus_focal_id = oestrusEventId,
                         nearest_individual_id = individualId,
                         close_individuals = string.Join(",", oestrusNearest.CloseListNames),
                         time = oestrusNearest.scanTime
@@ -1148,13 +1148,13 @@ namespace DataReceiver.Main.Data
                 }
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_mating(
-	                             oestrus_event_id, with_individual_id, behaviour, female_response, male_response, success, time, location)
-	                            VALUES ( @oestrus_event_id, @with_individual_id, @behaviour, @female_response, @male_response, @success, @time, {
+	                             oestrus_focal_id, with_individual_id, behaviour, female_response, male_response, success, time, location)
+	                            VALUES ( @oestrus_focal_id, @with_individual_id, @behaviour, @female_response, @male_response, @success, @time, {
                             loc
                         });",
                     new
                     {
-                        oestrus_event_id = oestrusEventId,
+                        oestrus_focal_id = oestrusEventId,
                         with_individual_id = withIndividualId,
                         behaviour = oestrusMateEvent.behaviour,
                         female_response = oestrusMateEvent.femaleResponse,
@@ -1184,13 +1184,13 @@ namespace DataReceiver.Main.Data
                 }
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_male_aggression(
-	                oestrus_event_id, initiator_individual_id, receiver_individual_id, level, winner, owner, time, location)
-	                VALUES (@oestrus_event_id, @initiator_individual_id, @receiver_individual_id, @level, @winner, @owner, @time, {
+	                oestrus_focal_id, initiator_individual_id, receiver_individual_id, level, winner, owner, time, location)
+	                VALUES (@oestrus_focal_id, @initiator_individual_id, @receiver_individual_id, @level, @winner, @owner, @time, {
                             loc
                         });",
                     new
                     {
-                        oestrus_event_id = oestrusEventId,
+                        oestrus_focal_id = oestrusEventId,
                         initiator_individual_id = initiatorIndividualId,
                         receiver_individual_id = receiverIndividualId,
                         level = oestrusMaleAggression.level,
@@ -1215,11 +1215,11 @@ namespace DataReceiver.Main.Data
                 }
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_affiliation(
-	 oestrus_event_id, with_individual_id, initiate, over, time, location)
-	VALUES (@oestrus_event_id, @with_individual_id, @initiate, @over, @time, {loc});",
+	 oestrus_focal_id, with_individual_id, initiate, over, time, location)
+	VALUES (@oestrus_focal_id, @with_individual_id, @initiate, @over, @time, {loc});",
                     new
                     {
-                        oestrus_event_id = oestrusEventId,
+                        oestrus_focal_id = oestrusEventId,
                         with_individual_id = withIndividualId,
                         initiate = oestrusAffiliationEvent.initiate,
                         over = oestrusAffiliationEvent.over,
@@ -1242,11 +1242,11 @@ namespace DataReceiver.Main.Data
                 }
 
                 conn.Execute($@"INSERT INTO mongoose.oestrus_aggression(
-	                 oestrus_event_id, with_individual_id, initate, level, over, win, time, location)
-	                VALUES (@oestrus_event_id, @with_individual_id, @initate, @level, @over, @win, @time, {loc});",
+	                 oestrus_focal_id, with_individual_id, initate, level, over, win, time, location)
+	                VALUES (@oestrus_focal_id, @with_individual_id, @initate, @level, @over, @win, @time, {loc});",
                     new
                     {
-                        oestrus_event_id = oestrusEventId,
+                        oestrus_focal_id = oestrusEventId,
                         with_individual_id = withIndividualId,
                         initate = oestrusAggressionEvent.initiate,
                         level = oestrusAggressionEvent.level,
@@ -1266,9 +1266,9 @@ namespace DataReceiver.Main.Data
             var packHistoryId = InsertPackHistory(packId, individualId, time, conn);
 
             var oestrusEventId = conn.ExecuteScalar<int>(
-                $@"INSERT INTO mongoose.oestrus_event(
+                $@"INSERT INTO mongoose.oestrus_focal(
 	             pack_history_id, depth_of_pack, number_of_individuals, width, time, location)
-	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_event_id;",
+	            VALUES (@pack_history_id, @depth_of_pack, @number_of_individuals, @width, @time, {loc}) RETURNING oestrus_focal_id;",
                 new
                 {
                     pack_history_id = packHistoryId,

@@ -242,6 +242,53 @@ namespace psDataImporter.Data
             }
         }
 
+        public void InsertOestrusEvent(NewLifeHistory lifeHistory, int? oestrusEventId)
+        {
+
+            Logger.Info($"Adding oestrus event code: {lifeHistory.Code} OestrusId {lifeHistory.Litter}.");
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                .ConnectionStrings["postgresConnectionString"]
+                .ConnectionString))
+            {
+                conn.Execute(
+                     @"INSERT INTO mongoose.oestrus_event(
+	                     oestrus_event_code_id, oestrus_code, date)
+	                    VALUES (@oestrus_event_code_id, @oestrus_code, @date);",
+                    new
+                    {
+                        oestrus_event_code_id = oestrusEventId,
+                        oestrus_code = lifeHistory.Litter,
+                        date = lifeHistory.Date
+                    });
+            }
+        }
+
+        public int? GetOestrusCodeId(string code)
+        {
+            int? returval = null;
+            if (!string.IsNullOrEmpty(code))
+            {
+                Logger.Info($"Adding Oestrus code: {code}");
+
+                using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+                    .ConnectionStrings["postgresConnectionString"]
+                    .ConnectionString))
+                {
+                    returval = conn.ExecuteScalar<int?>(
+                        @"with i as (
+                            INSERT INTO mongoose.oestrus_event_code(code) VALUES (@codeValue) ON CONFLICT (code) DO NOTHING RETURNING oestrus_event_code_id
+                        )
+                        select oestrus_event_code_id from i
+                        union all
+                        select oestrus_event_code_id from mongoose.oestrus_event_code where  code = @codeValue
+                        limit 1",
+                        new { codeValue = code.ToUpper() });
+                }
+            }
+            return returval;
+        }
+
         public void AddPacks(IEnumerable<string> packNames)
         {
             foreach (var packName in packNames)

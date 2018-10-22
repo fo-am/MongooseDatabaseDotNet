@@ -163,7 +163,11 @@ ALTER TABLE mongoose."Group Composition"
 CREATE OR REPLACE VIEW MONGOOSE."POO DATABASE" AS
 SELECT sample_number as "Sample Number", date as "Date", p.name as "Pack", pack_status as "Pack Status",
  emergence_time as "Emergence Time", freezer_time as "Time in Freezer", i.name as "Individual", collection_time as "Time of Collection",
-  parasite_sample as "Parasite sample taken", comment as "Comments"
+   CASE WHEN parasite_sample = true THEN 'YES'
+ 		WHEN parasite_sample = false THEN 'NO'
+        ELSE NULL
+  END as "Parasite sample taken", comment as "Comments" 
+
 FROM mongoose.poo_sample ps
 join mongoose.pack_history ph on ph.pack_history_id = ps.pack_history_id
 join mongoose.individual i on i.individual_id = ph.individual_id 
@@ -1448,7 +1452,7 @@ INSERT INTO mongoose.pack_move_destination(destination)
 		<type name="time" length="0"/>
 	</column>
 	<column name="parasite_sample">
-		<type name="text" length="0"/>
+		<type name="boolean" length="0"/>
 	</column>
 	<column name="comment">
 		<type name="text" length="0"/>

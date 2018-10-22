@@ -357,7 +357,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_1_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_1_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_1_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_1_LONG_VIEW_LENGTH,
@@ -373,7 +373,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_2_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_2_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_2_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_2_LONG_VIEW_LENGTH,
@@ -389,7 +389,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_3_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_3_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_3_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_3_LONG_VIEW_LENGTH,
@@ -405,7 +405,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_4_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_4_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_4_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_4_LONG_VIEW_LENGTH,
@@ -421,7 +421,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_5_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_5_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_5_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_5_LONG_VIEW_LENGTH,
@@ -437,7 +437,7 @@ namespace pgDataImporter.Core
                               ultrasound.FOETUS_6_LONG_VIEW_WIDTH == null))
                         {
                             Logger.Info($"Adding ultrasound data indiviudal:{ultrasound.INDIV} Foetus:{i}");
-                            pg.AddFoetus(pack_history_id, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
+                            pg.AddFoetus(pack_history_id, ultrasound.FOETUS_NUMBER, i, ultrasound.DATE, ultrasound.FOETUS_SIZE,
                                 ultrasound.FOETUS_6_CROSS_VIEW_WIDTH,
                                 ultrasound.FOETUS_6_CROSS_VIEW_LENGTH,
                                 ultrasound.FOETUS_6_LONG_VIEW_LENGTH,

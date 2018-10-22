@@ -36,22 +36,23 @@ ALTER TABLE mongoose."WEIGHTS"
 
 
 CREATE OR REPLACE VIEW mongoose."Ultrasound Data" AS
- SELECT u.observation_date,
-    i.name AS "individual name",
-    p.name AS "pack name",
-    u.foetus_number,
-    u.foetus_size,
-    u.cross_view_length,
-    u.cross_view_width,
-    u.long_view_length,
-    u.long_view_width,
-    u.observer,
-    u.comment
+ SELECT u.observation_date as "DATE",
+    i.name AS "INDIV",
+    p.name AS "PACK",
+    u.foetus_number as "FOETUS NUMBER",
+    u.foetus_id,
+    u.foetus_size as "FOETUS SIZE",
+    u.cross_view_length as "CROSS VIEW LENGTH",
+    u.cross_view_width as "CROSS VIEW WIDTH",
+    u.long_view_length as "LONG VIEW LENGTH",
+    u.long_view_width as "LONG VIEW WIDTH",
+    u.observer as "OBSERVER",
+    u.comment as "COMMENT"
    FROM mongoose.pack_history ph
      JOIN mongoose.ultrasound u ON u.pack_history_id = ph.pack_history_id
      JOIN mongoose.individual i ON ph.individual_id = i.individual_id
      JOIN mongoose.pack p ON p.pack_id = ph.pack_id
-  order by observation_date, "individual name", foetus_number;
+  order by observation_date, i.name, foetus_id;
 
 ALTER TABLE mongoose."Ultrasound Data"
     OWNER TO postgres;
@@ -871,7 +872,10 @@ INSERT INTO mongoose.pack_move_destination(destination)
 		<type name="timestamp" length="0"/>
 	</column>
 	<column name="foetus_number">
-		<type name="smallint" length="0"/>
+		<type name="text" length="0"/>
+	</column>
+	<column name="foetus_id" not-null="true">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="foetus_size">
 		<type name="text" length="0"/>
@@ -897,6 +901,14 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<constraint name="ultrasound_pk" type="pk-constr" table="mongoose.ultrasound">
 		<columns names="ultrasound_id" ref-type="src-columns"/>
 	</constraint>
+
+	<customidxs object-type="column">
+		<object name="pack_history_id" index="11"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="pack_history_fk" index="1"/>
+	</customidxs>
 </table>
 
 <table name="radiocollar" hide-ext-attribs="true">

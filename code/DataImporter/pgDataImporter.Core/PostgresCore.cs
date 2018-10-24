@@ -117,160 +117,129 @@ namespace pgDataImporter.Core
                 if (lifeHistory.Code.Equals("igi", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Logger.Info("event is IGI");
-                  
+
                     pg.AddIGI(lifeHistory);
                     continue;
                 }
 
-                if (string.IsNullOrEmpty(lifeHistory.PrevName))
+                if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
-                    lifeHistory.Comment += $" PrevName = {lifeHistory.PrevName}";
-                }
-                try
-                {
-
-
-                    if (LifeHistoryIsLitterEvent(lifeHistory))
+                    Logger.Info("Litter Event");
+                    duplicateCount++;
+                    if (lifeHistory.Litter == "ESG0903")
                     {
-                        Logger.Info("Litter Event");
-                        duplicateCount++;
-                        if (lifeHistory.Litter == "ESG0903")
-                        {
-                            Logger.Warn("No pack id for litter name ESG0903");
-                            continue;
-                        }
-
-                        // Add pack info
-                        pg.InsertSinglePack(lifeHistory.Pack);
-                        var packId = pg.GetPackId(lifeHistory.Pack);
-                        // add litter info
-                        pg.InsertSingleLitter(lifeHistory.Litter, packId);
-                        var litterId = pg.GetLitterId(lifeHistory.Litter).Value;
-
-                        // add litter event
-                        pg.AddLitterEventCode(lifeHistory.Code);
-                        var litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
-                        // link litter event to litter.
-                        pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
+                        Logger.Warn("No pack id for litter name ESG0903");
                         continue;
                     }
-                }
-                catch (Exception)
-                {
 
+                    // Add pack info
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+                    // add litter info
+
+                    string litter = lifeHistory.Litter ?? lifeHistory.Indiv;
+                    pg.InsertSingleLitter(litter, packId);
+                 
+                    int litterId = pg.GetLitterId(litter).Value;
+
+                    // add litter event
+                    pg.AddLitterEventCode(lifeHistory.Code);
+                    var litterCodeId = pg.GetLitterEventCodeId(lifeHistory.Code);
+                    // link litter event to litter.
+                    pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
                     continue;
                 }
-                try
+
+
+
+                if (LifeHistoryIsPackEvent(lifeHistory))
                 {
+                    Logger.Info("Pack Event");
+                    duplicateCount++;
 
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    var packId = pg.GetPackId(lifeHistory.Pack);
 
-                    if (LifeHistoryIsPackEvent(lifeHistory))
-                    {
-                        Logger.Info("Pack Event");
-                        duplicateCount++;
+                    pg.AddPackEventCode(lifeHistory.Code);
 
-                        pg.InsertSinglePack(lifeHistory.Pack);
-                        var packId = pg.GetPackId(lifeHistory.Pack);
+                    // get pack codes and ids
+                    var packEventCodeId = pg.GetPackEventCodeId(lifeHistory.Code);
 
-                        pg.AddPackEventCode(lifeHistory.Code);
+                    // link packs to codes.
 
-                        // get pack codes and ids
-                        var packEventCodeId = pg.GetPackEventCodeId(lifeHistory.Code);
+                    pg.LinkPackEvents(packId,
+                        packEventCodeId,
+                        lifeHistory.Status, lifeHistory.Date,
+                        lifeHistory.Exact, lifeHistory.Cause,
+                        lifeHistory.Comment, lifeHistory.Latitude, lifeHistory.Longitude);
 
-                        // link packs to codes.
-
-                        pg.LinkPackEvents(packId,
-                            packEventCodeId,
-                            lifeHistory.Status, lifeHistory.Date,
-                            lifeHistory.Exact, lifeHistory.Cause,
-                            lifeHistory.Comment, lifeHistory.Latitude, lifeHistory.Longitude);
-
-                        // record pack event
-                        continue;
-                    }
-                }
-                catch (Exception)
-                {
-
+                    // record pack event
                     continue;
                 }
-                try
+
+
+                if (LifeHistoryIsIndividualEvent(lifeHistory))
                 {
-
-                    if (LifeHistoryIsIndividualEvent(lifeHistory))
+                    Logger.Info("Individual Event");
+                    duplicateCount++;
+                    if (lifeHistory.Code.Equals("born", StringComparison.OrdinalIgnoreCase))
                     {
-                        Logger.Info("Individual Event");
-                        duplicateCount++;
-                        if (lifeHistory.Code.Equals("born", StringComparison.OrdinalIgnoreCase))
+                        pg.InsertIndividual(new Individual
                         {
-                            pg.InsertIndividual(new Individual
-                            {
-                                Name = lifeHistory.Indiv,
-                                Sex = lifeHistory.Sex,
-                                DateOfBirth = lifeHistory.Date
-                            });
-                        }
-                        else
-                        {
-                            pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
-                        }
-
-                        pg.InsertSinglePack(lifeHistory.Pack);
-                        //add individual event code
-                        // get individual code
-
-                        var packId = pg.GetPackId(lifeHistory.Pack);
-
-                        var individualId = pg.GetIndividualId(lifeHistory.Indiv);
-
-
-
-                        InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
-
-                        pg.AddLitter(new LifeHistoryDto
-                        {
-                            pgPackId = packId,
-                            Litter = lifeHistory.Litter,
-                            pgIndividualId = individualId
+                            Name = lifeHistory.Indiv,
+                            Sex = lifeHistory.Sex,
+                            DateOfBirth = lifeHistory.Date
                         });
-
-                        // get ids
-                        // record lifehistory
-                        var pack_history_id = pg.GetPackHistoryId(lifeHistory.Pack, lifeHistory.Indiv);
-                        var individual_event_code_id = pg.GetIndiviudalEventCodeId(lifeHistory.Code);
-
-                        pg.LinkIndividualEvents(pack_history_id,
-                            individual_event_code_id,
-                            lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.StartEnd, lifeHistory.Status,
-                            lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment);
-                        continue;
                     }
-                }
-                catch (Exception)
-                {
-
-                    continue;
-                }
-                try
-                {
-                    if (LifeHistoryIsOestrus(lifeHistory))
+                    else
                     {
-                        Logger.Info("Oestrus Event");
-                        if (!string.IsNullOrEmpty(lifeHistory.Litter))
-                        {
-                            var oestrusEventId = pg.GetOestrusCodeId(lifeHistory.Code);
-
-                            pg.InsertOestrusEvent(lifeHistory, oestrusEventId);
-
-                        }
-                        continue;
+                        pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
                     }
-                }
-                catch (Exception)
-                {
+
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    //add individual event code
+                    // get individual code
+
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+
+                    var individualId = pg.GetIndividualId(lifeHistory.Indiv);
+
+
+
+                    InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
+
+                    pg.AddLitter(new LifeHistoryDto
+                    {
+                        pgPackId = packId,
+                        Litter = lifeHistory.Litter,
+                        pgIndividualId = individualId
+                    });
+
+                    // get ids
+                    // record lifehistory
+                    var pack_history_id = pg.GetPackHistoryId(lifeHistory.Pack, lifeHistory.Indiv);
+                    var individual_event_code_id = pg.GetIndiviudalEventCodeId(lifeHistory.Code);
+
+                    pg.LinkIndividualEvents(pack_history_id,
+                        individual_event_code_id,
+                        lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.StartEnd, lifeHistory.Status,
+                        lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment);
                     continue;
                 }
-              
+
+                if (LifeHistoryIsOestrus(lifeHistory))
+                {
+                    Logger.Info("Oestrus Event");
+                    if (!string.IsNullOrEmpty(lifeHistory.Litter))
+                    {
+                        var oestrusEventId = pg.GetOestrusCodeId(lifeHistory.Code);
+
+                        pg.InsertOestrusEvent(lifeHistory, oestrusEventId);
+
+                    }
+                    continue;
+                }
+
 
                 Logger.Error($"We failed to process this event {lifeHistory}");
                 //throw new Exception($"No type found for this life history {lifeHistory}");
@@ -293,9 +262,23 @@ namespace pgDataImporter.Core
             {
                 lifeHistory.Code = "ENDEV";
             }
+            if (lifeHistory.Code.Equals("1STFO", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
 
-            var individualEvents = new[] { "1STFO", "1STMO", "2ND MO", "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
-                "EMERGE", "ENDEV", "FPREG", "FSEEN", "IMM", "KIDNAP", "LEAVE", "LSEEN", "NUMARK", "RESCUE", "RETURN", "STEV" };
+            if (lifeHistory.Code.Equals("1STMO", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("EMERGE", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
+
+            var individualEvents = new[] {   "2ND MO", "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
+                "ENDEV", "FPREG", "FSEEN", "IMM", "KIDNAP", "LEAVE", "LSEEN", "NUMARK", "RESCUE", "RETURN", "STEV" };
 
 
             if (individualEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Indiv))
@@ -303,7 +286,7 @@ namespace pgDataImporter.Core
                 return true;
             }
 
-            if (lifeHistory.Code == "BORN" && !string.IsNullOrEmpty(lifeHistory.StartEnd) && !string.IsNullOrEmpty(lifeHistory.Indiv))
+            if (lifeHistory.Code == "BORN" && !string.IsNullOrEmpty(lifeHistory.StartEnd))
             {
                 return true;
             }
@@ -319,19 +302,33 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsLitterEvent(NewLifeHistory lifeHistory)
         {
-            var isLitterEvent = false;
+
 
             // if we have the right codes (lost and born) but not if we have a start/end code (means we are an individual) 
             // and if we don't have a litter we cannot do anything (and we lose the row)
+            if (lifeHistory.Code.Equals("1STFO", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("1STMO", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("EMERGE", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.Sex))
+            {
+                return true;
+            }
 
             if (lifeHistory.Code.Equals("LOST", StringComparison.OrdinalIgnoreCase) ||
                 (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd)) &&
                 !string.IsNullOrEmpty(lifeHistory.Litter))
             {
-                isLitterEvent = true;
+                return true;
             }
 
-            return isLitterEvent;
+            return false;
         }
 
         private static DateTime GetMinimumDateFromRadioCollar(RadioCollar ph)

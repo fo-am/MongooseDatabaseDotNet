@@ -158,7 +158,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.individual_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code.ToLower() });
+                        new { codeValue = code.ToUpper() });
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.pack_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code.ToLower() });
+                        new { codeValue = code.ToUpper() });
                 }
             }
         }
@@ -425,7 +425,7 @@ namespace psDataImporter.Data
             {
                 return conn.ExecuteScalar<int>(
                     "Select pack_event_code_id  from mongoose.pack_event_code where code = @code",
-                    new { code = code.ToLower() });
+                    new { code = code.ToUpper() });
             }
         }
 
@@ -531,7 +531,7 @@ namespace psDataImporter.Data
                 return conn
                     .ExecuteScalar<int>(
                         "Select individual_event_code_id from mongoose.individual_event_code where code = @lifeHistoryCode",
-                        new { lifeHistoryCode = individualEventCode.ToLower() });
+                        new { lifeHistoryCode = individualEventCode.ToUpper() });
             }
         }
 
@@ -680,7 +680,7 @@ namespace psDataImporter.Data
                 {
                     conn.Execute(
                         "Insert into mongoose.litter_event_code (code) values (@codeValue) ON CONFLICT DO NOTHING",
-                        new { codeValue = code.ToLower() });
+                        new { codeValue = code.ToUpper() });
                 }
             }
         }
@@ -694,7 +694,7 @@ namespace psDataImporter.Data
             {
                 return conn.ExecuteScalar<int>(
                     "select litter_event_code_id from mongoose.litter_event_code where code = @code",
-                    new { code = litterEventCode.ToLower() });
+                    new { code = litterEventCode.ToUpper() });
             }
         }
 

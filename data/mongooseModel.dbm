@@ -430,7 +430,7 @@ UNION
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
 	NULL::text AS "Start/End",
-    'igi'::text AS "CODE",
+    'IGI'::text AS "CODE",
     NULL::text AS "EXACT",
     NULL::date AS "LSEEN",
     "Inter Group Interactions"."second pack" AS "CAUSE",
@@ -461,30 +461,30 @@ UNION
 ALTER TABLE MONGOOSE."NEW LIFE HISTORY"
   OWNER TO postgres;
 
-INSERT INTO mongoose.individual_event_code (code) VALUES ('born');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('died');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('adied');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('lseen');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('fseen');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('stev');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('endev');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('leave');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('return');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('imm');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('emm');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('fpreg');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('abort');
-INSERT INTO mongoose.individual_event_code (code) VALUES ('birth');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('BORN');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('DIED');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('ADIED');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('LSEEN');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('FSEEN');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('STEV');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('ENDEV');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('LEAVE');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('RETURN');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('IMM');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('EMM');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('FPREG');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('ABORT');
+INSERT INTO mongoose.individual_event_code (code) VALUES ('BIRTH');
 
 INSERT INTO mongoose.litter_event_code(code) VALUES ('unsuccessful');
 INSERT INTO mongoose.litter_event_code(code) VALUES ('short-lived');
 INSERT INTO mongoose.litter_event_code(code) VALUES ('successful');
-INSERT INTO mongoose.litter_event_code(code) VALUES ('born');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('BORN');
 
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('endgrp', 'End of pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('lgrp', 'Lost Pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('fgrp', 'Found Pack');
-INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ngrp', 'New Pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ENDGRP', 'End of pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('LGRP', 'Lost Pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('FGRP', 'Found Pack');
+INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('NGRP', 'New Pack');
 
 
 INSERT INTO mongoose.pack (name) VALUES('Unknown');

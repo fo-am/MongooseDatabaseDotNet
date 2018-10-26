@@ -104,13 +104,15 @@ namespace pgDataImporter.Core
 
                 if (lifeHistory.Litter == null && lifeHistory.Pack == null && lifeHistory.Indiv == null)
                 {
-                    Logger.Warn("No valid litter, pack or individual for life history event.");
+                    Logger.Error($"No valid litter, pack or individual for life history event. {lifeHistory}");
+
+                    
                     continue;
                 }
 
                 if (string.IsNullOrEmpty(lifeHistory.Code))
                 {
-                    Logger.Warn("No Code given. nothing we can do!");
+                    Logger.Error($"No Code given. nothing we can do! {lifeHistory}");
                     continue;
                 }
 
@@ -125,12 +127,7 @@ namespace pgDataImporter.Core
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
                     Logger.Info("Litter Event");
-                    duplicateCount++;
-                    if (lifeHistory.Litter == "ESG0903")
-                    {
-                        Logger.Warn("No pack id for litter name ESG0903");
-                        continue;
-                    }
+                    duplicateCount++;                 
 
                     // Add pack info
                     pg.InsertSinglePack(lifeHistory.Pack);
@@ -230,11 +227,16 @@ namespace pgDataImporter.Core
                 if (LifeHistoryIsOestrus(lifeHistory))
                 {
                     Logger.Info("Oestrus Event");
+                    duplicateCount++;
+
                     if (!string.IsNullOrEmpty(lifeHistory.Litter))
                     {
                         var oestrusEventId = pg.GetOestrusCodeId(lifeHistory.Code);
 
-                        pg.InsertOestrusEvent(lifeHistory, oestrusEventId);
+                        pg.InsertSinglePack(lifeHistory.Pack);
+
+                        var packId = pg.GetPackId(lifeHistory.Pack);
+                        pg.InsertOestrusEvent(lifeHistory, oestrusEventId, packId);
 
                     }
                     continue;

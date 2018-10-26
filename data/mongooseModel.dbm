@@ -387,6 +387,18 @@ SELECT  date, p.name as pack,l.name as litter, lec.code, exact, last_seen, cause
 ALTER TABLE MONGOOSE."Litter Events"
   OWNER TO postgres;
 
+CREATE OR REPLACE VIEW MONGOOSE."Oestrus Events" AS
+    select oe.date,p.name,oeci.code, oe.oestrus_code,oe.exact, oe.last_seen,
+    ST_X(oe.location::geometry) as latitude,
+    ST_Y(oe.location::geometry) as longitude,
+    oe.comment
+    From mongoose.oestrus_event oe
+    join mongoose.pack p on p.pack_id = oe.pack_id
+    join mongoose.oestrus_event_code oeci on oeci.oestrus_event_code_id = oe.oestrus_event_code_id	
+    order by date asc;
+
+ALTER TABLE MONGOOSE."Oestrus Events"
+  OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."NEW LIFE HISTORY" AS
 SELECT "Pack events".date AS "DATE",
@@ -456,6 +468,23 @@ UNION
     "Individual Events".latitude AS "Latitude",
     "Individual Events".longitude AS "Longitude"
    FROM mongoose."Individual Events"
+   UNION
+ SELECT "Oestrus Events".date AS "DATE",
+    "Oestrus Events"."pack_name" AS "PACK",
+    NULL::text AS "INDIV",
+    NULL::text AS "SEX",
+    NULL::text AS "AGE CAT",
+    NULL::text AS "STATUS",
+	NULL::text AS "Start/End",
+    "Oestrus Events".code AS "CODE",
+    "Oestrus Events".exact AS "EXACT",
+    "Oestrus Events".last_seen AS "LAST SEEN",
+    NULL::text AS "CAUSE",
+    NULL::text AS "LITTER",
+    "Oestrus Events".comment AS "COMMENT",
+    "Oestrus Events".latitude AS "Latitude",
+    "Oestrus Events".longitude AS "Longitude"
+   FROM mongoose."Oestrus Events"
   ORDER BY 1;
 
 ALTER TABLE MONGOOSE."NEW LIFE HISTORY"
@@ -3453,26 +3482,40 @@ INSERT INTO mongoose.pack_move_destination(destination)
 <table name="oestrus_event" hide-ext-attribs="true">
 	<schema name="mongoose"/>
 	<role name="postgres"/>
-	<position x="2500" y="1620"/>
+	<position x="2480" y="1620"/>
 	<column name="oestrus_event_id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
-	<column name="oestrus_code">
+	<column name="date" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="oestrus_code" not-null="true">
 		<type name="text" length="0"/>
 	</column>
-	<column name="date">
+	<column name="exact">
+		<type name="text" length="0"/>
+	</column>
+	<column name="last_seen">
 		<type name="date" length="0"/>
+	</column>
+	<column name="location">
+		<type name="geography" length="0"/>
+	</column>
+	<column name="comment">
+		<type name="text" length="0"/>
 	</column>
 	<constraint name="oestrus_event_pk" type="pk-constr" table="mongoose.oestrus_event">
 		<columns names="oestrus_event_id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="oestrus_event_code_id" index="1"/>
+		<object name="oestrus_event_code_id" index="2"/>
+		<object name="pack_id" index="1"/>
 	</customidxs>
 
 	<customidxs object-type="constraint">
 		<object name="oestrus_event_code_fk" index="1"/>
+		<object name="pack_fk" index="2"/>
 	</customidxs>
 </table>
 
@@ -3500,6 +3543,15 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 src-fk-pattern="{st}_fk"
 	 custom-color="#83af1f"
 	 src-table="mongoose.oestrus_event_code"
+	 dst-table="mongoose.oestrus_event"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="pack_has_many_oestrus_event" type="rel1n"
+	 src-col-pattern="{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#83af1f"
+	 src-table="mongoose.pack"
 	 dst-table="mongoose.oestrus_event"
 	 src-required="false" dst-required="false"/>
 

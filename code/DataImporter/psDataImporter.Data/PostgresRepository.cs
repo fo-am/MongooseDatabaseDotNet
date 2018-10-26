@@ -242,24 +242,34 @@ namespace psDataImporter.Data
             }
         }
 
-        public void InsertOestrusEvent(NewLifeHistory lifeHistory, int? oestrusEventId)
+        public void InsertOestrusEvent(NewLifeHistory lifeHistory, int? oestrusEventId, int? packId)
         {
 
             Logger.Info($"Adding oestrus event code: {lifeHistory.Code} OestrusId {lifeHistory.Litter}.");
+            if (packId==0)
+            {
+                packId = null;
+            }
+
+            var locationString = LocationString(lifeHistory.Latitude, lifeHistory.Longitude);
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
                 .ConnectionString))
             {
                 conn.Execute(
-                     @"INSERT INTO mongoose.oestrus_event(
-	                     oestrus_event_code_id, oestrus_code, date)
-	                    VALUES (@oestrus_event_code_id, @oestrus_code, @date);",
+                     $@"INSERT INTO mongoose.oestrus_event(
+	                    pack_id, oestrus_event_code_id, oestrus_code, date, exact, last_seen, location, comment)
+	                    VALUES (@pack_id, @oestrus_event_code_id, @oestrus_code, @date, @exact, @last_seen, {locationString}, @comment);",
                     new
                     {
+                        pack_id = packId,
                         oestrus_event_code_id = oestrusEventId,
                         oestrus_code = lifeHistory.Litter,
-                        date = lifeHistory.Date
+                        date = lifeHistory.Date,
+                        exact = lifeHistory.Exact,
+                        last_seen = lifeHistory.Lseen,
+                        comment = lifeHistory.Comment
                     });
             }
         }

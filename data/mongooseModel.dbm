@@ -388,7 +388,7 @@ ALTER TABLE MONGOOSE."Litter Events"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."Oestrus Events" AS
-    select oe.date,p.name,oeci.code, oe.oestrus_code,oe.exact, oe.last_seen,
+    select oe.date, p.name as pack_name,oeci.code, oe.oestrus_code,oe.exact, oe.last_seen,
     ST_X(oe.location::geometry) as latitude,
     ST_Y(oe.location::geometry) as longitude,
     oe.comment

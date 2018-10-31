@@ -297,7 +297,7 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsPackEvent(NewLifeHistory lifeHistory)
         {
-            var groupEvents = new[] { "ENDGRP", "FGRP", "IGI", "LGRP", "NGRP" };
+            var groupEvents = new[] { "ENDGRP", "FGRP",  "LGRP", "NGRP" };
 
             return groupEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase);
         }

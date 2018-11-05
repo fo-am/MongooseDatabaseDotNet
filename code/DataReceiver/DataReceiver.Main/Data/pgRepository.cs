@@ -630,10 +630,12 @@ namespace DataReceiver.Main.Data
 
                     if (!individiualId.HasValue)
                     {
-                        individiualId = InsertIndividual(new IndividualCreated { Name = message.entity_name, Gender = message.Type, UniqueId = message.UniqueId }, null, conn);                       
+                        individiualId = InsertIndividual(new IndividualCreated { Name = message.entity_name, Gender = message.Type, UniqueId = message.UniqueId }, null, conn);
                     }
 
-                    int packHistoryId = GetPackHistoryId(individiualId.Value, conn);
+                    var pack_id = InsertPack(message.associated_pack_name, null, conn);
+                    int packHistoryId = InsertPackHistory(pack_id, individiualId.Value, message.Date, conn);
+                   
                     //insert a individual event
                     CreateIndividualEvent(packHistoryId, message.Date, message.Code, conn);
 

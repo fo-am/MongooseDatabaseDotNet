@@ -12,6 +12,7 @@ namespace DataReceiver.Main.Model.LifeHistory
         public string UniqueId { get; set; }
         public string Code { get; set; }
         public string entity_name { get; set; }
+        public string associated_pack_name { get; set; }
         public DateTime Date { get; set; }
     }
 }

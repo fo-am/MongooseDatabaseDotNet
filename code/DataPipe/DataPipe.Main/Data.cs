@@ -200,17 +200,49 @@ namespace DataPipe.Main
 
         public static IEnumerable<LifeHistoryEvent> GetLifeHistoryEvents()
         {
-            const string stringSql = @"select 
-	                             se.entity_id,
-	                             se.entity_type,
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'date') as 'Date',
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'type') as 'Type',
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'code') as 'Code',
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'entity-uid') as 'UniqueId',
-	                             (select value from stream_value_varchar where entity_id = se.entity_id and attribute_id = 'entity-name') as 'entity_name',
-	                             se.sent
-                            from stream_entity se
-                            where se.entity_type = 'lifehist-event' and se.sent = 0;";
+            const string stringSql = @"SELECT se.entity_id, 
+                                       se.entity_type, 
+                                       (SELECT value 
+                                        FROM   stream_value_varchar 
+                                        WHERE  entity_id = se.entity_id 
+                                               AND attribute_id = 'date')              AS 'Date', 
+                                       (SELECT value 
+                                        FROM   stream_value_varchar 
+                                        WHERE  entity_id = se.entity_id 
+                                               AND attribute_id = 'type')              AS 'Type', 
+                                       (SELECT value 
+                                        FROM   stream_value_varchar 
+                                        WHERE  entity_id = se.entity_id 
+                                               AND attribute_id = 'code')              AS 'Code', 
+                                       (SELECT value 
+                                        FROM   stream_value_varchar 
+                                        WHERE  entity_id = se.entity_id 
+                                               AND attribute_id = 'entity-uid')        AS 'UniqueId', 
+                                       (SELECT value 
+                                        FROM   stream_value_varchar 
+                                        WHERE  entity_id = se.entity_id 
+                                               AND attribute_id = 'entity-name')       AS 'entity_name', 
+                                       (SELECT svv2.value 
+                                        FROM   sync_entity se2 
+                                               join sync_value_varchar svv2 
+                                                 ON svv2.entity_id = se2.entity_id 
+                                        WHERE  svv2.attribute_id = 'name' 
+                                               AND se2.unique_id IN (SELECT value 
+                                                                     FROM   sync_entity se1 
+                                                                            join sync_value_varchar svv1 
+                                                                              ON svv1.entity_id = se1.entity_id 
+                                                                     WHERE 
+                                                   se1.unique_id = (SELECT value 
+                                                                    FROM   stream_value_varchar 
+                                                                    WHERE  entity_id = se.entity_id 
+                                                                           AND attribute_id = 
+                                                                               'entity-uid' 
+                                                                   ) 
+                                                   AND svv1.attribute_id = 'pack-id')) AS associated_pack_name, 
+                                       se.sent 
+                                FROM   stream_entity se 
+                                WHERE  se.entity_type = 'lifehist-event' 
+                                       AND se.sent = 0;";
             var lifeEvents = RunSql<LifeHistoryEvent>(stringSql).ToList();
 
 

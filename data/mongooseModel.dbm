@@ -505,9 +505,9 @@ INSERT INTO mongoose.individual_event_code (code) VALUES ('FPREG');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('ABORT');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('BIRTH');
 
-INSERT INTO mongoose.litter_event_code(code) VALUES ('unsuccessful');
-INSERT INTO mongoose.litter_event_code(code) VALUES ('short-lived');
-INSERT INTO mongoose.litter_event_code(code) VALUES ('successful');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('UNSUCCESSFUL');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('SHORT-LIVED');
+INSERT INTO mongoose.litter_event_code(code) VALUES ('SUCCESSFUL');
 INSERT INTO mongoose.litter_event_code(code) VALUES ('BORN');
 
 INSERT INTO mongoose.pack_event_code(code, detail) VALUES ('ENDGRP', 'End of pack');

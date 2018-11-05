@@ -24,12 +24,12 @@ namespace DataReceiver.Main.Data
         private ILogger _logger;
         private readonly IConnectionManager _connectionManager;
 
-        public PgRepository( ILogger logger, IConnectionManager connectionManager)
+        public PgRepository(ILogger logger, IConnectionManager connectionManager)
         {
             _logger = logger;
             _connectionManager = connectionManager;
         }
-       
+
 
         public int StoreMessage(string fullName, string message, string messageId)
         {
@@ -50,7 +50,7 @@ namespace DataReceiver.Main.Data
             }
         }
 
-        public  void MessageHandledOk(int entityId)
+        public void MessageHandledOk(int entityId)
         {
             _logger.Info($"Message handled ok.");
             using (IDbConnection conn = _connectionManager.GetConn())
@@ -60,7 +60,7 @@ namespace DataReceiver.Main.Data
             }
         }
 
-        public  int FailedToHandleMessage(int entityId, Exception ex)
+        public int FailedToHandleMessage(int entityId, Exception ex)
         {
             _logger.Error(ex, "Failed to handle message.");
             using (IDbConnection conn = _connectionManager.GetConn())
@@ -109,7 +109,7 @@ namespace DataReceiver.Main.Data
                     }
 
                     var packId = InsertPack(message.Name, message.UniqueId, conn, message.CreatedDate);
-                    CreatePackEvent(packId, message.CreatedDate, "ngrp", conn);
+                    CreatePackEvent(packId, message.CreatedDate, "NGRP", conn);
                     tr.Commit();
                 }
             }
@@ -117,7 +117,7 @@ namespace DataReceiver.Main.Data
 
         private void UpdatePackWithUniqueId(string uniqueId, string name, IDbConnection conn)
         {
-            var pack = GetPackNameByUniqueId(uniqueId,conn);
+            var pack = GetPackNameByUniqueId(uniqueId, conn);
             var packId = TryGetPackId(name, conn);
             if (pack == null && packId.HasValue)
             {
@@ -227,14 +227,14 @@ namespace DataReceiver.Main.Data
                     // if either are there don't carry on with the add.
                     UpdateIndividualWithUniqueId(message.UniqueId, message.Name, conn);
 
-                    var current = GetIndividualNameByUniqueId(message.UniqueId,conn);
+                    var current = GetIndividualNameByUniqueId(message.UniqueId, conn);
                     if (current != null)
                     {
-                        if ( message.Name != null && message.Name != current.Name)
+                        if (message.Name != null && message.Name != current.Name)
                         {
                             _logger.Info($"Updating Individual name '{current.Name}' to '{message.Name}'!");
                             UpdateIndividualName(current.IndividualId, message.Name, current.Name, conn);
-                           
+
                         }
 
                         if (message.CollarWeight.HasValue && !current.CollarWeight.Equals(message.CollarWeight))
@@ -251,7 +251,7 @@ namespace DataReceiver.Main.Data
                             UpdateGender(current.IndividualId, message.Gender, current.Sex, conn);
                         }
 
-                        if (!string.IsNullOrEmpty(message.ChipCode) && current.TransponderId!= message.ChipCode)
+                        if (!string.IsNullOrEmpty(message.ChipCode) && current.TransponderId != message.ChipCode)
                         {
                             // update transponder
                             _logger.Info($"Updating individual transponder code '{current.TransponderId}' to {message.ChipCode}!");
@@ -268,7 +268,7 @@ namespace DataReceiver.Main.Data
                         tr.Commit();
                         return;
                     }
-                   
+
 
                     if (TryGetIndividualId(message.Name, conn).HasValue)
                     {
@@ -286,9 +286,9 @@ namespace DataReceiver.Main.Data
                     }
                     else
                     {
-                         litterId = InsertLitter(message.LitterCode, packId, conn);
+                        litterId = InsertLitter(message.LitterCode, packId, conn);
                     }
-                   
+
                     var individualId = InsertIndividual(message, litterId, conn);
                     var packhistory = InsertPackHistory(packId, individualId, message.DateOfBirth, conn);
 
@@ -352,7 +352,7 @@ namespace DataReceiver.Main.Data
         {
             // if there is a memeber with this unique then good times
             // if thee is a member with this name but no unique then good times
-            
+
 
             var individualByUniqueId = GetIndividualNameByUniqueId(uniqueId, conn);
             var individualId = TryGetIndividualId(name, conn);
@@ -419,12 +419,12 @@ namespace DataReceiver.Main.Data
                 });
         }
 
-        private void UpdateIndividualName(int individualId, string newName,string oldName, IDbConnection conn)
+        private void UpdateIndividualName(int individualId, string newName, string oldName, IDbConnection conn)
         {
             // insert oldName into the database history table
             conn.ExecuteScalar(
                 "Insert into mongoose.individual_name_history (individual_id, name, date_changed) values(@individualId, @name, @date)",
-                new {individualId = individualId, name = oldName, date = DateTime.UtcNow});
+                new { individualId = individualId, name = oldName, date = DateTime.UtcNow });
             // update the individual with new name.
             conn.ExecuteScalar("Update mongoose.individual set name = @newName where individual_id = @id", new
             {
@@ -435,9 +435,9 @@ namespace DataReceiver.Main.Data
 
         private DatabaseIndividual GetIndividualNameByUniqueId(string uniqueId, IDbConnection conn)
         {
-           
-          return  conn.Query<DatabaseIndividual>(
-                @"SELECT 
+
+            return conn.Query<DatabaseIndividual>(
+                  @"SELECT 
                     individual_id as IndividualId, 
                     litter_id as LitterId,
                     name as Name,
@@ -448,7 +448,7 @@ namespace DataReceiver.Main.Data
                     date_of_birth as DateOfBirth,
                     is_mongoose as IsMongoose
 	            FROM mongoose.individual where unique_id = @uniqueId;",
-                new { uniqueId }).FirstOrDefault();
+                  new { uniqueId }).FirstOrDefault();
         }
 
         private bool LitterIsNotBorn(int litterId, IDbConnection conn)
@@ -457,7 +457,7 @@ namespace DataReceiver.Main.Data
 	                                    FROM mongoose.litter l
                                         join mongoose.litter_event le on  le.litter_id = l.litter_id
                                         join mongoose.litter_event_code lec on lec.litter_event_code_id = le.litter_event_code_id
-                                        where lec.code = 'born' and l.litter_id = @litterId", new
+                                        where lec.code = 'BORN' and l.litter_id = @litterId", new
             {
                 litterId
             });
@@ -484,7 +484,7 @@ namespace DataReceiver.Main.Data
                        new { name = packName, unique_id = packUniqueId, pack_created_date = packCreatedDate });
         }
 
-        private  int? TryGetPackId(string packName, IDbConnection conn)
+        private int? TryGetPackId(string packName, IDbConnection conn)
         {
             var packId = conn.ExecuteScalar<int?>("select pack_id from mongoose.pack where name = @name",
                 new { name = packName });
@@ -501,7 +501,7 @@ namespace DataReceiver.Main.Data
                        litterId, message.DateOfBirth, conn);
         }
 
-        private  int AddIndividual(string name, string gender, string chipcode, string uniqueId, int? litterId, DateTime? dateOfBirth, IDbConnection conn)
+        private int AddIndividual(string name, string gender, string chipcode, string uniqueId, int? litterId, DateTime? dateOfBirth, IDbConnection conn)
         {
             return conn.ExecuteScalar<int>(
                 @"Insert into mongoose.individual
@@ -519,7 +519,7 @@ namespace DataReceiver.Main.Data
                 });
         }
 
-        private  int? TryGetIndividualId(string name, IDbConnection conn)
+        private int? TryGetIndividualId(string name, IDbConnection conn)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -603,7 +603,7 @@ namespace DataReceiver.Main.Data
                 @"SELECT pack_event_code_id FROM mongoose.pack_event_code where code = @code",
                 new
                 {
-                    code
+                    code = code.ToUpperInvariant()
                 });
 
             conn.Execute(@"INSERT INTO mongoose.pack_event
@@ -690,7 +690,7 @@ namespace DataReceiver.Main.Data
                 @"SELECT individual_event_code_id FROM mongoose.individual_event_code where code = @code",
                 new
                 {
-                    code
+                    code = code.ToUpperInvariant()
                 });
 
             conn.Execute(@"INSERT INTO mongoose.individual_event
@@ -736,7 +736,7 @@ namespace DataReceiver.Main.Data
                 @"SELECT litter_event_code_id FROM mongoose.litter_event_code where code = @code",
                 new
                 {
-                    code
+                    code = code.ToUpperInvariant()
                 });
 
             conn.Execute(@"INSERT INTO mongoose.litter_event
@@ -750,7 +750,7 @@ namespace DataReceiver.Main.Data
                 });
         }
 
-        private  int? TryGetLitterId(string litterName, IDbConnection conn)
+        private int? TryGetLitterId(string litterName, IDbConnection conn)
         {
             var litterId = conn.ExecuteScalar<int?>("select litter_id from mongoose.litter where name = @name",
                 new { name = litterName });
@@ -783,7 +783,7 @@ namespace DataReceiver.Main.Data
 
                     if (litterId.HasValue)
                     {
-                        UpdateCreationDateIfAltered(litterId.Value, message.Date,conn);
+                        UpdateCreationDateIfAltered(litterId.Value, message.Date, conn);
                         _logger.Info($"Litter already in database!  {message.LitterName}");
                         tr.Commit();
                         return;

@@ -7,7 +7,8 @@ using DataReceiver.Main.Handlers;
 using DataReceiver.Main.Interfaces;
 using DataReceiver.Main.Model;
 using FakeItEasy;
-
+using System.Data;
+using Dapper;
 
 namespace DataReceiver.Test
 {
@@ -38,6 +39,12 @@ namespace DataReceiver.Test
         {
             var log = A.Fake<ILogger>();
             var manager = A.Fake<IConnectionManager>();
+            var con = A.Fake<IDbConnection>();
+
+            A.CallTo(() => manager.GetConn()).Returns(con);
+
+            A.CallTo(() => con.ExecuteScalar<int?>(A<string>.Ignored, A<object>.Ignored, null, null, null)).Returns(2);
+
             var db = new PgRepository(log, manager);
             var weight = new WeightMeasure
             {
@@ -46,6 +53,8 @@ namespace DataReceiver.Test
                 PackId = "34"
             };
             db.InsertNewWeight(weight);
+
+        //    A.CallTo(() => db.InsertNewWeight(weight)).MustHaveHappened();
         }
     }
     

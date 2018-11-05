@@ -740,7 +740,7 @@ namespace DataReceiver.Main.Data
                 });
 
             conn.Execute(@"INSERT INTO mongoose.litter_event
-                            (litter_id, litter_event_code_id, last_seen)
+                            (litter_id, litter_event_code_id, date)
 	                        VALUES (@litter_id, @litter_event_code_id, @date);",
                 new
                 {

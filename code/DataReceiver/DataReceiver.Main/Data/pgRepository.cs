@@ -294,19 +294,19 @@ namespace DataReceiver.Main.Data
 
                     if (message.DateOfBirth.HasValue)
                     {
-                        CreateIndividualEvent(packhistory, message.DateOfBirth, "born", conn);
+                        CreateIndividualEvent(packhistory, message.DateOfBirth, "BORN", conn);
                         if (litterId.HasValue)
                         {
                             if (LitterIsNotBorn(litterId.Value, conn))
                             {
-                                CreateLitterEvent(litterId.Value, message.DateOfBirth.Value, "born", conn);
+                                CreateLitterEvent(litterId.Value, message.DateOfBirth.Value, "BORN", conn);
                             }
                         }
                     }
                     else
                     {
                         //todo: what if born already? (or fseen already?!)
-                        CreateIndividualEvent(packhistory, DateTime.UtcNow, "fseen", conn);
+                        CreateIndividualEvent(packhistory, DateTime.UtcNow, "FSEEN", conn);
                     }
 
                     tr.Commit();

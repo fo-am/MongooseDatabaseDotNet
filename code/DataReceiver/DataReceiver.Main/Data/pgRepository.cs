@@ -630,7 +630,7 @@ namespace DataReceiver.Main.Data
 
                     if (!individiualId.HasValue)
                     {
-                        individiualId = InsertIndividual(new IndividualCreated { Name = message.entity_name, Gender = message.Type, UniqueId = message.UniqueId }, null, conn);
+                        individiualId = InsertIndividual(new IndividualCreated { Name = message.entity_name, Gender =null, UniqueId = message.UniqueId }, null, conn);
                     }
 
                     var pack_id = InsertPack(message.associated_pack_name, null, conn);

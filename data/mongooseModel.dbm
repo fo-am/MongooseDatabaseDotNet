@@ -417,7 +417,7 @@ SELECT "Pack events".date AS "DATE",
     "Pack events".latitude AS "Latitude",
     "Pack events".longitude AS "Longitude"
    FROM mongoose."Pack events"
-UNION
+UNION all
  SELECT "Litter Events".date AS "DATE",
     "Litter Events".pack AS "PACK",
     NULL::text AS "INDIV",
@@ -434,7 +434,7 @@ UNION
     "Litter Events".latitude AS "Latitude",
     "Litter Events".longitude AS "Longitude"
    FROM mongoose."Litter Events"
-UNION
+UNION all
  SELECT "Inter Group Interactions".date::date AS "DATE",
     "Inter Group Interactions"."focal pack" AS "PACK",
     "Inter Group Interactions".leader AS "INDIV",
@@ -451,7 +451,7 @@ UNION
     "Inter Group Interactions".latitude AS "Latitude",
     "Inter Group Interactions".longitude AS "Longitude"
    FROM mongoose."Inter Group Interactions"
-UNION
+UNION all
  SELECT "Individual Events".date AS "DATE",
     "Individual Events"."pack name" AS "PACK",
     "Individual Events"."individual name" AS "INDIV",
@@ -468,7 +468,7 @@ UNION
     "Individual Events".latitude AS "Latitude",
     "Individual Events".longitude AS "Longitude"
    FROM mongoose."Individual Events"
-   UNION
+   UNION all
  SELECT "Oestrus Events".date AS "DATE",
     "Oestrus Events"."pack_name" AS "PACK",
     NULL::text AS "INDIV",

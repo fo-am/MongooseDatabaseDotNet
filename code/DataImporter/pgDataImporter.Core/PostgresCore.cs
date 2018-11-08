@@ -179,7 +179,7 @@ namespace pgDataImporter.Core
                 {
                     Logger.Info("Individual Event");
                     duplicateCount++;
-                    if (lifeHistory.Code.Equals("born", StringComparison.OrdinalIgnoreCase))
+                    if (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase))
                     {
                         pg.InsertIndividual(new Individual
                         {
@@ -279,7 +279,17 @@ namespace pgDataImporter.Core
                 return true;
             }
 
-            var individualEvents = new[] {   "2ND MO", "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
+            if (lifeHistory.Code.Equals("LGRP", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.StartEnd))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("FGRP", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.StartEnd))
+            {
+                return true;
+            }
+
+            var individualEvents = new[] {   "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
                 "ENDEV", "FPREG", "FSEEN", "IMM", "KIDNAP", "LEAVE", "LSEEN", "NUMARK", "RESCUE", "RETURN", "STEV" };
 
 
@@ -297,7 +307,17 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsPackEvent(NewLifeHistory lifeHistory)
         {
-            var groupEvents = new[] { "ENDGRP", "FGRP",  "LGRP", "NGRP" };
+            if (lifeHistory.Code.Equals("LGRP", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("FGRP", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd))
+            {
+                return true;
+            }
+
+            var groupEvents = new[] { "ENDGRP", "NGRP" };
 
             return groupEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase);
         }
@@ -323,9 +343,12 @@ namespace pgDataImporter.Core
                 return true;
             }
 
-            if (lifeHistory.Code.Equals("LOST", StringComparison.OrdinalIgnoreCase) ||
-                (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd)) &&
-                !string.IsNullOrEmpty(lifeHistory.Litter))
+            if (lifeHistory.Code.Equals("LOST", StringComparison.OrdinalIgnoreCase) || (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.StartEnd)))
+            {
+                return true;
+            }
+
+            if (lifeHistory.Code.Equals("2ND MO", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

@@ -48,7 +48,7 @@ namespace psDataImporter.Data
                     Logger.Info("Getting ultrasound data");
                     conn.Open();
                     ultrasounds = conn.Query<Ultrasound>(
-                        @"SELECT 
+                        @"SELECT
                             [DATE] ,
                             [INDIV] ,
                             [PACK] ,
@@ -99,7 +99,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 Logger.Info("Getting Radio Collar data");
-                return conn.Query<RadioCollar>(@" 
+                return conn.Query<RadioCollar>(@"
                                         SELECT
                                         PACK,
                                         INDIVIDUAL,
@@ -121,22 +121,22 @@ namespace psDataImporter.Data
             {
                 Logger.Info("Getting Life History data");
 
-                return conn.Query<NewLifeHistory>(@" 
-                                      SELECT DATE, 
-                                            PACK, 
-                                            INDIV, 
-                                            SEX, 
-                                            [AGE CAT] as AgeCat, 
-                                            STATUS, 
-                                            [START/END] as StartEnd, 
-                                            CODE, 
-                                            EXACT, 
-                                            LSEEN, 
-                                            CAUSE, 
-                                            LITTER, 
-                                            [PREV NAME] as PrevName, 
-                                            COMMENT, 
-                                            EDITED, 
+                return conn.Query<NewLifeHistory>(@"
+                                      SELECT DATE,
+                                            PACK,
+                                            INDIV,
+                                            SEX,
+                                            [AGE CAT] as AgeCat,
+                                            STATUS,
+                                            [START/END] as StartEnd,
+                                            CODE,
+                                            EXACT,
+                                            LSEEN,
+                                            CAUSE,
+                                            LITTER,
+                                            [PREV NAME] as PrevName,
+                                            COMMENT,
+                                            EDITED,
                                             Latitude,
                                             Longitude,
                                             date_entered
@@ -153,25 +153,25 @@ namespace psDataImporter.Data
             {
                 Logger.Info("Getting Life History data");
 
-                return conn.Query<Oestrus>(@" 
-                                      SELECT 
+                return conn.Query<Oestrus>(@"
+                                      SELECT
                                             DATE,
                                             TIME,
                                             GROUP,
-                                            [changes to data] as changes_to_data,   
-                                            COMMENT,                                
-                                            CONFIDENCE,                             
-                                            COPULATION,  
-                                            [FEMALE ID] as FEMALE_ID,               
-                                            [GUARD ID] as GUARD_ID,                 
-                                            Latitude,                               
-                                            Longitude,                              
-                                            [OESTRUS CODE] as OESTRUS_CODE,         
-                                            [PESTERER ID] as PESTERER_ID,           
-                                            [PESTERER ID 2] as PESTERER_ID_2,       
-                                            [PESTERER ID 3] as PESTERER_ID_3,       
-                                            [PESTERER ID 4] as PESTERER_ID_4,       
-                                            STRENGTH                                         
+                                            [changes to data] as changes_to_data,
+                                            COMMENT,
+                                            CONFIDENCE,
+                                            COPULATION,
+                                            [FEMALE ID] as FEMALE_ID,
+                                            [GUARD ID] as GUARD_ID,
+                                            Latitude,
+                                            Longitude,
+                                            [OESTRUS CODE] as OESTRUS_CODE,
+                                            [PESTERER ID] as PESTERER_ID,
+                                            [PESTERER ID 2] as PESTERER_ID_2,
+                                            [PESTERER ID 3] as PESTERER_ID_3,
+                                            [PESTERER ID 4] as PESTERER_ID_4,
+                                            STRENGTH
                                             FROM [OESTRUS];
                                             ").ToList();
             }
@@ -185,8 +185,8 @@ namespace psDataImporter.Data
             {
                 Logger.Info("Getting Life History data");
 
-                return conn.Query<CapturesNew2013>(@" 
-                                      SELECT 
+                return conn.Query<CapturesNew2013>(@"
+                                      SELECT
                                            [Capture DATE] as Capture_DATE ,
                                            [INDIV] ,
                                            [TRANSPONDER] ,
@@ -254,23 +254,23 @@ namespace psDataImporter.Data
             {
                 Logger.Info("Getting pup associations.");
 
-                return conn.Query<PupAssociation>(@" 
-                                      SELECT                         
-                                        [DATE]                              
-                                        ,[SESSION]                           
-                                        ,GROUP                             
-                                        ,LITTER                            
-                                        ,PUP                               
-                                        ,[PUP SEX] as PUP_SEX              
-                                        ,ESCORT                            
-                                        ,[ESC SEX] as ESC_SEX              
-                                        ,STRENGTH                          
-                                        ,CONFIDENCE                        
-                                        ,COMMENT                           
-                                        ,[Editing comments] as Editing_comments                
-                                        ,Latitude                                 
+                return conn.Query<PupAssociation>(@"
+                                      SELECT
+                                        [DATE]
+                                        ,[SESSION]
+                                        ,GROUP
+                                        ,LITTER
+                                        ,PUP
+                                        ,[PUP SEX] as PUP_SEX
+                                        ,ESCORT
+                                        ,[ESC SEX] as ESC_SEX
+                                        ,STRENGTH
+                                        ,CONFIDENCE
+                                        ,COMMENT
+                                        ,[Editing comments] as Editing_comments
+                                        ,Latitude
                                         ,Longitude
-                                        from 
+                                        from
                                         [PUP ASSOCIATION];").ToList();
             }
         }
@@ -284,7 +284,7 @@ namespace psDataImporter.Data
                 Logger.Info("Getting Babysitting Records.");
 
                 return conn.Query<BABYSITTING_RECORDS>(@"
-            Select 
+            Select
             [DATE]
             ,GROUP
             ,[LITTER CODE] as LITTER_CODE
@@ -299,11 +299,10 @@ namespace psDataImporter.Data
             ,COMMENT
             ,Latitude
             ,Longitude
-             from 
+             from
             [BABYSITTING RECORDS];").ToList();
             }
         }
-
 
         public IEnumerable<DiaryAndGrpComposition> GetGroupCompositions()
         {
@@ -314,7 +313,7 @@ namespace psDataImporter.Data
                 Logger.Info("Getting Babysitting Records.");
 
                 return conn.Query<DiaryAndGrpComposition>(@"
-            Select           
+            Select
             [Date],
             [Pack],
             [Observer],
@@ -331,7 +330,6 @@ namespace psDataImporter.Data
             [Unk em pups] as Unk_em_pups,
             [Pups in Den?] as Pups_in_Den,
             [Comment]
-             
            FROM [DIARY AND GRP COMPOSITION];").ToList();
             }
         }
@@ -356,7 +354,7 @@ namespace psDataImporter.Data
                                 ,[Time of Collection] as Time_of_Collection
                                 ,[Parasite sample taken] as Parasite_sample_taken
                                 ,Comments
-             
+
                    FROM [POO DATABASE];").ToList();
             }
         }
@@ -429,8 +427,7 @@ namespace psDataImporter.Data
                                                             ,[Notes]
                                                             FROM [Maternal Condition Experiment: Females];").ToList();
             }
-
-    }
+        }
 
         public List<Jennis_blood_data> GetBloodData()
         {
@@ -442,13 +439,13 @@ namespace psDataImporter.Data
 
                 return conn.Query<Jennis_blood_data>(@"
                                          SELECT
-                                            [Date] 
-                                            ,[Mongoose] 
+                                            [Date]
+                                            ,[Mongoose]
                                             ,[Trap time] as Trap_time
                                             ,[Bleed time (from stopwatch)] as Bleed_time
                                             ,[Weight]
                                             ,[Release time] as Release_time
-                                            ,[Sample] 
+                                            ,[Sample]
                                             ,[Spinning time] as Spinning_time
                                             ,[Freeze time] as Freeze_time
                                             ,[Focal]
@@ -604,7 +601,6 @@ namespace psDataImporter.Data
 
         public List<OxShieldingFemaleTreatmentGroups> GetOxFemale()
         {
-
             using (var conn = new OleDbConnection(ConfigurationManager
                 .ConnectionStrings["accessConnectionString"]
                 .ConnectionString))

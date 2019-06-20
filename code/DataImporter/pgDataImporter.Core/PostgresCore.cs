@@ -106,7 +106,6 @@ namespace pgDataImporter.Core
                 {
                     Logger.Error($"No valid litter, pack or individual for life history event. {lifeHistory}");
 
-                    
                     continue;
                 }
 
@@ -127,7 +126,7 @@ namespace pgDataImporter.Core
                 if (LifeHistoryIsLitterEvent(lifeHistory))
                 {
                     Logger.Info("Litter Event");
-                    duplicateCount++;                 
+                    duplicateCount++;
 
                     // Add pack info
                     pg.InsertSinglePack(lifeHistory.Pack);
@@ -136,7 +135,7 @@ namespace pgDataImporter.Core
 
                     string litter = lifeHistory.Litter ?? lifeHistory.Indiv;
                     pg.InsertSingleLitter(litter, packId);
-                 
+
                     int litterId = pg.GetLitterId(litter).Value;
 
                     // add litter event
@@ -146,8 +145,6 @@ namespace pgDataImporter.Core
                     pg.LinkLitterEvent(litterId, litterCodeId, lifeHistory);
                     continue;
                 }
-
-
 
                 if (LifeHistoryIsPackEvent(lifeHistory))
                 {
@@ -174,7 +171,6 @@ namespace pgDataImporter.Core
                     continue;
                 }
 
-
                 if (LifeHistoryIsIndividualEvent(lifeHistory))
                 {
                     Logger.Info("Individual Event");
@@ -200,8 +196,6 @@ namespace pgDataImporter.Core
                     var packId = pg.GetPackId(lifeHistory.Pack);
 
                     var individualId = pg.GetIndividualId(lifeHistory.Indiv);
-
-
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
 
@@ -237,15 +231,12 @@ namespace pgDataImporter.Core
 
                         var packId = pg.GetPackId(lifeHistory.Pack);
                         pg.InsertOestrusEvent(lifeHistory, oestrusEventId, packId);
-
                     }
                     continue;
                 }
 
-
                 Logger.Error($"We failed to process this event {lifeHistory}");
                 //throw new Exception($"No type found for this life history {lifeHistory}");
-
             }
 
             Logger.Info("Done adding life history data.");
@@ -292,7 +283,6 @@ namespace pgDataImporter.Core
             var individualEvents = new[] {   "ABORT", "ADIED", "APPROACH", "BIRTH", "DEPART", "DIED", "EM",
                 "ENDEV", "FPREG", "FSEEN", "IMM", "KIDNAP", "LEAVE", "LSEEN", "NUMARK", "RESCUE", "RETURN", "STEV" };
 
-
             if (individualEvents.Contains(lifeHistory.Code, StringComparer.OrdinalIgnoreCase) && !string.IsNullOrEmpty(lifeHistory.Indiv))
             {
                 return true;
@@ -324,9 +314,7 @@ namespace pgDataImporter.Core
 
         private static bool LifeHistoryIsLitterEvent(NewLifeHistory lifeHistory)
         {
-
-
-            // if we have the right codes (lost and born) but not if we have a start/end code (means we are an individual) 
+            // if we have the right codes (lost and born) but not if we have a start/end code (means we are an individual)
             // and if we don't have a litter we cannot do anything (and we lose the row)
             if (lifeHistory.Code.Equals("1STFO", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(lifeHistory.Sex))
             {
@@ -486,7 +474,6 @@ namespace pgDataImporter.Core
 
         private void InsertpackHistory(int packId, int individualId, DateTime? date, PostgresRepository pg)
         {
-
             // Get all pack histories for an individual
 
             var packHistories = pg.GetAllPackHistoriesForIndividual(individualId);
@@ -583,7 +570,7 @@ namespace pgDataImporter.Core
 
                     males.ForEach(male => pg.InsertIndividual(new Individual { Name = male }));
                 }
-                // add oestrus record, add pesterers 
+                // add oestrus record, add pesterers
                 pg.AddOestrusEvent(oestrus, males);
             }
         }
@@ -621,7 +608,6 @@ namespace pgDataImporter.Core
                 // do transponder
 
                 pg.AddTransponder(capture.TRANSPONDER, individualId);
-
 
                 if (capture.Capture_DATE is null)
                 {
@@ -782,7 +768,7 @@ namespace pgDataImporter.Core
         private static DateTime? GetTimeFromString(string timeString)
         {
             //Times are strings that need to be turned into datetime times.
-            // Example times are 
+            // Example times are
             // 12  => 12:00
             // 13.4 => 13:40
             // 3.32 => 3:32
@@ -818,7 +804,7 @@ namespace pgDataImporter.Core
                 }
             }
 
-            //830, 836 and 1505 
+            //830, 836 and 1505
             if (timeString == "830")
             {
                 timestart = new DateTime().AddHours(8).AddMinutes(30);
@@ -1035,8 +1021,6 @@ namespace pgDataImporter.Core
                 var litterId = pg.GetLitterId(female.Litter);
 
                 pg.AddConditioningFemale(packHistoryId, pairedFemaleId, litterId, female);
-
-
             }
         }
 
@@ -1053,9 +1037,7 @@ namespace pgDataImporter.Core
                 var bleedtime = TimeSpan.FromSeconds(double.Parse(blood.Bleed_time));
 
                 pg.AddBloodData(mongooseId, bleedtime, blood);
-
             }
-
         }
 
         public void ProcessHpaSamples(List<HPA_samples> hpaSamples)
@@ -1075,8 +1057,6 @@ namespace pgDataImporter.Core
 
                 pg.InsertHpaSample(individualId, firstBloodTime, secondBloodTime, timeInTrap, hpaSample);
             }
-
-
         }
 
         private static TimeSpan GetTimespanFromString(string time)
@@ -1084,7 +1064,6 @@ namespace pgDataImporter.Core
             time = time.Replace(';', ':');
             var times = time.Split(':');
             return new TimeSpan(int.Parse(times[0]), int.Parse(times[1]), int.Parse(times[2]));
-
         }
 
         public void ProcessDnaSamples(List<DNA_SAMPLES> dnaSamples)

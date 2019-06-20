@@ -100,7 +100,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
 
             {
-                return conn.ExecuteScalar<int>(@"select ph.pack_history_id  from mongoose.pack_history ph 
+                return conn.ExecuteScalar<int>(@"select ph.pack_history_id  from mongoose.pack_history ph
             join mongoose.pack p on p.pack_id = ph.pack_id
             join mongoose.individual i on ph.individual_id = i.individual_id
             where p.name = @packName and i.name = @individualName",
@@ -187,7 +187,7 @@ namespace psDataImporter.Data
                 // if so do we have all the data we have at this point?
                 // if not then update it with what we have...
                 // what if we have the same data but it conflicts (Sex eg)
-                // 
+                //
                 var inDatabaseIndividual = conn
                     .Query<Individual>(
                         "Select individual_id as IndividualId, litter_id as LitterId,  name, sex  from mongoose.individual where name = @name",
@@ -233,9 +233,9 @@ namespace psDataImporter.Data
                     }
 
                     conn.ExecuteScalar<int>(
-                        @"Insert into mongoose.individual 
+                        @"Insert into mongoose.individual
                             (name, sex, litter_id, date_of_birth, is_mongoose)
-                            values 
+                            values
                             (@name, @sex, @litterId, @dateOfBirth, @is_mongoose) ON CONFLICT DO NOTHING",
                         new
                         {
@@ -252,9 +252,8 @@ namespace psDataImporter.Data
 
         public void InsertOestrusEvent(NewLifeHistory lifeHistory, int? oestrusEventId, int? packId)
         {
-
             Logger.Info($"Adding oestrus event code: {lifeHistory.Code} OestrusId {lifeHistory.Litter}.");
-            if (packId==0)
+            if (packId == 0)
             {
                 packId = null;
             }
@@ -475,7 +474,6 @@ namespace psDataImporter.Data
                         exact,
                         cause,
                         comment
-
                     });
             }
         }
@@ -571,8 +569,6 @@ namespace psDataImporter.Data
 
             var maleIds = males.Select(GetPossibleNullIndividualId);
 
-
-
             var locationString = LocationString(oestrus.Latitude, oestrus.Longitude);
 
             var sql = $@"INSERT INTO mongoose.oestrus(
@@ -611,7 +607,6 @@ namespace psDataImporter.Data
                         {
                             oestrus_id = oestrusId,
                             individual_id = maleId
-
                         });
                     }
                 }
@@ -625,7 +620,7 @@ namespace psDataImporter.Data
                .ConnectionString))
 
             {
-                return conn.Query<Individual>(@"select 
+                return conn.Query<Individual>(@"select
                                                 individual_id as IndividualId,
                                                 litter_id as LitterId,
                                                 name as Name,
@@ -635,11 +630,9 @@ namespace psDataImporter.Data
                                                 unique_id,
                                                 collar_weight,
                                                 is_mongoose
-                                                from mongoose.individual 
+                                                from mongoose.individual
                                                 where individual_id = @individual_id",
                      new { individual_id = individualId }).Single();
-
-             
             }
         }
 
@@ -725,7 +718,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 conn.Execute(
-                    $@"Insert into mongoose.litter_event 
+                    $@"Insert into mongoose.litter_event
                       (litter_id, litter_event_code_id, date, cause, exact, last_seen, location, comment)
                        values
                       (@litterId, @litterEventCodeId, @date, @cause, @exact, @lastSeen, {locationString}, @comment)
@@ -754,7 +747,6 @@ namespace psDataImporter.Data
 
             // makes sure first pack is in the db
             InsertSinglePack(lifeHistory.Pack);
-
 
             var secondpacks = lifeHistory.Cause.Split(new[] { "/", ",", " OR ", " or " }, StringSplitOptions.None);
             List<int?> secondPackIds = new List<int?>();
@@ -1346,7 +1338,6 @@ namespace psDataImporter.Data
                 .ConnectionString))
 
             {
-
                 list = conn.Query<int>(@"SELECT pack_history_id, pack_id, individual_id, date_joined
 	                                    FROM mongoose.pack_history
                                         where pack_id = @pack_id and individual_id = @individual_id and date_joined is not distinct from @date_joined;",
@@ -1378,7 +1369,7 @@ namespace psDataImporter.Data
                 .ConnectionString))
             {
                 return conn.Query<string>(
-                    @"SELECT name  
+                    @"SELECT name
                       FROM mongoose.individual_name_history
                       WHERE individual_id = @individual_id",
                     new { individual_id = individualId }).ToList();
@@ -1396,7 +1387,6 @@ namespace psDataImporter.Data
                     @"INSERT INTO mongoose.individual_name_history(individual_id, name)
 	                  VALUES (@IndividualId, @name); ",
                     new { IndividualId = individualId, name = oldName });
-
             }
         }
     }

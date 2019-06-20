@@ -85,7 +85,7 @@ CREATE OR REPLACE VIEW mongoose."Individual Events" AS
  SELECT p.name AS "pack name",
     i.name AS "individual name",
     i.sex,
-    l.name AS "Litter name",
+   COALESCE (al.name, l.name) AS "Litter name",
     iec.code,
     ie.date,
     ie.exact,
@@ -100,6 +100,7 @@ FROM mongoose.individual_event ie
      LEFT JOIN mongoose.individual_event_code iec ON ie.individual_event_code_id = iec.individual_event_code_id
      LEFT JOIN mongoose.individual i ON ph.individual_id = i.individual_id
      LEFT JOIN mongoose.litter l ON l.litter_id = i.litter_id
+	 LEFT JOIN mongoose.litter al ON al.litter_id = ie.affected_litter
      LEFT JOIN mongoose.pack p ON p.pack_id = ph.pack_id
 ORDER BY ie.date;
 
@@ -869,6 +870,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	</column>
 	<column name="cause">
 		<type name="text" length="0"/>
+	</column>
+	<column name="affected_litter">
+		<type name="integer" length="0"/>
 	</column>
 	<column name="location">
 		<type name="geography" length="0"/>

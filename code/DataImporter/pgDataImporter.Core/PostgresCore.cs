@@ -211,10 +211,12 @@ namespace pgDataImporter.Core
                     var pack_history_id = pg.GetPackHistoryId(lifeHistory.Pack, lifeHistory.Indiv);
                     var individual_event_code_id = pg.GetIndiviudalEventCodeId(lifeHistory.Code);
 
+                    int? affectedLitterId = HasAffectedLitter(lifeHistory, packId, pg);
+
                     pg.LinkIndividualEvents(pack_history_id,
                         individual_event_code_id,
                         lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.StartEnd, lifeHistory.Status,
-                        lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment);
+                        lifeHistory.Date, lifeHistory.Exact, lifeHistory.Cause, lifeHistory.Comment, affectedLitterId);
                     continue;
                 }
 
@@ -240,6 +242,20 @@ namespace pgDataImporter.Core
             }
 
             Logger.Info("Done adding life history data.");
+        }
+
+        private int? HasAffectedLitter(NewLifeHistory lifeHistory, int packId, PostgresRepository pg)
+        {
+            // this ties the indiviudal event to a litter that is not the litter the individual is in (eg birth to litter X)
+            var individualEvents = new[] { "ABORT", "BIRTH", "ENDEV", "FPREG", "STEV" };
+
+            if (individualEvents.Contains(lifeHistory.Code) && !string.IsNullOrEmpty(lifeHistory.Litter))
+            {
+                pg.InsertSingleLitter(lifeHistory.Litter, packId);
+
+                return pg.GetLitterId(lifeHistory.Litter).Value;
+            }
+            return null;
         }
 
         private bool LifeHistoryIsOestrus(NewLifeHistory lifeHistory)

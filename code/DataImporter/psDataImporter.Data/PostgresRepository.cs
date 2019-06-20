@@ -448,14 +448,14 @@ namespace psDataImporter.Data
         public void LinkIndividualEvents(int pack_history_id, int individualEventCodeId, string latitude,
             string longitude,
             string startend,
-            string status, DateTime date, string exact, string cause, string comment)
+            string status, DateTime date, string exact, string cause, string comment, int? affectedLitter)
         {
             // create geography if lat and long are present.
             var locationString = LocationString(latitude, longitude);
 
             var sql =
-                "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, start_end, cause, comment, location )" +
-                $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @start_end, @cause, @Comment, {locationString})";
+                "Insert into mongoose.individual_event (pack_history_id, individual_event_code_id, status, date, exact, start_end, cause, affected_litter, comment, location )" +
+                $" values (@pack_history_id, @individualEventCodeId, @status, @date, @exact, @start_end, @cause, @affected_litter, @Comment, {locationString})";
 
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -473,6 +473,7 @@ namespace psDataImporter.Data
                         date,
                         exact,
                         cause,
+                        affected_litter = affectedLitter,
                         comment
                     });
             }

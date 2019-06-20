@@ -363,7 +363,68 @@ ALTER TABLE MONGOOSE."OESTRUS"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."CAPTURES NEW 2013" AS
-SELECT date, i.name as "INDIV",i.transponder_id, p.name as "PACK",  trap_time, process_time, trap_location, bleed_time, release_time, examiner, age, drugs, reproductive_status, teats_ext, ultrasound, foetuses, foetus_size, weight, head_width, head_length, body_length, hind_foot_length, tail_length, tail_circumference, ticks, fleas, wounds_and_scars, plasma_sample_id, plasma_freeze_time, blood_sample_id, blood_sample_freeze_time, bucket, white_blood_count, white_blood_freeze_time, white_blood_cell_bucket, whisker_sample_id, ear_clip, tail_tip, "2d4d_photo", agd_photo, blood_sugar, red_cell_percentage, fat_neck_1, fat_neck_2, fat_armpit, fat_thigh, testes_length, testes_width, testes_depth, tooth_wear, comment
+SELECT date as "Capture Date",
+ i.name as "INDIV",
+ i.transponder_id as "TRANSPONDER",
+ p.name as "PACK",
+-- PACK STATUS
+ trap_location AS "TRAP LOCN",
+ trap_time as "TRAP TIME",
+ process_time as "PROCESS TIME",
+ bleed_time AS "BLEED TIME",
+ release_time AS "RELEASE TIME",
+ age AS "AGE",
+ examiner AS "Examiner",
+ drugs AS "DRUGS",
+ -- SEX
+ reproductive_status AS "REPRO STATUS",
+ teats_ext AS "TEATS EXT?",
+ -- lactating
+ ultrasound AS "ULTRASOUND?",
+ foetuses AS "FOETUSES",
+ foetus_size AS "FOET SIZE",
+ -- MILK SAMPLE MK
+ -- BUCKET MK
+ -- FREEZE TIME MK
+ weight AS "WEIGHT",
+ head_width AS "HEAD WIDTH",
+ head_length AS "HEAD LENGTH",
+ body_length AS "BODY LENGTH",
+ hind_foot_length AS "HINDFOOT LENGTH",
+ tail_length AS "TAIL LENGTH",
+ tail_circumference AS "TAIL CIRC",
+ -- BUCKET PLxxxA
+ -- FREEZE TIME PLxxxB
+ -- BUCKET PLxxxB
+ -- FREEZE TIME PLxxxA
+ ticks AS "TICKS",
+ -- BUCKET RBC
+ fleas AS "FLEAS",
+ wounds_and_scars AS "SCARS / WOUNDS",
+ plasma_sample_id AS "PLASMA SAMPLE PL",
+ plasma_freeze_time AS "FREEZE TIME PL",
+ blood_sample_id AS "BLOOD SAMPLE BL",
+ blood_sample_freeze_time AS "FREEZE TIME BL",
+ bucket AS "BUCKET PLxxx AND BLxxx",
+ white_blood_count AS "White blood WBC",
+ white_blood_freeze_time AS "FREEZE TIME WBC",
+ white_blood_cell_bucket AS "BUCKET WBC",
+ whisker_sample_id AS "WHISKER SAMPLE WSK",
+ ear_clip AS "EAR CLIP TAKEN?",
+ tail_tip AS "TAIL TIP?",
+ "2d4d_photo" AS "2D4D photos?",
+ agd_photo AS "AGD photos?",
+ blood_sugar AS "Blood sugar",
+ red_cell_percentage AS "Red cell percentage",
+ fat_neck_1 AS "Fat: neck 1",
+ fat_neck_2 AS "Fat: neck 2", 
+ fat_armpit AS "Fat: armpit",
+ fat_thigh "Fat: thigh",
+ comment AS "COMMENTS",
+ testes_length AS "TESTES L",
+ testes_width AS "TESTES W",
+ tooth_wear AS "TOOTH WEAR",
+ testes_depth AS "TESTES DEPTH"
 	FROM mongoose.capture c
 	join mongoose.pack_history ph on c.pack_history_id = ph.pack_history_id
 	join mongoose.pack p on p.pack_id = ph.pack_id
@@ -407,7 +468,7 @@ SELECT "Pack events".date AS "DATE",
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     "Pack events".status AS "STATUS",
-	NULL::text AS "Start/End",
+	NULL::text AS "START/END",
     "Pack events".code AS "CODE",
     "Pack events".exact AS "EXACT",
     NULL::date AS "LSEEN",
@@ -424,7 +485,7 @@ UNION all
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "Start/End",
+	NULL::text AS "START/END",
     "Litter Events".code AS "CODE",
     "Litter Events".exact AS "EXACT",
     "Litter Events".last_seen AS "LSEEN",
@@ -441,7 +502,7 @@ UNION all
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "Start/End",
+	NULL::text AS "START/END",
     'IGI'::text AS "CODE",
     NULL::text AS "EXACT",
     NULL::date AS "LSEEN",
@@ -458,7 +519,7 @@ UNION all
     "Individual Events".sex AS "SEX",
     NULL::text AS "AGE CAT",
     "Individual Events".status AS "STATUS",
-	"Individual Events".start_end AS "Start/End",
+	"Individual Events".start_end AS "START/END",
     "Individual Events".code AS "CODE",
     "Individual Events".exact AS "EXACT",
     NULL::date AS "LSEEN",
@@ -475,7 +536,7 @@ UNION all
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "Start/End",
+	NULL::text AS "START/END",
     "Oestrus Events".code AS "CODE",
     "Oestrus Events".exact AS "EXACT",
     "Oestrus Events".last_seen AS "LAST SEEN",

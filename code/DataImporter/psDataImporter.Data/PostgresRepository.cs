@@ -213,6 +213,14 @@ namespace psDataImporter.Data
                         conn.Execute("Update mongoose.Individual set litter_id = @litterId where individual_id = @id",
                             new { litterId = newIndividual.LitterId, id = inDatabaseIndividual.IndividualId });
                     }
+                    if (inDatabaseIndividual.DateOfBirth == null && newIndividual.DateOfBirth != null)
+                    {
+                        Logger.Info(
+                            $"Added date of birth: '{newIndividual.DateOfBirth}' to individiual with Id : '{inDatabaseIndividual.IndividualId}'");
+
+                        conn.Execute("Update mongoose.Individual set date_of_birth = @dob where individual_id = @id",
+                            new { dob = newIndividual.DateOfBirth, id = inDatabaseIndividual.IndividualId });
+                    }
                 }
                 else
                 {
@@ -382,11 +390,10 @@ namespace psDataImporter.Data
 
         public void AddLitter(LifeHistoryDto litter)
         {
-            if (string.IsNullOrEmpty(litter.Pack) || string.IsNullOrEmpty(litter.Individual) ||
-                string.IsNullOrEmpty(litter.Litter))
+            if ((litter.pgPackId == null) || (litter.pgIndividualId == null) || string.IsNullOrEmpty(litter.Litter))
             {
                 Logger.Warn(
-                    $"Something was null for this litter. pack:{litter.Pack} Individual:{litter.Individual} Litter {litter.Litter}");
+                    $"Something was null for this litter. pack:{litter.pgPackId} Individual:{litter.pgIndividualId} Litter {litter.Litter}");
                 return;
             }
 

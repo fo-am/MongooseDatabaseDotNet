@@ -213,6 +213,8 @@ namespace pgDataImporter.Core
 
                     int? affectedLitterId = HasAffectedLitter(lifeHistory, packId, pg);
 
+                    CheckPreviousName(lifeHistory, individualId, pg);
+
                     pg.LinkIndividualEvents(pack_history_id,
                         individual_event_code_id,
                         lifeHistory.Latitude, lifeHistory.Longitude, lifeHistory.StartEnd, lifeHistory.Status,
@@ -242,6 +244,22 @@ namespace pgDataImporter.Core
             }
 
             Logger.Info("Done adding life history data.");
+        }
+
+        private void CheckPreviousName(NewLifeHistory lifeHistory, int individualId, PostgresRepository pg)
+        {
+            if (!string.IsNullOrEmpty(lifeHistory.PrevName))
+            {
+                // we have a prev name
+                // check if we have had it before for this individual
+                // if so carry on
+                // if not then lets put it in the database.
+                var prevNames = pg.GetPreviousNamesForIndividual(individualId);
+                if (!prevNames.Contains(lifeHistory.PrevName))
+                {
+                    pg.AddPreviousNameForIndividual(individualId, lifeHistory.PrevName, lifeHistory.Date);
+                }
+            }
         }
 
         private int? HasAffectedLitter(NewLifeHistory lifeHistory, int packId, PostgresRepository pg)

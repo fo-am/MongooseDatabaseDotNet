@@ -1377,7 +1377,7 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddPreviousNameForIndividual(int individualId, string oldName)
+        public void AddPreviousNameForIndividual(int individualId, string oldName, DateTime? date)
         {
             using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
                 .ConnectionStrings["postgresConnectionString"]
@@ -1385,9 +1385,9 @@ namespace psDataImporter.Data
 
             {
                 conn.Execute(
-                    @"INSERT INTO mongoose.individual_name_history(individual_id, name)
-	                  VALUES (@IndividualId, @name); ",
-                    new { IndividualId = individualId, name = oldName });
+                    @"INSERT INTO mongoose.individual_name_history(individual_id, name, date_changed)
+	                  VALUES (@IndividualId, @name, @date_changed); ",
+                    new { IndividualId = individualId, name = oldName, date_changed = date });
             }
         }
     }

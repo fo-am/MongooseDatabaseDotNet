@@ -290,3 +290,5 @@ __pycache__/
 linuxDeploy
 code/DataPipe/linuxbackup/
 .vscode/
+Docker/Foam_auto.sql
+data/dback.sql

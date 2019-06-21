@@ -140,7 +140,7 @@ namespace psDataImporter.Data
                                             Latitude,
                                             Longitude,
                                             date_entered
-                                            FROM [NEW LIFE HISTORY];
+                                            FROM [NEW LIFE HISTORY] order by DATE;
                                             ").ToList();
             }
         }

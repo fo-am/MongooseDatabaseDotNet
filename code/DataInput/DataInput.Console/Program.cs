@@ -1,52 +1,31 @@
 ﻿using System;
 
 using DataInput.Core;
+using System.Linq;
+using Newtonsoft.Json;
+using DataPipe.Main.Model;
+
+using DataInput.Core;
 
 namespace DataInput.Console
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            //look at code for entity types.
+            // from remote postgres database, get list of recieved messages
+            // deserialise into objects
+            // publish to queue
+            // ensure data reciever is configured to point at new database (local postgres?)
+            // Example row
+            // event_log_id, message_id, delivered_count, type, object, success, error, date_created
+            // 2 "3b6190ab-ab08-4fbe-bfc9-00cb998eb834"  1   "DataReceiver.Main.Model.PackCreated"   "{"sent":0,"UniqueId":"Mwesige Kenneth Araali - 1446615300:186285","entity_id":158,"entity_type":"pack","Name":"1HA","CreatedDate":"2015 - 11 - 04T08: 35:00"}"    true        "2018-11-18 19:15:56.417023"
 
-            // need to build each object.
-            // deal with updates (version number
-            // write unique id to new database?
-            // would if it was a guid but don't like the format so just do it!
+            string type = "DataReceiver.Main.Model.PackCreated";
+            string json = @"{""sent"":0,""UniqueId"":""Mwesige Kenneth Araali - 1446615300:186285"",""entity_id"":158,""entity_type"":""pack"",""Name"":""1HA"",""CreatedDate"":""2015 - 11 - 04T08: 35:00""}";
 
-            // what objects are in the database
-            // create ones for them here?
-            // how about making events?
-            // add group
-            // update group name
-
-            // add individual
-            // update individual name
-
-            //Connect to sqlite
-            // connect to postgres
-            // read from sqlite and write to postgres
-
-            // find out the data structure of sqlite objects.
-            // and map them to the postgres stuff
-
-            // scan the database every 5 mins for new entities
-            // copy them to the postgres and mark them copied.
-
-            // find what updates look like
-            // write them to the postgres
-
-            // log loads of stuff. and so it feels good and nice!
-            // maybe update times on postgres tables
-            // maybe write the IDS from the sqlite database to help match data up.
-
-            // sing and be happy
-
-            var sqliteData = new GetSqliteData();
-            sync_entity data = sqliteData.GetSomeData();
-            System.Console.WriteLine(data.unique_id);
-            System.Console.ReadLine();
+            var sender = new Sender();
+            sender.PublishEntity(type, json);
         }
     }
 }

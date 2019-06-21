@@ -2,7 +2,11 @@
 {
     public class AppSettings
     {
-        public string SqliteLocation { get; set; }
-        public string PostgresConnectionString { get; set; }
+        public string SourcePostgres { get; set; }
+        public string DestinationPostgres { get; set; }
+
+        public string RabbitHostName { get; set; }
+        public string RabbitUsername { get; set; }
+        public string RabbitPassword { get; set; }
     }
 }

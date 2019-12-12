@@ -463,13 +463,13 @@ ALTER TABLE MONGOOSE."Oestrus Events"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."NEW LIFE HISTORY" AS
-SELECT "Pack events".date AS "DATE",
+ SELECT "Pack events".date AS "DATE",
     "Pack events"."pack name" AS "PACK",
     NULL::text AS "INDIV",
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     "Pack events".status AS "STATUS",
-	NULL::text AS "START/END",
+    NULL::text AS "START/END",
     "Pack events".code AS "CODE",
     "Pack events".exact AS "EXACT",
     NULL::date AS "LSEEN",
@@ -479,14 +479,14 @@ SELECT "Pack events".date AS "DATE",
     "Pack events".latitude AS "Latitude",
     "Pack events".longitude AS "Longitude"
    FROM mongoose."Pack events"
-UNION all
+UNION ALL
  SELECT "Litter Events".date AS "DATE",
     "Litter Events".pack AS "PACK",
     NULL::text AS "INDIV",
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "START/END",
+    NULL::text AS "START/END",
     "Litter Events".code AS "CODE",
     "Litter Events".exact AS "EXACT",
     "Litter Events".last_seen AS "LSEEN",
@@ -496,14 +496,14 @@ UNION all
     "Litter Events".latitude AS "Latitude",
     "Litter Events".longitude AS "Longitude"
    FROM mongoose."Litter Events"
-UNION all
+UNION ALL
  SELECT "Inter Group Interactions".date::date AS "DATE",
     "Inter Group Interactions"."focal pack" AS "PACK",
     "Inter Group Interactions".leader AS "INDIV",
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "START/END",
+    NULL::text AS "START/END",
     'IGI'::text AS "CODE",
     NULL::text AS "EXACT",
     NULL::date AS "LSEEN",
@@ -513,14 +513,14 @@ UNION all
     "Inter Group Interactions".latitude AS "Latitude",
     "Inter Group Interactions".longitude AS "Longitude"
    FROM mongoose."Inter Group Interactions"
-UNION all
+UNION ALL
  SELECT "Individual Events".date AS "DATE",
     "Individual Events"."pack name" AS "PACK",
     "Individual Events"."individual name" AS "INDIV",
     "Individual Events".sex AS "SEX",
     NULL::text AS "AGE CAT",
     "Individual Events".status AS "STATUS",
-	"Individual Events".start_end AS "START/END",
+    "Individual Events".start_end AS "START/END",
     "Individual Events".code AS "CODE",
     "Individual Events".exact AS "EXACT",
     NULL::date AS "LSEEN",
@@ -530,27 +530,27 @@ UNION all
     "Individual Events".latitude AS "Latitude",
     "Individual Events".longitude AS "Longitude"
    FROM mongoose."Individual Events"
-   UNION all
+UNION ALL
  SELECT "Oestrus Events".date AS "DATE",
-    "Oestrus Events"."pack_name" AS "PACK",
+    "Oestrus Events".pack_name AS "PACK",
     NULL::text AS "INDIV",
     NULL::text AS "SEX",
     NULL::text AS "AGE CAT",
     NULL::text AS "STATUS",
-	NULL::text AS "START/END",
+    NULL::text AS "START/END",
     "Oestrus Events".code AS "CODE",
     "Oestrus Events".exact AS "EXACT",
-    "Oestrus Events".last_seen AS "LAST SEEN",
+    "Oestrus Events".last_seen AS "LSEEN",
     NULL::text AS "CAUSE",
-    NULL::text AS "LITTER",
+    "Oestrus Events".oestrus_code AS "LITTER",
     "Oestrus Events".comment AS "COMMENT",
     "Oestrus Events".latitude AS "Latitude",
     "Oestrus Events".longitude AS "Longitude"
    FROM mongoose."Oestrus Events"
   ORDER BY 1;
 
-ALTER TABLE MONGOOSE."NEW LIFE HISTORY"
-  OWNER TO postgres;
+ALTER TABLE mongoose."NEW LIFE HISTORY"
+    OWNER TO postgres;
 
 INSERT INTO mongoose.individual_event_code (code) VALUES ('BORN');
 INSERT INTO mongoose.individual_event_code (code) VALUES ('DIED');

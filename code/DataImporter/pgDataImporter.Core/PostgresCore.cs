@@ -199,12 +199,16 @@ namespace pgDataImporter.Core
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
 
-                    pg.AddLitter(new LifeHistoryDto
+                    var EventsWithIndividualLitterCode = new[] { "BORN", "ADIED", "DIED" };
+                    if (EventsWithIndividualLitterCode.Contains(lifeHistory.Code))
                     {
-                        pgPackId = packId,
-                        Litter = lifeHistory.Litter,
-                        pgIndividualId = individualId
-                    });
+                        pg.AddLitter(new LifeHistoryDto
+                        {
+                            pgPackId = packId,
+                            Litter = lifeHistory.Litter,
+                            pgIndividualId = individualId
+                        });
+                    }
 
                     // get ids
                     // record lifehistory

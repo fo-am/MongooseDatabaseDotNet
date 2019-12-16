@@ -436,15 +436,21 @@ ALTER TABLE MONGOOSE."CAPTURES NEW 2013"
   OWNER TO postgres;
 
 CREATE OR REPLACE VIEW MONGOOSE."Litter Events" AS
-SELECT  date, p.name as pack,l.name as litter, lec.code, exact, last_seen, cause, 
-    ST_X(le.location::geometry) as latitude,
-    ST_Y(le.location::geometry) as longitude,
-	comment
+ SELECT le.date,
+    p.name AS pack,
+    l.name AS litter,
+    lec.code,
+    le.exact,
+    le.last_seen,
+    le.cause,
+    st_x(le.location::geometry) AS latitude,
+    st_y(le.location::geometry) AS longitude,
+	CONCAT_WS(', ', 'Unknown Pups = '|| l.unknown_pups_count, le.comment) as comment 
 	FROM mongoose.litter_event le
-	join mongoose.litter_event_code lec on lec.litter_event_code_id = le.litter_event_code_id
-	join mongoose.litter l on l.litter_id = le.litter_id
-	join mongoose.pack p on p.pack_id = l.pack_id	
-	order by date asc;
+     JOIN mongoose.litter_event_code lec ON lec.litter_event_code_id = le.litter_event_code_id
+     JOIN mongoose.litter l ON l.litter_id = le.litter_id
+     JOIN mongoose.pack p ON p.pack_id = l.pack_id
+  ORDER BY le.date;
 
 ALTER TABLE MONGOOSE."Litter Events"
   OWNER TO postgres;

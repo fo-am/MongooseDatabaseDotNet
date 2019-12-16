@@ -175,6 +175,21 @@ namespace pgDataImporter.Core
                 {
                     Logger.Info("Individual Event");
                     duplicateCount++;
+
+                    //Insert pack and get ID
+                    pg.InsertSinglePack(lifeHistory.Pack);
+                    var packId = pg.GetPackId(lifeHistory.Pack);
+
+                    //Special case for unknown pups
+                    if (lifeHistory.Indiv.Equals("UM PUP", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase))
+                        {
+                            pg.AddUnknownPupToLitter(lifeHistory.Litter, packId);
+                        }
+                        continue;
+                    }
+
                     if (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase))
                     {
                         pg.InsertIndividual(new Individual
@@ -189,16 +204,11 @@ namespace pgDataImporter.Core
                         pg.InsertIndividual(new Individual { Name = lifeHistory.Indiv, Sex = lifeHistory.Sex });
                     }
 
-                    pg.InsertSinglePack(lifeHistory.Pack);
-                    //add individual event code
-                    // get individual code
-
-                    var packId = pg.GetPackId(lifeHistory.Pack);
-
                     var individualId = pg.GetIndividualId(lifeHistory.Indiv);
 
                     InsertpackHistory(packId, individualId, lifeHistory.Date, pg);
 
+                    // for events about this individual we can add their litter to them
                     var EventsWithIndividualLitterCode = new[] { "BORN", "ADIED", "DIED" };
                     if (EventsWithIndividualLitterCode.Contains(lifeHistory.Code))
                     {
@@ -215,6 +225,7 @@ namespace pgDataImporter.Core
                     var pack_history_id = pg.GetPackHistoryId(lifeHistory.Pack, lifeHistory.Indiv);
                     var individual_event_code_id = pg.GetIndiviudalEventCodeId(lifeHistory.Code);
 
+                    // for events that create a litter or reference another litter we add the litter here.
                     int? affectedLitterId = HasAffectedLitter(lifeHistory, packId, pg);
 
                     CheckPreviousName(lifeHistory, individualId, pg);

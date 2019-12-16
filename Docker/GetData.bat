@@ -1,0 +1,1 @@
+pg_dump -h localhost -p 5433 -U postgres  Foam_auto > Foam_auto5.sql

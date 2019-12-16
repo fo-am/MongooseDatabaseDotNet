@@ -182,6 +182,7 @@ CREATE TABLE litter (
     litter_id integer NOT NULL,
     pack_id integer,
     name text NOT NULL,
+    unknown_pups_count integer DEFAULT 0 NOT NULL,
     date_formed timestamp without time zone
 );
 
@@ -3929,7 +3930,7 @@ SELECT pg_catalog.setval('interaction_outcome_interaction_outcome_id_seq', 4, tr
 -- Data for Name: litter; Type: TABLE DATA; Schema: mongoose; Owner: postgres
 --
 
-COPY litter (litter_id, pack_id, name, date_formed) FROM stdin;
+COPY litter (litter_id, pack_id, name, unknown_pups_count, date_formed) FROM stdin;
 \.
 
 

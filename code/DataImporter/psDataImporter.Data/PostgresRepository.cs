@@ -250,6 +250,24 @@ namespace psDataImporter.Data
             }
         }
 
+        public void AddUnknownPupToLitter(string litterName, int packId)
+        {
+            InsertSingleLitter(litterName, packId);
+
+            var litterId = GetLitterId(litterName);
+
+            using (IDbConnection conn = new NpgsqlConnection(ConfigurationManager
+              .ConnectionStrings["postgresConnectionString"]
+              .ConnectionString))
+            {
+                conn.Execute(
+                             $@"UPDATE mongoose.litter
+                             SET unknown_pups_count = unknown_pups_count + 1
+                             WHERE litter_id = @litterId;", new { litterId }
+                   );
+            }
+        }
+
         public void InsertOestrusEvent(NewLifeHistory lifeHistory, int? oestrusEventId, int? packId)
         {
             Logger.Info($"Adding oestrus event code: {lifeHistory.Code} OestrusId {lifeHistory.Litter}.");

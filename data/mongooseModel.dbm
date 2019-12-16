@@ -636,6 +636,9 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	<column name="name" not-null="true">
 		<type name="text" length="0"/>
 	</column>
+	<column name="unknown_pups_count" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
 	<column name="date_formed">
 		<type name="timestamp" length="0"/>
 	</column>

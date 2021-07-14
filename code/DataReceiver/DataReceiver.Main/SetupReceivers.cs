@@ -1,6 +1,6 @@
 using System;
 
-using Autofac.Extras.NLog;
+using NLog;
 
 using DataReceiver.Main.Interfaces;
 using DataReceiver.Main.Model;

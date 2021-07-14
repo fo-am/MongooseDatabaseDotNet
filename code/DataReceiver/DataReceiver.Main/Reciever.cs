@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Autofac.Extras.NLog;
+using NLog;
 
 using DataReceiver.Main.Interfaces;
 
@@ -72,7 +72,7 @@ namespace DataReceiver.Main
 
             consumer.Received += (model, ea) =>
             {
-                var body = ea.Body;
+                var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var output = JsonConvert.DeserializeObject<T>(message);
                 var messageIdBytes =(byte[]) ea.BasicProperties.Headers["Id"];

@@ -1,5 +1,5 @@
 ﻿using System;
-using Autofac.Extras.NLog;
+using NLog;
 using NUnit.Framework;
 using DataReceiver.Main;
 using DataReceiver.Main.Data;

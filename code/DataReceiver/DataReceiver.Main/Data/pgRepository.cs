@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-using Autofac.Extras.NLog;
+using NLog;
 
 using Dapper;
 

@@ -31,12 +31,11 @@ namespace DataReceiver.Main.Scaffold
                         HostName = appSettings.RabbitHostName,
                         UserName = appSettings.RabbitUsername,
                         Password = appSettings.RabbitPassword,
-                        RequestedHeartbeat = 15
+                        RequestedHeartbeat = System.TimeSpan.FromSeconds(15),
+                        AutomaticRecoveryEnabled = true
                     };
 
-                    var con = new AutorecoveringConnection(factory);
-                    con.Init();
-                    return con;
+                    return factory.CreateConnection();
                 }).SingleInstance();
 
             return builder.Build();

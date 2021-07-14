@@ -1,5 +1,10 @@
 set PGPASSWORD=changeme
+set SERVER=localhost
+set PORT=5433
+set DATABASE=Foam_auto
+set IMPORTFILE=Foam_auto2.sql
 
-createdb -p 5433 -U postgres -T template0 Foam_auto
-psql -p 5433 -U postgres Foam_auto < Foam_auto5.sql
+createdb -h %SERVER% -p %PORT%  -U postgres -T template0 %DATABASE%
+psql -h %SERVER% -p %PORT%  -U postgres %DATABASE% < %IMPORTFILE%
+
 pause 

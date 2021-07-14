@@ -3629,6 +3629,30 @@ INSERT INTO mongoose.pack_move_destination(destination)
 	 dst-table="mongoose.oestrus_event"
 	 src-required="false" dst-required="false"/>
 
+<table name="litter_unknown_pup" hide-ext-attribs="true">
+	<schema name="mongoose"/>
+	<role name="postgres"/>
+	<position x="440" y="1300"/>
+	<column name="litter_unknown_pup_id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="date_born">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="date_died">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="start_end">
+		<type name="text" length="0"/>
+	</column>
+	<column name="code">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="litter_unknown_pup_pk" type="pk-constr" table="mongoose.litter_unknown_pup">
+		<columns names="litter_unknown_pup_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
 <constraint name="pack_secondary" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="mongoose.pack" table="mongoose.inter_group_interaction">
 	<columns names="secondpack_id" ref-type="src-columns"/>

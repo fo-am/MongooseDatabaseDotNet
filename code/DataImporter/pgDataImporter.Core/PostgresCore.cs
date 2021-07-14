@@ -183,9 +183,17 @@ namespace pgDataImporter.Core
                     //Special case for unknown pups
                     if (lifeHistory.Indiv.Equals("UM PUP", StringComparison.OrdinalIgnoreCase))
                     {
+                        // if born, try and find a 'dead' pup without a born data and update that or enter new pup
                         if (lifeHistory.Code.Equals("BORN", StringComparison.OrdinalIgnoreCase))
                         {
-                            pg.AddUnknownPupToLitter(lifeHistory.Litter, packId);
+                            pg.AddBornUnknownPupToLitter(lifeHistory.Litter, packId, lifeHistory.Date);
+                        }
+
+                        // if dead, find a born pup with no death date and update it, or enter new pup
+                        var DeadPupsCodes = new[] { "ADIED", "DIED" };
+                        if (DeadPupsCodes.Contains(lifeHistory.Code))
+                        {
+                            pg.AddDiedUnknownPupToLitter(lifeHistory.Litter, packId, lifeHistory.Date);
                         }
                         continue;
                     }
@@ -212,12 +220,36 @@ namespace pgDataImporter.Core
                     var EventsWithIndividualLitterCode = new[] { "BORN", "ADIED", "DIED" };
                     if (EventsWithIndividualLitterCode.Contains(lifeHistory.Code))
                     {
-                        pg.AddLitter(new LifeHistoryDto
+                        // If it is born row then insert/overwrite the litter id                    
+
+                        if(string.Equals(lifeHistory.Code, "BORN", StringComparison.OrdinalIgnoreCase))
                         {
-                            pgPackId = packId,
-                            Litter = lifeHistory.Litter,
-                            pgIndividualId = individualId
-                        });
+                            pg.AddLitter(new LifeHistoryDto
+                            {
+                                pgPackId = packId,
+                                Litter = lifeHistory.Litter,
+                                pgIndividualId = individualId
+                            });
+                        }
+                        else
+                        {
+                            // if anything other than BORN then check the individual to see if it has a LitterID
+                            // if not then add one, if it does then do nothing.
+
+                            var individualInDatabase = pg.GetIndivdualById(individualId);
+
+                            if (!individualInDatabase.LitterId.HasValue)
+                            {
+                                pg.AddLitter(new LifeHistoryDto
+                                {
+                                    pgPackId = packId,
+                                    Litter = lifeHistory.Litter,
+                                    pgIndividualId = individualId
+                                });
+                            }
+                        }
+                       
+
                     }
 
                     // get ids
@@ -629,7 +661,7 @@ namespace pgDataImporter.Core
             var pg = new PostgresRepository();
             foreach (var capture in captures)
             {
-                if (string.IsNullOrEmpty(capture.PACK) && string.IsNullOrEmpty(capture.INDIV))
+                if (string.IsNullOrEmpty(capture.PACK) || string.IsNullOrEmpty(capture.INDIV))
                 {
                     Logger.Info("Capture with no pack or individual.");
                     continue;

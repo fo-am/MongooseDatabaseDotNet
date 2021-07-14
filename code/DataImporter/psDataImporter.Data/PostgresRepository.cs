@@ -250,7 +250,12 @@ namespace psDataImporter.Data
             }
         }
 
-        public void AddUnknownPupToLitter(string litterName, int packId)
+        public void AddBornUnknownPupToLitter(string litter, int packId, DateTime date)
+        {
+        //    throw new NotImplementedException();
+        }
+
+        public void AddDiedUnknownPupToLitter(string litterName, int packId, DateTime date)
         {
             InsertSingleLitter(litterName, packId);
 

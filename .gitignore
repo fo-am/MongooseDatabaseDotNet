@@ -292,3 +292,21 @@ code/DataPipe/linuxbackup/
 .vscode/
 Docker/Foam_auto.sql
 data/dback.sql
+mongoose.db
+mongoose - Copy.db
+Docker/GetDataFromBigServer.bat
+Docker/Foam_auto2.sql
+data/mongooseModel.dbm.3
+code/KeepAlive/appsettings.json.old
+code/KeepAlive/KeepAlive.Sender/appsettings.json
+code/KeepAlive/appsettings.json
+code/DataReceiver/DataReceiver.Main/appsettings - Copy.json
+code/DataPipe/mongoose.db_
+code/DataPipe/mongoose.db_prego
+code/DataPipe/mongoose.db_pup
+code/DataPipe/mongoose.db__
+code/DataPipe/DataPipe.Main/appsettings.json_
+code/DataPipe/DataPipe.Main/appsettings.jsonBerillium
+Docker/Foam_auto23.sql
+Docker/new.sql
+Docker/SetupDataToBigServer.bat

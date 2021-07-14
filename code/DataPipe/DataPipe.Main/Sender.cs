@@ -11,7 +11,7 @@ using NLog.Config;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Impl;
 
-using BasicProperties = RabbitMQ.Client.Framing.BasicProperties;
+
 
 namespace DataPipe.Main
 {

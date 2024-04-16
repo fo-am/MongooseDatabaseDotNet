@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace KeepAlive.Reciever
+namespace KeepAlive.Receiver
 {
     public static class GetAppSettings
     {

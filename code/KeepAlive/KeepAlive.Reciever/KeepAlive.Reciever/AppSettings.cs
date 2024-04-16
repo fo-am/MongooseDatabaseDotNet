@@ -1,4 +1,4 @@
-﻿namespace KeepAlive.Reciever
+﻿namespace KeepAlive.Receiver
 {
     public class AppSettings
     {

@@ -1,22 +1,17 @@
-﻿using System;
-
-using System.Text;
+﻿using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace KeepAlive.Reciever
+namespace KeepAlive.Receiver
 
 {
-    internal class Reciever
+    internal class Receiver
     {
         private AppSettings settings;
-        public Reciever()
-        {
-            settings = GetAppSettings.Get();
-        }
+        public Receiver() { settings = GetAppSettings.Get(); }
 
-        public void Recieve<T>()
+        public void Receive<T>()
         {
             var factory = new ConnectionFactory
             {
@@ -27,25 +22,21 @@ namespace KeepAlive.Reciever
 
             var connection = factory.CreateConnection();
 
-            Console.WriteLine($"Setting up reciever for: {typeof(T).Name}");
+            Console.WriteLine($"Setting up receiver for: {typeof(T).Name}");
             var channel = connection.CreateModel();
 
-            channel.QueueDeclare($"keepalive_{typeof(T).Name}",
-                true,
-                false,
-                false,
-                null);
+            channel.QueueDeclare($"keepalive_{typeof(T).Name}", true, false, false, null);
             var consumer = new EventingBasicConsumer(channel);
             channel.BasicConsume($"keepalive_{typeof(T).Name}", false, consumer);
 
             consumer.Received += (model, ea) =>
             {
-                var body = ea.Body;
-                var message = Encoding.UTF8.GetString(body);
+                ReadOnlyMemory<byte> body = ea.Body;
+                var message = Encoding.UTF8.GetString(body.ToArray());
                 var output = JsonConvert.DeserializeObject<T>(message);
 
-              // Log receipt
-                Console.WriteLine($"recieved {typeof(T).Name}");
+                // Log receipt
+                Console.WriteLine($"received {typeof(T).Name}");
 
                 channel.BasicAck(ea.DeliveryTag, false);
             };

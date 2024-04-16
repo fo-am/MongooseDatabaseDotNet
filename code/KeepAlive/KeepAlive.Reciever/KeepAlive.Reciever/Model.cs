@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KeepAlive.Reciever
+namespace KeepAlive.Receiver
 {
     public class Status
     {

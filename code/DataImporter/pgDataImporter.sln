@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34804.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Console", "pgDataImporter.Console\psDataImporter.Console.csproj", "{A7275ED8-266E-4818-B563-6EA346473D26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Console", "pgDataImporter.Console\pgDataImporter.Console.csproj", "{A7275ED8-266E-4818-B563-6EA346473D26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Core", "pgDataImporter.Core\psDataImporter.Core.csproj", "{182C086D-FA29-4A8A-BE76-9BD95546CE21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Core", "pgDataImporter.Core\pgDataImporter.Core.csproj", "{182C086D-FA29-4A8A-BE76-9BD95546CE21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Data", "pgDataImporter.Data\psDataImporter.Data.csproj", "{4BB68870-21E1-4FB2-B7BE-2609B7BDDB65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Data", "pgDataImporter.Data\pgDataImporter.Data.csproj", "{4BB68870-21E1-4FB2-B7BE-2609B7BDDB65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Contracts", "pgDataImporter.Contracts\psDataImporter.Contracts.csproj", "{69E163C5-FDCD-4C3E-BECD-58873A30D08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "psDataImporter.Contracts", "pgDataImporter.Contracts\pgDataImporter.Contracts.csproj", "{69E163C5-FDCD-4C3E-BECD-58873A30D08C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

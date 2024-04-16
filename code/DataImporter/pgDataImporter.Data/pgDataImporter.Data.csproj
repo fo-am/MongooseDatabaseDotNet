@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pgDataImporter.Contracts\psDataImporter.Contracts.csproj" />
+    <ProjectReference Include="..\pgDataImporter.Contracts\pgDataImporter.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,9 +5,9 @@ using System.Data.OleDb;
 using System.Linq;
 using Dapper;
 using NLog;
-using psDataImporter.Contracts.Access;
+using pgDataImporter.Contracts.Access;
 
-namespace psDataImporter.Data
+namespace pgDataImporter.Data
 {
     public class AccessRepository
     {

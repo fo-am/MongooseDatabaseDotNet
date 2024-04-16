@@ -1,6 +1,6 @@
 using System;
 
-namespace psDataImporter.Contracts.Access
+namespace pgDataImporter.Contracts.Access
 {
     public class NewLifeHistory
     {

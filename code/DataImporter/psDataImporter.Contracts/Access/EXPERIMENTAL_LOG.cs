@@ -1,4 +1,4 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿namespace pgDataImporter.Contracts.Access
 {
     class EXPERIMENTAL_LOG
 

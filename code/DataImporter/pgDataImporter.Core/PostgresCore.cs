@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
-using psDataImporter.Contracts.Access;
-using psDataImporter.Contracts.dtos;
-using psDataImporter.Contracts.Postgres;
-using psDataImporter.Data;
+using pgDataImporter.Contracts.Access;
+using pgDataImporter.Contracts.dtos;
+using pgDataImporter.Contracts.Postgres;
+using pgDataImporter.Data;
 
 namespace pgDataImporter.Core
 {
@@ -222,7 +222,7 @@ namespace pgDataImporter.Core
                     {
                         // If it is born row then insert/overwrite the litter id                    
 
-                        if(string.Equals(lifeHistory.Code, "BORN", StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(lifeHistory.Code, "BORN", StringComparison.OrdinalIgnoreCase))
                         {
                             pg.AddLitter(new LifeHistoryDto
                             {
@@ -248,7 +248,7 @@ namespace pgDataImporter.Core
                                 });
                             }
                         }
-                       
+
 
                     }
 

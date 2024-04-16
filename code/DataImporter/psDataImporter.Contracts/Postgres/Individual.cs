@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace psDataImporter.Contracts.Postgres
+namespace pgDataImporter.Contracts.Postgres
 {
     public class Individual
     {

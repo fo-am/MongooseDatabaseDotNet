@@ -1,4 +1,4 @@
-﻿namespace psDataImporter.Contracts.dtos
+﻿namespace pgDataImporter.Contracts.dtos
 {
     public class LifeHistoryDto
     {

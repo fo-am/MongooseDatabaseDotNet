@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using NLog;
 using pgDataImporter.Core;
-using psDataImporter.Data;
+using pgDataImporter.Data;
 
-namespace psDataImporter.Console
+namespace pgDataImporter.Console
 {
     internal class Program
     {

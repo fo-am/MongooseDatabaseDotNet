@@ -1,4 +1,4 @@
-﻿namespace psDataImporter.Contracts.Access
+﻿namespace pgDataImporter.Contracts.Access
 {
     public class Maternal_Condition_Experiment_Females
     {

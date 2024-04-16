@@ -10,11 +10,11 @@ using NLog;
 
 using Npgsql;
 
-using psDataImporter.Contracts.Access;
-using psDataImporter.Contracts.dtos;
-using psDataImporter.Contracts.Postgres;
+using pgDataImporter.Contracts.Access;
+using pgDataImporter.Contracts.dtos;
+using pgDataImporter.Contracts.Postgres;
 
-namespace psDataImporter.Data
+namespace pgDataImporter.Data
 {
     public class PostgresRepository
     {
@@ -252,7 +252,7 @@ namespace psDataImporter.Data
 
         public void AddBornUnknownPupToLitter(string litter, int packId, DateTime date)
         {
-        //    throw new NotImplementedException();
+            //    throw new NotImplementedException();
         }
 
         public void AddDiedUnknownPupToLitter(string litterName, int packId, DateTime date)
@@ -960,9 +960,7 @@ namespace psDataImporter.Data
             {
                 conn.Execute($@"INSERT INTO mongoose.babysitting(
                          babysitter_pack_history_id, date, litter_id, type, time_start, den_distance, time_end, accuracy, comment, location)
-                            VALUES (@babysitter_pack_history_id, @date, @litter_id, @type, @time_start, @den_distance, @time_end, @accuracy, @comment,  {
-                            locationString
-                        })"
+                            VALUES (@babysitter_pack_history_id, @date, @litter_id, @type, @time_start, @den_distance, @time_end, @accuracy, @comment,  {locationString})"
                     ,
                     new
                     {

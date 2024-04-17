@@ -14,72 +14,72 @@ namespace pgDataImporter.Console
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var accessdata = new AccessRepository();
+            var accessData = new AccessRepository();
             var postgresData = new PostgresCore();
 
             postgresData.AddStaticData();
 
-            var lifeHistories = accessdata.GetLifeHistorys();
+            var lifeHistories = accessData.GetLifeHistorys();
             postgresData.ProcessLifeHistories(lifeHistories);
 
-            var weights = accessdata.GetWeights();
+            var weights = accessData.GetWeights();
             postgresData.ProcessWeights(weights);
 
-            var conditionFemales = accessdata.GetMaternalConditionFemales();
+            var conditionFemales = accessData.GetMaternalConditionFemales();
             postgresData.ProcessConditionFemales(conditionFemales);
 
-            var conditionProvisioning = accessdata.GetMaternalConditionProvisioning();
+            var conditionProvisioning = accessData.GetMaternalConditionProvisioning();
             postgresData.ProcessConditionProvisioning(conditionProvisioning);
 
-            var bloodData = accessdata.GetBloodData();
+            var bloodData = accessData.GetBloodData();
             postgresData.ProcessBloodData(bloodData);
 
-            var hpaSamples = accessdata.GetHpaSamples();
+            var hpaSamples = accessData.GetHpaSamples();
             postgresData.ProcessHpaSamples(hpaSamples);
 
-            var dnaSamples = accessdata.GetDnaSamples();
+            var dnaSamples = accessData.GetDnaSamples();
             postgresData.ProcessDnaSamples(dnaSamples);
 
-            var antiParasite = accessdata.GetAntiParasite();
+            var antiParasite = accessData.GetAntiParasite();
             postgresData.ProcessAntiParasite(antiParasite);
 
-            var oxFeeding = accessdata.GetOxFeeding();
+            var oxFeeding = accessData.GetOxFeeding();
             postgresData.ProcessOxFeeding(oxFeeding);
 
-            var oxMales = accessdata.GetOxMale();
+            var oxMales = accessData.GetOxMale();
             postgresData.ProcessOxMale(oxMales);
 
-            var oxFemales = accessdata.GetOxFemale();
+            var oxFemales = accessData.GetOxFemale();
             postgresData.ProcessOxFemale(oxFemales);
 
-            var oestruses = accessdata.GetOestruses();
+            var oestruses = accessData.GetOestruses();
             postgresData.ProcessOestrusData(oestruses);
 
-            var ultrasoundData = accessdata.GetUltrasounds();
+            var ultrasoundData = accessData.GetUltrasounds();
             postgresData.ProcessUltrasoundData(ultrasoundData);
 
-            var radioCollarData = accessdata.GetRadioCollars();
+            var radioCollarData = accessData.GetRadioCollars();
             postgresData.ProcessRadioCollarData(radioCollarData);
 
-            var pupAssocs = accessdata.GetPupAssocs();
+            var pupAssocs = accessData.GetPupAssocs();
             postgresData.ProcessPupAssocs(pupAssocs);
 
-            var babysittingRecords = accessdata.GetBabysittingRecords();
+            var babysittingRecords = accessData.GetBabysittingRecords();
             postgresData.ProcessBabysittingRecords(babysittingRecords);
 
-            var groupCompositions = accessdata.GetGroupCompositions();
+            var groupCompositions = accessData.GetGroupCompositions();
             postgresData.ProcessGroupCompositions(groupCompositions);
 
-            var pooSamples = accessdata.GetPoo();
+            var pooSamples = accessData.GetPoo();
             postgresData.ProcessPoo(pooSamples);
 
-            var weatherData = accessdata.GetWeather();
+            var weatherData = accessData.GetWeather();
             postgresData.ProcessWeather(weatherData);
 
-            var conditionLitter = accessdata.GetMaternalConditionLitters();
+            var conditionLitter = accessData.GetMaternalConditionLitters();
             postgresData.ProcessConditionLitters(conditionLitter);
 
-            var captures = accessdata.GetCaptures();
+            var captures = accessData.GetCaptures();
             postgresData.ProcessCaptures(captures);
 
             stopwatch.Stop();

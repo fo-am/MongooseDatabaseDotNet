@@ -10,6 +10,8 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+    volumes:
+      - ./rabbitmq-data:/var/lib/rabbitmq/mnesia/
     networks:
       - postgres
     labels:

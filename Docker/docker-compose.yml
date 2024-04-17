@@ -1,9 +1,7 @@
-version: '3.3'
-
 services:
-  rabbit1:
+  rabbit:
     build: .
-    hostname: "rabbit1"
+    hostname: "rabbit"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
       RABBITMQ_DEFAULT_USER: "rabbitmq"
@@ -15,15 +13,17 @@ services:
     networks:
       - postgres
     labels:
-      NAME: "rabbitmq1"
+      NAME: "rabbitmq"
   postgres:
-      image: mdillon/postgis:9.6-alpine
+      image: postgis/postgis:16-3.4
       environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: changeme
-        PGDATA: /data/postgres
+        PGDATA: /var/lib/postgresql/data/pgdata
       ports:
-        - "5433:5432"    
+        - "5433:5432"   
+      volumes:
+        - ./postgres-data:/var/lib/postgresql/data
       networks:
         - postgres
       restart: unless-stopped

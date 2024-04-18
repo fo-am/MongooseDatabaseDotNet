@@ -1,6 +1,8 @@
 services:
   rabbit:
-    build: .
+    build:  
+        context: .
+        dockerfile: rabbit.Dockerfile
     hostname: "rabbit"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"

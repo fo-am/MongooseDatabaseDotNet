@@ -1,8 +1,8 @@
 services:
   rabbit:
     build:  
-        context: .
-        dockerfile: rabbit.Dockerfile
+      context: .
+      dockerfile: rabbit.Dockerfile
     hostname: "rabbit"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
@@ -14,23 +14,38 @@ services:
       - "5672:5672"
     volumes:
       - ./rabbitmq-data:/var/lib/rabbitmq/mnesia/
+    container_name: "rabbitmq"
     networks:
       - postgres
-    labels:
-      NAME: "rabbitmq"
+    restart: unless-stopped    
+    
   postgres:
-      image: postgis/postgis:16-3.4
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: changeme
-        PGDATA: /var/lib/postgresql/data/pgdata
-      ports:
-        - "5432:5432"   
-      volumes:
-        - ./postgres-data:/var/lib/postgresql/data
-      networks:
-        - postgres
-      restart: unless-stopped
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"   
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    container_name: postgres
+    networks:
+      - postgres
+    restart: unless-stopped
+    
+  pgadmin: 
+    image: dpage/pgadmin4:8.5
+    hostname: "pgadmin"
+    container_name: "pgadmin"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "user@domain.com"
+      PGADMIN_DEFAULT_PASSWORD: "SuperSecret"
+    ports: 
+      - "80:80"
+    networks:
+      - postgres    
+    
 networks:
   postgres:
     driver: bridge

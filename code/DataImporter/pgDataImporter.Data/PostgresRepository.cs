@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using Dapper;
+using NLog;
+using Npgsql;
+using pgDataImporter.Contracts.Access;
+
+using pgDataImporter.Contracts.dtos;
+
+using pgDataImporter.Contracts.Postgres;
+
+using System;
+
 using System.Configuration;
 using System.Data;
 using System.Linq;
-
-using Dapper;
-
-using NLog;
-
-using Npgsql;
-
-using pgDataImporter.Contracts.Access;
-using pgDataImporter.Contracts.dtos;
-using pgDataImporter.Contracts.Postgres;
 
 namespace pgDataImporter.Data
 {

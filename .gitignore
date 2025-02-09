@@ -310,3 +310,5 @@ code/DataPipe/DataPipe.Main/appsettings.jsonBerillium
 Docker/Foam_auto23.sql
 Docker/new.sql
 Docker/SetupDataToBigServer.bat
+Docker/rabbitmq-data
+Docker/postgres-data

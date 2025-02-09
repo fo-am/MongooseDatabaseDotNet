@@ -1,2 +1,6 @@
-bin\
-obj\
+# Ignore all
+*
+
+# Allow
+
+
